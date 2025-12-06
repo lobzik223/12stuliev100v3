@@ -1,0 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Malayalam:wght@400&display=swap');
+
+@import "swiper/css";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-start-rgb));
+  overflow-x: hidden;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Анимация киноленты */
+@keyframes kinolentaMove {
+  0% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(-30%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.kinolenta-animation {
+  animation: kinolentaMove 20s ease-in-out infinite;
+}
+
+/* Анимация киноленты 2 - слева вправо и обратно */
+@keyframes kinolenta2Move {
+  0% {
+    transform: translateX(-50%);
+  }
+  50% {
+    transform: translateX(-20%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.kinolenta2-animation {
+  animation: kinolenta2Move 20s ease-in-out infinite;
+}
+
+/* Стили для карусели актеров Swiper */
+.actors-carousel {
+  width: 100%;
+  overflow: hidden;
+  padding: 2rem 0;
+}
+
+.actors-carousel .swiper-slide {
+  transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
+  opacity: 0.7;
+  transform: scale(0.85);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  filter: grayscale(100%);
+}
+
+.actors-carousel .swiper-slide-active {
+  transform: scale(1);
+  opacity: 1;
+  filter: grayscale(0%);
+  z-index: 2;
+}
+
+.actors-carousel .swiper-slide-next,
+.actors-carousel .swiper-slide-prev {
+  transform: scale(0.85);
+  opacity: 0.7;
+  filter: grayscale(100%);
+}
+
+/* Стили для активной (центральной) карточки */
+.actors-carousel .swiper-slide-active .actor-card-image {
+  max-width: clamp(16.875rem, 22vw, 20rem) !important;
+  aspect-ratio: 3/5.3 !important;
+  border: 3px solid #FBC632 !important;
+  box-shadow: 0 0 1.5625rem rgba(251, 198, 50, 0.6), inset 0 0 0.625rem rgba(251, 198, 50, 0.2) !important;
+}
+
+.actors-carousel .swiper-slide-active .actor-card-line {
+  max-width: clamp(22.5rem, 28vw, 28.75rem) !important;
+  background-color: #FBC632 !important;
+  box-shadow: 0 0 0.625rem rgba(251, 198, 50, 0.6) !important;
+}
+
+.actors-carousel .swiper-slide-active .actor-card-text {
+  max-width: clamp(25rem, 31.25vw, 31.25rem) !important;
+}
+
+.actors-carousel .swiper-slide-active .actor-card-name {
+  margin-bottom: 0.5rem !important;
+}
+
+.actors-carousel .swiper-slide-active .actor-card-role {
+  text-transform: uppercase !important;
+  margin-bottom: 2rem !important;
+  color: #FFFFFF !important;
+  filter: drop-shadow(0 0 0.46875rem rgba(255, 255, 255, 0.6)) !important;
+  text-shadow: 0 0 0.9375rem rgba(255, 255, 255, 0.4), 0 0 1.875rem rgba(255, 255, 255, 0.3) !important;
+}
+
+.actors-carousel .swiper-button-next,
+.actors-carousel .swiper-button-prev {
+  color: #FBC632;
+  width: clamp(2rem, 3vw, 3rem);
+  height: clamp(2rem, 3vw, 3rem);
+  filter: drop-shadow(0 0 0.46875rem rgba(251, 198, 50, 0.8));
+}
+
+.actors-carousel .swiper-button-next::after,
+.actors-carousel .swiper-button-prev::after {
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: bold;
+}
+
+.actors-carousel .swiper-button-next:hover,
+.actors-carousel .swiper-button-prev:hover {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+/* Кастомные кнопки навигации для актеров - фиксированные */
+.swiper-button-prev-actors,
+.swiper-button-next-actors {
+  width: clamp(2rem, 3vw, 3rem) !important;
+  height: clamp(2rem, 3vw, 3rem) !important;
+  color: #FBC632 !important;
+  filter: drop-shadow(0 0 0.46875rem rgba(251, 198, 50, 0.8)) !important;
+  text-shadow: 0 0 0.9375rem rgba(251, 198, 50, 0.6) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: absolute !important;
+  top: 38% !important;
+  margin-top: 0 !important;
+  transform: translateY(-50%) !important;
+  z-index: 30 !important;
+}
+
+.swiper-button-prev-actors {
+  left: 2rem !important;
+  right: auto !important;
+}
+
+.swiper-button-next-actors {
+  right: 2rem !important;
+  left: auto !important;
+}
+
+.actors-carousel .swiper-button-prev-actors::after,
+.actors-carousel .swiper-button-next-actors::after {
+  font-size: clamp(2rem, 3vw, 3rem) !important;
+  font-weight: bold !important;
+  color: #FBC632 !important;
+}
+
+.actors-carousel .swiper-button-prev-actors:hover,
+.actors-carousel .swiper-button-next-actors:hover {
+  transform: translateY(-50%) scale(1.1) !important;
+  transition: transform 0.3s ease !important;
+}
+
+/* Стили для карусели отзывов Swiper */
+.reviews-carousel {
+  width: 100%;
+  overflow: hidden;
+  padding: 2rem 0;
+}
+
+.reviews-carousel .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Кастомные кнопки навигации для отзывов */
+.swiper-button-prev-reviews,
+.swiper-button-next-reviews {
+  width: clamp(2rem, 3vw, 3rem) !important;
+  height: clamp(2rem, 3vw, 3rem) !important;
+  color: #FBC632 !important;
+  filter: drop-shadow(0 0 0.46875rem rgba(251, 198, 50, 0.8)) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: absolute !important;
+  top: 50% !important;
+  margin-top: 0 !important;
+  transform: translateY(-50%) !important;
+  z-index: 30 !important;
+}
+
+.swiper-button-prev-reviews {
+  left: -1rem !important;
+  right: auto !important;
+}
+
+.swiper-button-next-reviews {
+  right: -1rem !important;
+  left: auto !important;
+}
+
+.reviews-carousel .swiper-button-prev-reviews::after,
+.reviews-carousel .swiper-button-next-reviews::after {
+  font-size: clamp(2rem, 3vw, 3rem) !important;
+  font-weight: bold !important;
+  color: #FBC632 !important;
+}
+
+.reviews-carousel .swiper-button-prev-reviews:hover,
+.reviews-carousel .swiper-button-next-reviews:hover {
+  transform: translateY(-50%) scale(1.1) !important;
+  transition: transform 0.3s ease !important;
+}
+
+/* Стили для карусели расписания Swiper */
+.schedule-carousel {
+  width: 100%;
+  overflow: hidden;
+  padding: 2rem 0;
+}
+
+.schedule-carousel .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  height: auto;
+}
+
+/* Кастомные кнопки навигации для расписания */
+.swiper-button-prev-schedule,
+.swiper-button-next-schedule {
+  width: clamp(2rem, 3vw, 3rem) !important;
+  height: clamp(2rem, 3vw, 3rem) !important;
+  color: #FBC632 !important;
+  filter: drop-shadow(0 0 0.46875rem rgba(251, 198, 50, 0.8)) !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  position: absolute !important;
+  top: 50% !important;
+  margin-top: 0 !important;
+  transform: translateY(-50%) !important;
+  z-index: 30 !important;
+}
+
+.swiper-button-prev-schedule {
+  left: 0.5rem !important;
+  right: auto !important;
+}
+
+.swiper-button-next-schedule {
+  right: 0.5rem !important;
+  left: auto !important;
+}
+
+.schedule-carousel .swiper-button-prev-schedule::after,
+.schedule-carousel .swiper-button-next-schedule::after {
+  font-size: clamp(2rem, 3vw, 3rem) !important;
+  font-weight: bold !important;
+  color: #FBC632 !important;
+}
+
+.schedule-carousel .swiper-button-prev-schedule:hover,
+.schedule-carousel .swiper-button-next-schedule:hover {
+  transform: translateY(-50%) scale(1.1) !important;
+  transition: transform 0.3s ease !important;
+}
+
