@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { reviews } from '../../data/reviews';
@@ -242,7 +243,7 @@ export default function TrailerSection() {
                         fontStyle: 'italic'
                       }}
                     >
-                      "{member.quote}"
+                      &ldquo;{member.quote}&rdquo;
                     </p>
                   </div>
                 </div>
@@ -315,9 +316,11 @@ export default function TrailerSection() {
                           pointerEvents: 'auto'
                         }}
                       >
-                        <img
+                        <Image
                           src="/backgrounds/sections/otzivi.png"
                           alt={`Отзыв от ${review.name}`}
+                          width={900}
+                          height={600}
                           className="h-auto w-full"
                           style={{ 
                             objectFit: 'contain',
@@ -760,9 +763,11 @@ export default function TrailerSection() {
                   marginTop: 'clamp(1rem, 2vh, 2rem)',
                   minWidth: 'clamp(250px, 25vw, 400px)'
                 }}>
-                  <img
+                  <Image
                     src="/backgrounds/sections/logo100let.png"
                     alt="12 стульев — 100 лет спустя"
+                    width={450}
+                    height={450}
                     style={{
                       maxWidth: 'clamp(280px, 25vw, 450px)',
                       width: '100%',
