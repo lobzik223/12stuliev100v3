@@ -78,14 +78,17 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
 
         {/* Видео блок под текстом */}
         <div className="flex justify-center mb-6 md:mb-8 mt-6 md:mt-8">
-          <img
+          <Image
             src="/backgrounds/sections/video.png"
             alt="Видео"
+            width={1200}
+            height={675}
             style={{ 
               width: 'clamp(43.75rem, 70vw, 75rem)', 
               maxWidth: '100%',
               height: 'auto'
             }}
+            unoptimized
           />
         </div>
 
@@ -168,21 +171,27 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
 
         {/* Кинолента 1 */}
         <div className="w-full flex justify-start overflow-x-visible" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-4rem' }}>
-          <img
+          <Image
             src="/backgrounds/sections/kinolenta.png"
             alt="Кинолента"
+            width={3840}
+            height={200}
             className="max-w-none h-auto kinolenta-animation"
             style={{ width: '200vw', minWidth: '200vw' }}
+            unoptimized
           />
         </div>
 
         {/* Кинолента 2 */}
         <div className="w-full flex justify-start overflow-x-visible" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-12rem' }}>
-          <img
+          <Image
             src="/backgrounds/sections/kinolenta2.png"
             alt="Кинолента 2"
+            width={3840}
+            height={200}
             className="max-w-none h-auto kinolenta2-animation"
             style={{ width: '200vw', minWidth: '200vw' }}
+            unoptimized
           />
         </div>
 
@@ -205,15 +214,18 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             {teamMembers.filter(member => member.date).map((member) => (
               <div key={member.id} className="flex justify-center">
                 <div className="relative" style={{ width: '100%', maxWidth: 'clamp(600px, 45vw, 900px)', pointerEvents: 'auto' }}>
-                  <img
+                  <Image
                     src="/backgrounds/sections/command.png"
                     alt={member.name}
+                    width={900}
+                    height={600}
                     className="h-auto w-full"
                     style={{ 
                       objectFit: 'contain',
                       pointerEvents: 'none',
                       display: 'block'
                     }}
+                    unoptimized
                   />
                   {/* Текст поверх карточки */}
                   <div 
@@ -339,6 +351,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                             display: 'block',
                             pointerEvents: 'none'
                           }}
+                          unoptimized
                         />
                         
                       {/* Текст по центру карточки - часть единого целого */}
@@ -792,6 +805,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                       width: '100%',
                       height: 'auto'
                     }}
+                    unoptimized
                   />
                 </div>
 

@@ -180,9 +180,9 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   }, []);
 
   // Refs для анимации PNG объектов
-  const quoteTextRef = useRef<HTMLImageElement>(null);
-  const longQuoteTextRef = useRef<HTMLImageElement>(null);
-  const triangleRef = useRef<HTMLImageElement>(null);
+  const quoteTextRef = useRef<HTMLDivElement>(null);
+  const longQuoteTextRef = useRef<HTMLDivElement>(null);
+  const triangleRef = useRef<HTMLDivElement>(null);
   
   // Фиксируем позицию треугольника сразу после монтирования
   useEffect(() => {
@@ -197,13 +197,13 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   
   // Refs для раздела "Наши преимущества"
   const advantagesTitleRef = useRef<HTMLDivElement>(null);
-  const starImageRef = useRef<HTMLImageElement>(null);
-  const logoInStarRef = useRef<HTMLImageElement>(null);
+  const starImageRef = useRef<HTMLDivElement>(null);
+  const logoInStarRef = useRef<HTMLDivElement>(null);
   const comedyQualityTextRef = useRef<HTMLDivElement>(null);
   const premiumSegmentTextRef = useRef<HTMLDivElement>(null);
-  const artistsIconRef = useRef<HTMLImageElement>(null);
+  const artistsIconRef = useRef<HTMLDivElement>(null);
   const bestArtistsTextRef = useRef<HTMLDivElement>(null);
-  const directorIconRef = useRef<HTMLImageElement>(null);
+  const directorIconRef = useRef<HTMLDivElement>(null);
   const topDirectorTextRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -563,6 +563,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           priority
           quality={90}
           loading="eager"
+          unoptimized
         />
       </div>
       <div className="location-text">
@@ -626,6 +627,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           priority
           quality={85}
           loading="eager"
+          unoptimized
         />
       </div>
       <div className="dark-overlay">
@@ -638,15 +640,20 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           priority
           quality={80}
           loading="eager"
+          unoptimized
         />
-        <img 
-          ref={triangleRef}
-          src="/photo/treygol.png" 
-          alt="Треугольник" 
-          className="triangle-overlay"
-          loading="eager"
-          fetchPriority="high"
-        />
+        <div ref={triangleRef} className="triangle-overlay">
+          <Image 
+            src="/photo/treygol.png" 
+            alt="Треугольник" 
+            width={200}
+            height={200}
+            loading="eager"
+            priority
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            unoptimized
+          />
+        </div>
         <div className="stats-circles">
           <div className="stat-circle">
             <div className="stat-number">
@@ -697,22 +704,30 @@ const DetailsView: React.FC<DetailsViewProps> = ({
             <div className="stat-label">ЗРИТЕЛЕЙ</div>
           </div>
         </div>
-        <img 
-          ref={quoteTextRef}
-          src="/photo/text1.png" 
-          alt="Текст цитаты" 
-          className="quote-text-overlay"
-          loading="eager"
-          fetchPriority="high"
-        />
-        <img 
-          ref={longQuoteTextRef}
-          src="/photo/text55.png" 
-          alt="Длинный текст цитаты" 
-          className="long-quote-text-overlay"
-          loading="eager"
-          fetchPriority="high"
-        />
+        <div ref={quoteTextRef} className="quote-text-overlay">
+          <Image 
+            src="/photo/text1.png" 
+            alt="Текст цитаты" 
+            width={800}
+            height={400}
+            loading="eager"
+            priority
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            unoptimized
+          />
+        </div>
+        <div ref={longQuoteTextRef} className="long-quote-text-overlay">
+          <Image 
+            src="/photo/text55.png" 
+            alt="Длинный текст цитаты" 
+            width={800}
+            height={600}
+            loading="eager"
+            priority
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            unoptimized
+          />
+        </div>
       </div>
       <div className="dark-overlay-duplicate">
         <Image 
@@ -723,46 +738,63 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           className="dark-overlay-image"
           quality={80}
           loading="lazy"
+          unoptimized
         />
         <div ref={advantagesTitleRef} className="advantages-title">Наши преимущества</div>
-        <img 
-          ref={starImageRef}
-          src="/photo/yildiz.png" 
-          alt="Звезда" 
-          className="star-image"
-          loading="eager"
-          fetchPriority="high"
-        />
-        <img 
-          ref={logoInStarRef}
-          src="/photo/logo2.png" 
-          alt="Логотип 12 стульев" 
-          className="logo-in-star"
-          loading="eager"
-          fetchPriority="high"
-        />
+        <div ref={starImageRef} className="star-image">
+          <Image 
+            src="/photo/yildiz.png" 
+            alt="Звезда" 
+            width={300}
+            height={300}
+            loading="eager"
+            priority
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            unoptimized
+          />
+        </div>
+        <div ref={logoInStarRef} className="logo-in-star">
+          <Image 
+            src="/photo/logo2.png" 
+            alt="Логотип 12 стульев" 
+            width={150}
+            height={150}
+            loading="eager"
+            priority
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            unoptimized
+          />
+        </div>
         <div ref={comedyQualityTextRef} className="comedy-quality-text">КОМЕДИЯ ВЫСАЧАЙШЕГО КАЧЕСТВА</div>
         <div ref={premiumSegmentTextRef} className="premium-segment-text">
           Спектакль премиум<br />
           сегмента
         </div>
-        <img 
-          ref={artistsIconRef}
-          src="/photo/artisti.png" 
-          alt="Иконка театральной маски" 
-          className="artists-icon"
-          loading="eager"
-          fetchPriority="high"
-        />
+        <div ref={artistsIconRef} className="artists-icon">
+          <Image 
+            src="/photo/artisti.png" 
+            alt="Иконка театральной маски" 
+            width={100}
+            height={100}
+            loading="eager"
+            priority
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            unoptimized
+          />
+        </div>
         <div ref={bestArtistsTextRef} className="best-artists-text">Лучшие артисты</div>
-        <img 
-          ref={directorIconRef}
-          src="/photo/rejiser.png" 
-          alt="Иконка кинокамеры" 
-          className="director-icon"
-          loading="eager"
-          fetchPriority="high"
-        />
+        <div ref={directorIconRef} className="director-icon">
+          <Image 
+            src="/photo/rejiser.png" 
+            alt="Иконка кинокамеры" 
+            width={100}
+            height={100}
+            loading="eager"
+            priority
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            unoptimized
+          />
+        </div>
         <div ref={topDirectorTextRef} className="top-director-text">Топовый режиссер</div>
         <button 
           className="buy-ticket-button-bottom"
@@ -864,6 +896,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
                         display: 'block',
                         pointerEvents: 'none'
                       }}
+                      unoptimized
                     />
                     
                     {/* Текст по центру карточки - часть единого целого */}
@@ -1038,6 +1071,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
                 height: 'auto',
                 objectFit: 'contain'
               }}
+              unoptimized
             />
           </div>
 
@@ -1212,6 +1246,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
                   width: '100%',
                   height: 'auto'
                 }}
+                unoptimized
               />
             </div>
 

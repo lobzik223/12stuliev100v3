@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { actors } from '../../data/actors';
@@ -342,13 +343,13 @@ export default function ActorsSection() {
               >
                         <div className="w-full h-full bg-gray-900">
                           {actor.image && (
-                            <img 
+                            <Image 
                               src={actor.image} 
                               alt={actor.name}
+                              width={400}
+                              height={600}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).style.display = 'none';
-                              }}
+                              unoptimized
                             />
                           )}
                         </div>

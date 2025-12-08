@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from 'next/image';
 import Header from "./Header";
 import SecondaryNav from "./sections/SecondaryNav";
 import HeroSection from "./sections/HeroSection";
@@ -282,35 +283,6 @@ export default function MainScreen() {
                 reviewsSectionRef={reviewsSectionRef}
                 contactsSectionRef={contactsSectionRef}
                 onViewSchedule={() => router.push('/schedule')}
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Раздел с фоном sectıon-12.png и наложением sectıon-1509.png */}
-        <section className="relative w-full">
-          <div className="relative w-full z-0">
-            {/* Фоновое изображение sectıon-12.png */}
-            <img
-              src="/backgrounds/sections/sectıon-12.png"
-              alt=""
-              className="w-full h-auto block"
-              style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain' }}
-              loading="eager"
-              fetchPriority="high"
-            />
-            {/* Наложенное изображение sectıon-1509.png в начале фона */}
-            <div 
-              className="absolute top-0 left-0 w-full"
-              style={{ zIndex: 5 }}
-            >
-              <img
-                src="/backgrounds/sections/sectıon-1509.png"
-                alt=""
-                className="w-full h-auto block"
-                style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain' }}
-                loading="eager"
-                fetchPriority="high"
               />
             </div>
           </div>

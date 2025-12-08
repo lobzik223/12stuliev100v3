@@ -220,14 +220,17 @@ export default function SchedulePage() {
               ГДЕ МОЖНО ПОСМОТРЕТЬ
             </p>
             <div style={{ display: 'flex', justifyContent: 'flex-end', paddingRight: 'clamp(1rem, 2vw, 2rem)' }}>
-              <img
+              <Image
                 src="/backgrounds/sections/logo100let.png"
                 alt="12 СТУЛЬЕВ 100 лет спустя"
+                width={450}
+                height={450}
                 style={{
                   maxWidth: 'clamp(15rem, 30vw, 25rem)',
                   height: 'auto',
                   objectFit: 'contain'
                 }}
+                unoptimized
               />
             </div>
           </div>
