@@ -8,25 +8,75 @@ import EventsSection from "./sections/EventsSection";
 import JourneySection from "./sections/JourneySection";
 import ActorsSection from "./sections/ActorsSection";
 import TrailerSection from "./sections/TrailerSection";
+import { useRouter } from 'next/navigation';
 
 export default function MainScreen() {
+  const router = useRouter();
   const [isMainHeaderVisible, setIsMainHeaderVisible] = useState(true);
-  const secondaryHeaderNavRef = useRef<HTMLDivElement>(null);
+  const [activeCategory, setActiveCategory] = useState(0); // 0: ОФИС, 1: ПСИХУШКА, 2: КВАРТИРА КИСЫ, 3: КВАРТИРА СТАРУХИ
+  const journeySectionRef = useRef<HTMLDivElement>(null);
+  const eventsSectionRef = useRef<HTMLDivElement>(null);
+  const gallerySectionRef = useRef<HTMLDivElement>(null);
+  const actorsSectionRef = useRef<HTMLDivElement>(null);
+  const teamSectionRef = useRef<HTMLDivElement>(null);
+  const reviewsSectionRef = useRef<HTMLDivElement>(null);
+  const contactsSectionRef = useRef<HTMLDivElement>(null);
+  const navPanelRef = useRef<HTMLDivElement>(null);
+  const finalTextRef = useRef<HTMLDivElement>(null);
   const sectionEndRef = useRef<HTMLDivElement>(null);
+  const officeRef = useRef<HTMLDivElement>(null);
+  const psychushkaRef = useRef<HTMLDivElement>(null);
+  const kisaRef = useRef<HTMLDivElement>(null);
+  const yaryginaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (secondaryHeaderNavRef.current && sectionEndRef.current) {
       const handleScroll = () => {
-        if (!secondaryHeaderNavRef.current || !sectionEndRef.current) return;
+      if (!navPanelRef.current) return;
         
-        const secondaryRect = secondaryHeaderNavRef.current.getBoundingClientRect();
-        const endRect = sectionEndRef.current.getBoundingClientRect();
+      const navPanelRect = navPanelRef.current.getBoundingClientRect();
+      const finalTextRect = finalTextRef.current?.getBoundingClientRect();
         
-        if (secondaryRect.top <= 100 && endRect.top > 0) {
-          setIsMainHeaderVisible(false);
+      // Когда навигационная панель из EventsSection достигает верха экрана - "подхватываем" её
+      if (navPanelRect.top <= 100) {
+        // Проверяем, прошли ли мы текст "ФИНАЛ ОХОТЫ"
+        if (finalTextRect && finalTextRect.top < window.innerHeight * 0.3) {
+          // Прошли текст "ФИНАЛ ОХОТЫ" - возвращаем главную шапку
+          setIsMainHeaderVisible(true);
         } else {
+          // Еще не прошли текст "ФИНАЛ ОХОТЫ" - показываем вторичную шапку (подхватываем навигационную панель)
+          setIsMainHeaderVisible(false);
+        }
+        } else {
+        // Навигационная панель еще не достигла верха - показываем главную шапку
           setIsMainHeaderVisible(true);
         }
+
+      // Определяем активную категорию на основе позиции объектов
+      // Объект считается активным, когда его верхняя часть достигает верхней трети экрана
+      const activationThreshold = window.innerHeight * 0.3;
+      const refs = [
+        { ref: officeRef, index: 0 },
+        { ref: psychushkaRef, index: 1 },
+        { ref: kisaRef, index: 2 },
+        { ref: yaryginaRef, index: 3 }
+      ];
+
+      // Проверяем объекты сверху вниз, находим последний который прошел порог активации
+      let activeIndex = 0;
+      
+      for (let i = refs.length - 1; i >= 0; i--) {
+        const { ref, index } = refs[i];
+        if (ref.current) {
+          const rect = ref.current.getBoundingClientRect();
+          // Если верх объекта достиг порога активации - это активный объект
+          if (rect.top <= activationThreshold && rect.bottom > 0) {
+            activeIndex = index;
+            break;
+          }
+        }
+      }
+
+      setActiveCategory(activeIndex);
       };
 
       window.addEventListener('scroll', handleScroll, { passive: true });
@@ -35,24 +85,134 @@ export default function MainScreen() {
       return () => {
         window.removeEventListener('scroll', handleScroll);
       };
-    }
   }, []);
 
   return (
     <main className="relative min-h-screen w-full bg-black" style={{ overflowX: 'hidden' }}>
-      <Header isVisible={isMainHeaderVisible} />
-      <SecondaryNav isVisible={!isMainHeaderVisible} />
+      <Header 
+        isVisible={isMainHeaderVisible}
+        onTicketsClick={() => {
+          if (eventsSectionRef.current) {
+            const element = eventsSectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+        onAboutClick={() => {
+          if (journeySectionRef.current) {
+            const element = journeySectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+        onGalleryClick={() => {
+          if (gallerySectionRef.current) {
+            const element = gallerySectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+        onActorsClick={() => {
+          if (actorsSectionRef.current) {
+            const element = actorsSectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+        onTeamClick={() => {
+          if (teamSectionRef.current) {
+            const element = teamSectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+        onReviewsClick={() => {
+          if (reviewsSectionRef.current) {
+            const element = reviewsSectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+        onContactsClick={() => {
+          if (contactsSectionRef.current) {
+            const element = contactsSectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }}
+      />
+      <SecondaryNav isVisible={!isMainHeaderVisible} activeCategory={activeCategory} />
       
       <div className="min-h-screen">
         {/* Раздел 1 - Hero */}
-        <HeroSection />
+        <HeroSection onStartJourney={() => {
+          if (journeySectionRef.current) {
+            const element = journeySectionRef.current;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - 100; // Отступ для header
+            
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }
+        }} />
 
         {/* Раздел 2 - Карточки событий (под текстами Hero) */}
-        <EventsSection />
+        <div ref={eventsSectionRef}>
+          <EventsSection 
+            navPanelRef={navPanelRef} 
+            activeCategory={activeCategory}
+            onViewSchedule={() => router.push('/schedule')}
+          />
+        </div>
 
         {/* Раздел "В ПУТЬ" */}
-        <div ref={secondaryHeaderNavRef}>
-          <JourneySection sectionEndRef={sectionEndRef} />
+        <div ref={journeySectionRef}>
+          <JourneySection 
+            sectionEndRef={sectionEndRef} 
+            finalTextRef={finalTextRef} 
+            navPanelRef={navPanelRef}
+            officeRef={officeRef}
+            psychushkaRef={psychushkaRef}
+            kisaRef={kisaRef}
+            yaryginaRef={yaryginaRef}
+          />
         </div>
 
         {/* Переходный элемент с черным блюром между section-4.png и section-3.png */}
@@ -89,7 +249,8 @@ export default function MainScreen() {
                 position: 'absolute',
                 top: '0',
                 left: 0,
-                bottom: 0
+                bottom: 0,
+                willChange: 'auto' // Оптимизация для браузера
               }}
             />
           </div>
@@ -109,13 +270,19 @@ export default function MainScreen() {
           {/* Контейнер для контента */}
           <div className="relative w-full" style={{ zIndex: 15 }}>
             {/* Раздел "АКТЕРЫ" */}
-            <div className="relative w-full" style={{ zIndex: 15 }}>
+            <div ref={actorsSectionRef} className="relative w-full" style={{ zIndex: 15 }}>
               <ActorsSection />
             </div>
             
             {/* Раздел "ТРЕЙЛЕР" */}
             <div className="relative w-full">
-              <TrailerSection />
+              <TrailerSection 
+                gallerySectionRef={gallerySectionRef}
+                teamSectionRef={teamSectionRef}
+                reviewsSectionRef={reviewsSectionRef}
+                contactsSectionRef={contactsSectionRef}
+                onViewSchedule={() => router.push('/schedule')}
+              />
             </div>
           </div>
         </section>
@@ -129,6 +296,8 @@ export default function MainScreen() {
               alt=""
               className="w-full h-auto block"
               style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain' }}
+              loading="eager"
+              fetchPriority="high"
             />
             {/* Наложенное изображение sectıon-1509.png в начале фона */}
             <div 
@@ -140,6 +309,8 @@ export default function MainScreen() {
                 alt=""
                 className="w-full h-auto block"
                 style={{ display: 'block', width: '100%', height: 'auto', objectFit: 'contain' }}
+                loading="eager"
+                fetchPriority="high"
               />
             </div>
           </div>

@@ -16,6 +16,12 @@ export default function RootLayout({
     <html lang="ru">
       <head>
         <link rel="stylesheet" href="//s3.intickets.ru/interposed-frame.min.css" />
+        {/* Preload критических фоновых изображений для быстрой загрузки */}
+        <link rel="preload" href="/backgrounds/sections/section-1.png" as="image" />
+        <link rel="preload" href="/backgrounds/sections/section-3.png" as="image" />
+        <link rel="preload" href="/backgrounds/sections/section-4.png" as="image" />
+        <link rel="preload" href="/photo/section-34839282.png" as="image" />
+        <link rel="preload" href="/backgrounds/sections/logo100let.png" as="image" />
       </head>
       <body>
         {children}

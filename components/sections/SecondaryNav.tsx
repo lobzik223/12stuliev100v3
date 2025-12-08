@@ -2,9 +2,10 @@
 
 interface SecondaryNavProps {
   isVisible: boolean;
+  activeCategory?: number;
 }
 
-export default function SecondaryNav({ isVisible }: SecondaryNavProps) {
+export default function SecondaryNav({ isVisible, activeCategory = 0 }: SecondaryNavProps) {
   return (
     <div
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
@@ -12,7 +13,7 @@ export default function SecondaryNav({ isVisible }: SecondaryNavProps) {
       }`}
       style={{ padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(0.5%, 1vw, 1%)' }}
     >
-      <div className="relative w-full mx-auto" style={{ maxWidth: '93.75vw', height: 'clamp(3.5rem, 4.25vw, 4.25rem)' }}>
+      <div className="relative w-full mx-auto" style={{ maxWidth: '98vw', height: 'clamp(4rem, 5vw, 5rem)' }}>
         <svg
           className="absolute inset-0 w-full h-full"
           viewBox="0 0 1728 81"
@@ -57,35 +58,38 @@ export default function SecondaryNav({ isVisible }: SecondaryNavProps) {
         <div className="relative h-full flex items-center justify-center" style={{ padding: '0 2%' }}>
           <div className="flex flex-wrap items-center justify-center" style={{ gap: 'clamp(2rem, 5vw, 3rem)' }}>
             {[
-              { name: 'ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»', active: true },
-              { name: 'ПСИХУШКА', active: false },
-              { name: 'КВАРТИРА КИСЫ', active: false },
-              { name: 'КВАРТИРА СТАРУХИ ЯРЫГИНОЙ', active: false }
-            ].map((item, index) => (
-              <div key={index} className="flex flex-col items-center">
+              { name: 'ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»', index: 0 },
+              { name: 'ПСИХУШКА', index: 1 },
+              { name: 'КВАРТИРА КИСЫ', index: 2 },
+              { name: 'КВАРТИРА СТАРУХИ ЯРЫГИНОЙ', index: 3 }
+            ].map((item) => {
+              const isActive = activeCategory === item.index;
+              return (
+              <div key={item.index} className="flex flex-col items-center">
                 <div 
                   className="rounded-full mb-2"
                   style={{
-                    width: 'clamp(0.75rem, 0.9375vw, 0.9375rem)',
-                    height: 'clamp(0.75rem, 0.9375vw, 0.9375rem)',
-                    backgroundColor: item.active ? '#FBC632' : 'transparent',
-                    border: item.active ? 'none' : '2px solid rgba(255, 255, 255, 0.6)',
-                    boxShadow: item.active ? '0 0 0.625rem rgba(251, 198, 50, 0.8)' : 'none'
+                    width: 'clamp(0.5rem, 0.7vw, 0.7rem)',
+                    height: 'clamp(0.5rem, 0.7vw, 0.7rem)',
+                    backgroundColor: isActive ? '#FBC632' : 'transparent',
+                    border: isActive ? 'none' : '1.5px solid rgba(255, 255, 255, 0.6)',
+                    boxShadow: isActive ? '0 0 0.5rem rgba(251, 198, 50, 0.8)' : 'none'
                   }}
                 />
                 <p
                   className="text-center uppercase"
                   style={{
                     fontFamily: "'Playfair Display SC', serif",
-                    fontSize: 'clamp(0.75rem, 0.875vw, 0.875rem)',
-                    letterSpacing: '0.0625rem',
+                    fontSize: 'clamp(0.75rem, 0.9vw, 0.9rem)',
+                    letterSpacing: '0.05rem',
                     color: 'white'
                   }}
                 >
                   {item.name}
                 </p>
               </div>
-            ))}
+            );
+            })}
           </div>
         </div>
       </div>

@@ -10,140 +10,80 @@ if (typeof window !== 'undefined') {
 
 interface JourneySectionProps {
   sectionEndRef: React.RefObject<HTMLDivElement>;
+  finalTextRef?: React.RefObject<HTMLDivElement>;
+  navPanelRef?: React.RefObject<HTMLDivElement>;
+  officeRef?: React.RefObject<HTMLDivElement>;
+  psychushkaRef?: React.RefObject<HTMLDivElement>;
+  kisaRef?: React.RefObject<HTMLDivElement>;
+  yaryginaRef?: React.RefObject<HTMLDivElement>;
 }
 
-export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
+export default function JourneySection({ sectionEndRef, finalTextRef, officeRef, psychushkaRef, kisaRef, yaryginaRef }: JourneySectionProps) {
   const vputSectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // GSAP анимации для объектов в разделе "В ПУТЬ"
+    // GSAP параллакс для объектов в разделе "В ПУТЬ" (как на hlado.ru)
     if (vputSectionRef.current) {
-      const allElements = vputSectionRef.current.querySelectorAll('[data-animate="vput"]');
-      const imageElements: Element[] = [];
-      const textElements: Element[] = [];
+      // Находим только объекты с изображениями (не тексты)
+      const parallaxObjects = Array.from(vputSectionRef.current.querySelectorAll('[data-animate="vput"]'));
       
-      // Разделяем элементы на изображения и тексты
-      allElements.forEach((el) => {
-        // Проверяем, является ли это объектом vput (vput.png, vput2.png, vput3.png, vput4.png)
-        const innerDiv = el.querySelector('div');
-        let isVputObject = false;
-        
-        if (innerDiv) {
-          const styleAttr = innerDiv.getAttribute('style') || '';
-          isVputObject = styleAttr.includes('vput.png') || 
-                        styleAttr.includes('vput2.png') || 
-                        styleAttr.includes('vput3.png') || 
-                        styleAttr.includes('vput4.png');
-        }
-        
-        // Пропускаем объекты vput и тексты - они не должны иметь параллакс
-        if (isVputObject || (el.textContent && el.textContent.trim().length > 0)) {
-          // Это vput объект или текст - только анимация появления, без параллакса
-          return;
-        }
-        
-        // Проверяем, есть ли внутри div с backgroundImage (для остальных объектов)
-        let hasImage = false;
-        if (innerDiv) {
-          const styleAttr = innerDiv.getAttribute('style') || '';
-          hasImage = styleAttr.includes('backgroundImage') || 
-                     styleAttr.includes('background-image') ||
-                     (window.getComputedStyle && window.getComputedStyle(innerDiv).backgroundImage !== 'none' && 
-                      window.getComputedStyle(innerDiv).backgroundImage !== '');
-        }
-        
-        if (hasImage) {
-          imageElements.push(el);
-        } else {
-          textElements.push(el);
-        }
+      // Фильтруем только объекты с изображениями (не тексты)
+      const imageObjects = parallaxObjects.filter((el) => {
+        const isText = el.textContent && el.textContent.trim().length > 0;
+        return !isText;
       });
       
-      // Анимация для объектов vput и текстов - только появление, без параллакса
-      allElements.forEach((el, index) => {
-        // Проверяем, является ли это объектом vput или текстом
-        const innerDiv = el.querySelector('div');
-        let isVputObject = false;
-        let isText = el.textContent && el.textContent.trim().length > 0;
-        
-        if (innerDiv) {
-          const styleAttr = innerDiv.getAttribute('style') || '';
-          isVputObject = styleAttr.includes('vput.png') || 
-                        styleAttr.includes('vput2.png') || 
-                        styleAttr.includes('vput3.png') || 
-                        styleAttr.includes('vput4.png');
-        }
-        
-        // Если это vput объект или текст - только анимация появления
-        if (isVputObject || isText) {
-          gsap.set(el, {
-            opacity: 0,
-            y: 60
-          });
-          
-          gsap.to(el, {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 85%",
-              toggleActions: "play none none reverse"
-            },
-            delay: index * 0.03
-          });
-        }
-      });
+      imageObjects.forEach((el, index) => {
+        // Получаем скорость из data-speed атрибута
+        const speedAttr = el.getAttribute('data-speed');
+        const parallaxSpeed = speedAttr ? parseFloat(speedAttr) : 0.3;
       
-      // Анимация для объектов с параллаксом - появление + плавный параллакс (как в MainView.tsx)
-      imageElements.forEach((el, index) => {
-        // Устанавливаем начальное состояние
-        gsap.set(el, {
-          opacity: 0,
-          y: 60,
-          scale: 0.95
-        });
+        // Применяем will-change для оптимизации GPU
+        if (el instanceof HTMLElement) {
+          el.style.willChange = 'transform';
+          gsap.set(el, { force3D: true });
+        }
         
-        // Быстрая анимация появления
+        // Параллакс-движение как на hlado.ru
+        // Разные скорости создают эффект глубины: ближайшие объекты двигаются быстрее, дальние - медленнее
+        // Направление движения для разнообразия
+        const direction = index % 2 === 0 ? -1 : 1;
+        const parallaxAmount = parallaxSpeed * 100; // Амплитуда движения (100px максимум)
+        
+        // Параллакс по вертикали с разной скоростью
+        // Используем подход как на hlado.ru - движение зависит от позиции скролла
         gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.5,
-          ease: "power2.out",
+          y: direction * parallaxAmount,
+          ease: "none",
+          force3D: true,
           scrollTrigger: {
-            trigger: el,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
-          },
-          delay: index * 0.03
-        });
-        
-        // Легкий параллакс-эффект для объектов (более деликатный)
-        const speed = 0.3 + (index % 4) * 0.15; // Более медленные скорости от 0.3 до 0.75
-        const directionY = index % 2 === 0 ? -1 : 1;
-        const directionX = index % 3 === 0 ? -1 : index % 3 === 1 ? 1 : 0;
-        
-        gsap.to(el, {
-          y: directionY * 40 * speed, // Уменьшена амплитуда для более легкого эффекта
-          x: directionX * 25 * speed, // Уменьшена амплитуда для более легкого эффекта
-          rotation: directionY * 2 * speed, // Уменьшено вращение
-          scale: 1 + (speed * 0.02), // Очень легкое увеличение масштаба
-          ease: "sine.inOut", // Плавное движение
-          scrollTrigger: {
-            trigger: el,
+            trigger: el, // Триггер для каждого элемента отдельно
             start: "top bottom",
             end: "bottom top",
-            scrub: 2, // Более плавное и медленное движение
-            invalidateOnRefresh: true
+            scrub: 1, // Плавная привязка к скроллу
+            refreshPriority: -1,
+            onLeave: () => {
+              if (el instanceof HTMLElement) {
+                el.style.willChange = 'auto';
+              }
+            },
+            onEnterBack: () => {
+              if (el instanceof HTMLElement) {
+                el.style.willChange = 'transform';
+              }
+            }
           }
         });
       });
     }
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      // Очистка всех ScrollTrigger при размонтировании
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars && trigger.vars.trigger) {
+          trigger.kill();
+        }
+      });
     };
   }, []);
   return (
@@ -170,13 +110,15 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
             position: 'absolute',
             top: '0',
             left: 0,
-            minHeight: '400vh'
+            minHeight: '400vh',
+            willChange: 'auto' // Оптимизация для браузера
           }}
         />
       </div>
 
       {/* Изображение vput.png поверх фона сверху */}
       <div 
+        ref={officeRef}
         className="absolute z-[5]"
         style={{
           top: 'clamp(5vh, 15vh, 25vh)',
@@ -200,6 +142,7 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
       <div 
         className="absolute z-[5]"
         data-animate="vput"
+        data-speed="0.3"
         style={{
           top: 'clamp(20vh, 30vh, 40vh)',
           right: 'clamp(22.5rem, 30vw, 28.125rem)'
@@ -241,183 +184,10 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
         />
       </div>
 
-      {/* Навигационная панель */}
-      <div 
-        className="absolute z-[10] w-full max-w-[1200px] left-1/2 -translate-x-1/2"
-        style={{
-          top: 'clamp(-25vh, -15vh, -5vh)',
-          paddingLeft: 'clamp(0.5rem, 1vw, 1rem)',
-          paddingRight: 'clamp(0.5rem, 1vw, 1rem)',
-          paddingTop: 'clamp(0.625rem, 0.75vw, 0.75rem)',
-          paddingBottom: 'clamp(0.625rem, 0.75vw, 0.75rem)'
-        }}
-      >
-        {/* SVG фон с эффектом свечения */}
-        <div className="relative w-full" style={{ height: 'clamp(80px, 10vh, 90px)' }}>
-          <svg
-            className="absolute inset-0 w-full h-full"
-            viewBox="0 0 1728 81"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <filter
-                id="filter0_d_journey"
-                x="0"
-                y="0"
-                width="1728"
-                height="81"
-                filterUnits="userSpaceOnUse"
-                colorInterpolationFilters="sRGB"
-              >
-                <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                <feColorMatrix
-                  in="SourceAlpha"
-                  type="matrix"
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-                  result="hardAlpha"
-                />
-                <feOffset />
-                <feGaussianBlur stdDeviation="7.5" />
-                <feComposite in2="hardAlpha" operator="out" />
-                <feColorMatrix
-                  type="matrix"
-                  values="0 0 0 0 0.984314 0 0 0 0 0.776471 0 0 0 0 0.196078 0 0 0 0.6 0"
-                />
-                <feBlend
-                  mode="normal"
-                  in2="BackgroundImageFix"
-                  result="effect1_dropShadow_journey"
-                />
-                <feBlend
-                  mode="normal"
-                  in="SourceGraphic"
-                  in2="effect1_dropShadow_journey"
-                  result="shape"
-                />
-              </filter>
-            </defs>
-            <g filter="url(#filter0_d_journey)">
-              <rect
-                x="15"
-                y="15"
-                width="1698"
-                height="51"
-                rx="10"
-                fill="#682302"
-              />
-              <rect
-                x="16"
-                y="16"
-                width="1696"
-                height="49"
-                rx="9"
-                stroke="#955E0C"
-                strokeWidth="2"
-              />
-            </g>
-          </svg>
-
-          {/* Контент поверх SVG */}
-          <div className="relative h-full flex items-center justify-center px-4 md:px-8">
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-10 lg:gap-12">
-              {/* ОФИС ЛОТЕРЕИ «БИМ-БОМ-26» */}
-              <div className="flex flex-col items-center">
-                <div 
-                  className="w-3 h-3 rounded-full mb-2"
-                  style={{
-                    backgroundColor: '#FBC632',
-                    boxShadow: '0 0 10px rgba(251, 198, 50, 0.8)'
-                  }}
-                ></div>
-                <p
-                  className="text-xs md:text-sm text-center uppercase"
-                  style={{
-                    fontFamily: "'Playfair Display SC', serif",
-                    fontSize: '14px',
-                    letterSpacing: '1px',
-                    color: 'white'
-                  }}
-                >
-                  ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»
-                </p>
-              </div>
-              
-              {/* ПСИХУШКА */}
-              <div className="flex flex-col items-center">
-                <div 
-                  className="w-3 h-3 rounded-full mb-2 border-2"
-                  style={{
-                    borderColor: 'rgba(255, 255, 255, 0.6)',
-                    backgroundColor: 'transparent'
-                  }}
-                ></div>
-                <p
-                  className="text-xs md:text-sm text-center uppercase"
-                  style={{
-                    fontFamily: "'Playfair Display SC', serif",
-                    fontSize: '14px',
-                    letterSpacing: '1px',
-                    color: 'white'
-                  }}
-                >
-                  ПСИХУШКА
-                </p>
-              </div>
-              
-              {/* КВАРТИРА КИСЫ */}
-              <div className="flex flex-col items-center">
-                <div 
-                  className="w-3 h-3 rounded-full mb-2 border-2"
-                  style={{
-                    borderColor: 'rgba(255, 255, 255, 0.6)',
-                    backgroundColor: 'transparent'
-                  }}
-                ></div>
-                <p
-                  className="text-xs md:text-sm text-center uppercase"
-                  style={{
-                    fontFamily: "'Playfair Display SC', serif",
-                    fontSize: '14px',
-                    letterSpacing: '1px',
-                    color: 'white'
-                  }}
-                >
-                  КВАРТИРА КИСЫ
-                </p>
-              </div>
-              
-              {/* КВАРТИРА СТАРУХИ ЯРЫГИНОЙ */}
-              <div className="flex flex-col items-center">
-                <div 
-                  className="w-3 h-3 rounded-full mb-2 border-2"
-                  style={{
-                    borderColor: 'rgba(255, 255, 255, 0.6)',
-                    backgroundColor: 'transparent'
-                  }}
-                ></div>
-                <p
-                  className="text-xs md:text-sm text-center uppercase"
-                  style={{
-                    fontFamily: "'Playfair Display SC', serif",
-                    fontSize: '14px',
-                    letterSpacing: '1px',
-                    color: 'white'
-                  }}
-                >
-                  КВАРТИРА СТАРУХИ ЯРЫГИНОЙ
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Текст отдельно от flash.png */}
       <div 
+        ref={officeRef}
         className="absolute z-[5] text-center"
-        data-animate="vput"
         style={{
           top: 'clamp(55vh, 65vh, 75vh)',
           right: 'clamp(4rem, 6vw, 7rem)',
@@ -480,6 +250,7 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
 
       {/* Изображение vput2.png ниже и справа */}
       <div 
+        ref={psychushkaRef}
         className="absolute z-[5]"
         style={{
           top: 'clamp(85vh, 100vh, 120vh)',
@@ -525,7 +296,6 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
       {/* Текст "Психушка" ниже analiz.png */}
       <div 
         className="absolute z-[5] text-center"
-        data-animate="vput"
         style={{
           top: 'clamp(115.625vh, 143.75vh, 156.25vh)',
           left: 'clamp(55rem, 71vw, 88rem)',
@@ -588,7 +358,6 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
       {/* Текст "КВАРТИРА КИСЫ" ниже pamat15.png */}
       <div 
         className="absolute z-[5] text-center"
-        data-animate="vput"
         style={{
           top: 'clamp(238vh, 272.5vh, 250vh)',
           left: 'clamp(6rem, 11vw, 21rem)',
@@ -650,6 +419,7 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
 
       {/* Изображение vput3.png ниже объекта vput2.png */}
       <div 
+        ref={kisaRef}
         className="absolute z-[5]"
         style={{
           top: 'clamp(173vh, 206vh, 198vh)',
@@ -671,6 +441,7 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
 
       {/* Текст "КВАРТИРА СТАРУХИ ЯРЫГИНОЙ" ниже computer.png */}
       <div 
+        ref={finalTextRef}
         className="absolute z-[5] text-center"
         style={{
           top: 'clamp(325vh, 390vh, 350vh)',
@@ -710,6 +481,7 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
 
       {/* Изображение vput4.png ниже объекта vput3.png */}
       <div 
+        ref={yaryginaRef}
         className="absolute z-[5]"
         style={{
           top: 'clamp(262vh, 315vh, 288vh)',
@@ -735,7 +507,7 @@ export default function JourneySection({ sectionEndRef }: JourneySectionProps) {
         data-animate="vput"
         data-speed="0.8"
         style={{
-          top: 'clamp(302vh, 365vh, 343vh)',
+          top: 'clamp(312vh, 375vh, 353vh)',
           left: 'clamp(50rem, 64vw, 83.875rem)'
         }}
       >

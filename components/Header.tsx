@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const navItems = [
   { name: 'БИЛЕТЫ', href: '/tickets' },
-  { name: 'СПЕКТАКЛИ', href: '/about' },
+  { name: 'О СПЕКТАКЛЕ', href: '/about' },
   { name: 'ГАЛЕРЕЯ', href: '/gallery' },
   { name: 'АКТЕРЫ', href: '/actors' },
   { name: 'КОМАНДА', href: '/team' },
@@ -13,8 +13,64 @@ const navItems = [
   { name: 'КОНТАКТЫ', href: '/contacts' },
 ];
 
-export default function Header({ isVisible = true }: { isVisible?: boolean }) {
+interface HeaderProps {
+  isVisible?: boolean;
+  onTicketsClick?: () => void;
+  onAboutClick?: () => void;
+  onGalleryClick?: () => void;
+  onActorsClick?: () => void;
+  onTeamClick?: () => void;
+  onReviewsClick?: () => void;
+  onContactsClick?: () => void;
+}
+
+export default function Header({ isVisible = true, onTicketsClick, onAboutClick, onGalleryClick, onActorsClick, onTeamClick, onReviewsClick, onContactsClick }: HeaderProps) {
   const pathname = usePathname();
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Если это "БИЛЕТЫ" и есть функция скролла - используем её
+    if (href === '/tickets' && onTicketsClick) {
+      e.preventDefault();
+      onTicketsClick();
+      return;
+    }
+    // Если это "О СПЕКТАКЛЕ" и есть функция скролла - используем её
+    if (href === '/about' && onAboutClick) {
+      e.preventDefault();
+      onAboutClick();
+      return;
+    }
+    // Если это "ГАЛЕРЕЯ" и есть функция скролла - используем её
+    if (href === '/gallery' && onGalleryClick) {
+      e.preventDefault();
+      onGalleryClick();
+      return;
+    }
+    // Если это "АКТЕРЫ" и есть функция скролла - используем её
+    if (href === '/actors' && onActorsClick) {
+      e.preventDefault();
+      onActorsClick();
+      return;
+    }
+    // Если это "КОМАНДА" и есть функция скролла - используем её
+    if (href === '/team' && onTeamClick) {
+      e.preventDefault();
+      onTeamClick();
+      return;
+    }
+    // Если это "ОТЗЫВЫ" и есть функция скролла - используем её
+    if (href === '/reviews' && onReviewsClick) {
+      e.preventDefault();
+      onReviewsClick();
+      return;
+    }
+    // Если это "КОНТАКТЫ" и есть функция скролла - используем её
+    if (href === '/contacts' && onContactsClick) {
+      e.preventDefault();
+      onContactsClick();
+      return;
+    }
+  };
 
   return (
     <header 
@@ -75,16 +131,14 @@ export default function Header({ isVisible = true }: { isVisible?: boolean }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-2 py-1 rounded transition-all duration-200 ${
-                    isActive
-                      ? 'bg-black/30'
-                      : 'hover:bg-black/20'
-                  }`}
+                  onClick={(e) => handleLinkClick(e, item.href)}
+                  className="px-2 py-1 rounded transition-all duration-200 hover:bg-black/20"
                   style={{ 
                     fontFamily: "'Playfair Display SC', serif",
                     fontSize: 'clamp(0.875rem, 1.0625vw, 1.0625rem)',
                     letterSpacing: '0.0625rem',
-                    color: 'white'
+                    color: 'white',
+                    cursor: 'pointer'
                   }}
                 >
                   {item.name}

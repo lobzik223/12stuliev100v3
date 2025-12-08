@@ -155,7 +155,11 @@ body {
 
 /* Кастомные кнопки навигации для актеров - фиксированные */
 .swiper-button-prev-actors,
-.swiper-button-next-actors {
+.swiper-button-next-actors,
+.swiper-button-prev.swiper-button-prev-actors,
+.swiper-button-next.swiper-button-next-actors,
+div.swiper-button-prev.swiper-button-prev-actors,
+div.swiper-button-next.swiper-button-next-actors {
   width: clamp(2rem, 3vw, 3rem) !important;
   height: clamp(2rem, 3vw, 3rem) !important;
   color: #FBC632 !important;
@@ -165,26 +169,39 @@ body {
   border: none !important;
   cursor: pointer !important;
   position: absolute !important;
-  top: 38% !important;
+  top: 50% !important;
+  bottom: auto !important;
+  margin: 0 !important;
   margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding: 0 !important;
   transform: translateY(-50%) !important;
   z-index: 30 !important;
+  pointer-events: auto !important;
+  will-change: auto !important;
+  box-sizing: border-box !important;
 }
 
-.swiper-button-prev-actors {
-  left: 2rem !important;
+.swiper-button-prev-actors,
+.swiper-button-prev.swiper-button-prev-actors,
+div.swiper-button-prev.swiper-button-prev-actors {
+  left: -1rem !important;
   right: auto !important;
 }
 
-.swiper-button-next-actors {
-  right: 2rem !important;
+.swiper-button-next-actors,
+.swiper-button-next.swiper-button-next-actors,
+div.swiper-button-next.swiper-button-next-actors {
+  right: -1rem !important;
   left: auto !important;
 }
 
 .actors-carousel .swiper-button-prev-actors::after,
 .actors-carousel .swiper-button-next-actors::after {
   font-size: clamp(2rem, 3vw, 3rem) !important;
-  font-weight: bold !important;
+  font-weight: 300 !important;
   color: #FBC632 !important;
 }
 
@@ -192,6 +209,38 @@ body {
 .actors-carousel .swiper-button-next-actors:hover {
   transform: translateY(-50%) scale(1.1) !important;
   transition: transform 0.3s ease !important;
+}
+
+/* Переопределяем все возможные стили Swiper для кнопок актеров */
+.actors-carousel .swiper-button-prev-actors.swiper-button-disabled,
+.actors-carousel .swiper-button-next-actors.swiper-button-disabled,
+.swiper-button-prev-actors.swiper-button-disabled,
+.swiper-button-next-actors.swiper-button-disabled,
+.swiper-button-prev.swiper-button-prev-actors.swiper-button-disabled,
+.swiper-button-next.swiper-button-next-actors.swiper-button-disabled {
+  opacity: 0.35 !important;
+  cursor: auto !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  top: 50% !important;
+  bottom: auto !important;
+  margin: 0 !important;
+  transform: translateY(-50%) !important;
+  will-change: transform !important;
+}
+
+.actors-carousel .swiper-button-prev-actors.swiper-button-disabled,
+.swiper-button-prev-actors.swiper-button-disabled,
+.swiper-button-prev.swiper-button-prev-actors.swiper-button-disabled {
+  left: -1rem !important;
+  right: auto !important;
+}
+
+.actors-carousel .swiper-button-next-actors.swiper-button-disabled,
+.swiper-button-next-actors.swiper-button-disabled,
+.swiper-button-next.swiper-button-next-actors.swiper-button-disabled {
+  right: -1rem !important;
+  left: auto !important;
 }
 
 /* Стили для карусели отзывов Swiper */

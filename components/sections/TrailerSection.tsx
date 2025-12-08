@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
@@ -8,7 +9,16 @@ import { reviews } from '../../data/reviews';
 import { scheduleItems } from '../../data/schedule';
 import { teamMembers } from '../../data/team';
 
-export default function TrailerSection() {
+interface TrailerSectionProps {
+  gallerySectionRef?: React.RefObject<HTMLDivElement>;
+  teamSectionRef?: React.RefObject<HTMLDivElement>;
+  reviewsSectionRef?: React.RefObject<HTMLDivElement>;
+  contactsSectionRef?: React.RefObject<HTMLDivElement>;
+  onViewSchedule?: () => void;
+}
+
+export default function TrailerSection({ gallerySectionRef, teamSectionRef, reviewsSectionRef, contactsSectionRef, onViewSchedule }: TrailerSectionProps) {
+  const router = useRouter();
   const [selectedScheduleUrl, setSelectedScheduleUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -101,7 +111,7 @@ export default function TrailerSection() {
         </div>
 
         {/* Раздел "ГАЛЕРЕЯ" */}
-        <div className="text-center mb-8 md:mb-12">
+        <div ref={gallerySectionRef} className="text-center mb-8 md:mb-12">
           <p
             className="uppercase mb-4 md:mb-6"
             style={{
@@ -136,7 +146,8 @@ export default function TrailerSection() {
         {/* Кнопка "ФОТО СО СПЕКТАКЛЯ" */}
         <div className="flex justify-center mb-8 md:mb-12" style={{ marginTop: 'clamp(6rem, 10vh, 10rem)' }}>
           <button
-            className="rounded-lg border-2 transition-all duration-300 hover:scale-105"
+            onClick={() => router.push('/gallery')}
+            className="rounded-lg border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             style={{
               fontFamily: "'Playfair Display SC', serif",
               fontSize: 'clamp(1.125rem, 1.5vw, 1.25rem)',
@@ -147,7 +158,8 @@ export default function TrailerSection() {
               borderWidth: '3px',
               padding: 'clamp(0.5rem, 0.75vw, 0.625rem) clamp(5rem, 8vw, 6.25rem)',
               boxShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.4)',
-              whiteSpace: 'nowrap'
+              whiteSpace: 'nowrap',
+              pointerEvents: 'auto'
             }}
           >
             ФОТО СО СПЕКТАКЛЯ
@@ -175,7 +187,7 @@ export default function TrailerSection() {
         </div>
 
         {/* Раздел "КОМАНДА" */}
-        <div className="w-full flex flex-col items-center" style={{ marginTop: 'clamp(4rem, 8vh, 6rem)' }}>
+        <div ref={teamSectionRef} className="w-full flex flex-col items-center" style={{ marginTop: 'clamp(4rem, 8vh, 6rem)' }}>
           <p 
             className="text-2xl md:text-3xl lg:text-4xl uppercase mb-10 md:mb-12 lg:mb-14"
             style={{
@@ -252,7 +264,7 @@ export default function TrailerSection() {
           </div>
 
           {/* Раздел "ОТЗЫВЫ" */}
-          <div className="w-full flex flex-col items-center mt-14 md:mt-16 lg:mt-20">
+          <div ref={reviewsSectionRef} className="w-full flex flex-col items-center mt-14 md:mt-16 lg:mt-20">
             <p 
               className="text-2xl md:text-3xl lg:text-4xl uppercase mb-10 md:mb-12"
               style={{
@@ -344,7 +356,7 @@ export default function TrailerSection() {
                             style={{
                               fontFamily: "'Playfair Display SC', serif",
                               fontSize: 'clamp(0.875rem, 1.1vw, 1.1rem)',
-                              color: '#D2691E',
+                              color: '#682302',
                               fontWeight: 'bold',
                               marginBottom: 'clamp(0.25rem, 0.5vw, 0.5rem)',
                               letterSpacing: '0.05em'
@@ -364,8 +376,8 @@ export default function TrailerSection() {
                               <svg
                                 key={index}
                                 viewBox="0 0 24 24"
-                                fill={index < review.rating ? '#D2691E' : 'none'}
-                                stroke="#D2691E"
+                                fill={index < review.rating ? '#682302' : 'none'}
+                                stroke="#682302"
                                 strokeWidth="2"
                                 style={{
                                   width: 'clamp(12px, 1vw, 16px)',
@@ -381,13 +393,18 @@ export default function TrailerSection() {
                           <p
                             style={{
                               fontFamily: "'Playfair Display SC', serif",
-                              fontSize: 'clamp(0.65rem, 0.75vw, 0.8rem)',
+                              fontSize: 'clamp(0.55rem, 0.65vw, 0.7rem)',
                               color: '#1a1a1a',
-                              lineHeight: '1.4',
+                              lineHeight: '1.3',
                               letterSpacing: '0.02em',
                               maxWidth: 'clamp(140px, 12vw, 220px)',
                               margin: '0 auto',
-                              marginBottom: '0'
+                              marginBottom: '0',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 4,
+                              WebkitBoxOrient: 'vertical'
                             }}
                           >
                             {review.text}
@@ -597,7 +614,8 @@ export default function TrailerSection() {
 
                           <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
                             <button
-                              className="px-10 md:px-12 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105"
+                              onClick={() => router.push(`/details/${item.id}`)}
+                              className="px-10 md:px-12 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
                               style={{
                                 fontFamily: "'Playfair Display SC', serif",
                                 fontSize: 'clamp(14px, 1vw, 16px)',
@@ -672,6 +690,7 @@ export default function TrailerSection() {
             {/* Кнопка "ПОСМОТРЕТЬ РАСПИСАНИЕ" под карточками расписания */}
             <div className="w-full max-w-7xl mt-8 md:mt-10 flex justify-center">
               <button
+                onClick={onViewSchedule}
                 className="px-28 py-2 rounded-lg border-2 transition-all duration-300 hover:scale-105"
                 style={{
                   fontFamily: "'Playfair Display SC', serif",
@@ -692,7 +711,7 @@ export default function TrailerSection() {
           </div>
 
           {/* Раздел "Контакты и партнёры" */}
-          <div className="w-full flex flex-col items-center mt-32 md:mt-40 lg:mt-48" style={{ width: '100%', padding: '0 clamp(1rem, 4vw, 4rem)' }}>
+          <div ref={contactsSectionRef} className="w-full flex flex-col items-center mt-32 md:mt-40 lg:mt-48" style={{ width: '100%', padding: '0 clamp(1rem, 4vw, 4rem)' }}>
             {/* Заголовок "Контакты и партнёры" */}
             <p
               className="uppercase text-center"

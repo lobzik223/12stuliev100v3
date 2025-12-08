@@ -11,7 +11,7 @@ export interface ScheduleItem {
 export const scheduleItems: ScheduleItem[] = [
   {
     id: 1,
-    title: '12 стульев – Москва',
+    title: '12 стульев – Курск',
     date: '15 ноября',
     time: '22:00',
     location: 'Театр драмы, ул. Ленина,',

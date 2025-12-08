@@ -1,0 +1,863 @@
+.details-container {
+  width: 100%;
+  position: relative;
+  /* Высота устанавливается динамически через JavaScript */
+  background-color: transparent;
+  overflow: hidden; /* Возвращено для правильного позиционирования абсолютных элементов */
+}
+
+/* Псевдоэлемент для отзеркаленного фона */
+.details-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 600vh;
+  background-image: url(/photo/section-34839282.png);
+  background-size: 100% 600vh; /* Растягиваем фон на 6 разделов */
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-attachment: scroll; /* Фон прокручивается вместе с контентом */
+  transform: scaleX(-1); /* Горизонтальное отзеркаливание */
+  z-index: -1; /* Фон за контентом */
+}
+
+
+/* Черный фон под изображением - footer с разделом "Контакты" */
+.details-container::after {
+  content: '';
+  position: absolute;
+  top: 600vh; /* Начинается сразу после изображения */
+  left: 0;
+  width: 100%;
+  height: var(--after-height, 200vh); /* Высота устанавливается динамически через JavaScript */
+  background-color: #000000;
+  z-index: -1; /* Фон за контентом */
+}
+
+/* Элемент с датой и временем */
+.date-time-box {
+  position: absolute;
+  top: 3%;
+  left: 10%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(217, 168, 87, 0.5);
+  border-radius: 24px;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 0 20px rgba(217, 168, 87, 0.4),
+    0 0 40px rgba(217, 168, 87, 0.2),
+    inset 0 0 20px rgba(217, 168, 87, 0.1);
+  z-index: 10;
+}
+
+.calendar-icon {
+  color: #d9a857;
+  filter: drop-shadow(0 0 4px rgba(217, 168, 87, 0.8));
+  flex-shrink: 0;
+}
+
+.date-time-text {
+  font-family: 'Playfair Display SC', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #ffffff;
+  text-shadow: 
+    0 0 6px rgba(255, 255, 255, 0.3),
+    0 0 12px rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Увеличенный размер для цифр в дате и времени - все цифры одинакового размера */
+.date-time-number,
+.date-time-text .date-time-number,
+.date-time-text span.date-time-number,
+span.date-time-number {
+  font-size: 27px !important; /* Фиксированный размер для всех цифр (1.5 * 18px базового размера) */
+  font-weight: 600 !important;
+  display: inline-block !important;
+  vertical-align: baseline !important;
+  line-height: 1 !important;
+  font-family: 'Playfair Display SC', serif !important;
+}
+
+/* Контейнер для логотипа */
+.logo-container {
+  position: absolute;
+  top: calc(3% + 46px); /* Позиционируем точно под элементом с датой */
+  left: calc(5% + 3px); /* Чуть вправо */
+  z-index: 10;
+}
+
+.logo-image {
+  max-width: 500px;
+  width: auto;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(217, 168, 87, 0.3));
+}
+
+/* Текст "в Нижнем Новогороде" */
+.location-text {
+  position: absolute;
+  top: calc(3% + 200px); /* Под логотипом */
+  left: 10%;
+  font-family: 'Playfair Display SC', serif;
+  font-size: 42px;
+  font-weight: 400;
+  color: #FBC632;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  text-shadow: 
+    0 0 6px rgba(251, 198, 50, 0.4),
+    0 0 12px rgba(251, 198, 50, 0.3);
+  z-index: 10;
+  width: fit-content;
+  max-width: 600px;
+}
+
+/* Текст описания */
+.description-text {
+  position: absolute;
+  top: calc(3% + 280px); /* Под текстом "в Нижнем Новогороде" */
+  left: 10%;
+  font-family: 'Playfair Display SC', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+  max-width: 600px;
+  text-shadow: 
+    0 0 4px rgba(255, 255, 255, 0.2),
+    0 0 8px rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+/* Кнопка "Купить билет" */
+.buy-ticket-button {
+  position: absolute;
+  top: calc(3% + 400px); /* Под текстом описания */
+  left: 10%;
+  padding: 14px 32px;
+  background: #682302;
+  border: 1px solid rgba(217, 168, 87, 0.6);
+  border-radius: 12px;
+  font-family: 'Playfair Display SC', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: #d9a857;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 15px rgba(217, 168, 87, 0.3),
+    0 0 30px rgba(217, 168, 87, 0.15);
+  z-index: 10;
+  text-shadow: 
+    0 0 4px rgba(255, 200, 120, 0.3),
+    0 0 8px rgba(255, 180, 80, 0.2);
+}
+
+.buy-ticket-button:hover {
+  background: #7a3302;
+  border-color: rgba(217, 168, 87, 0.8);
+  box-shadow: 
+    0 0 20px rgba(217, 168, 87, 0.5),
+    0 0 40px rgba(217, 168, 87, 0.3);
+  transform: translateY(-2px);
+}
+
+.buy-ticket-button:active {
+  transform: translateY(0);
+}
+
+/* Виджет с адресом */
+.venue-widget {
+  position: absolute;
+  top: calc(3% + 480px); /* Под кнопкой "Купить билет" */
+  left: 10%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  max-width: none;
+}
+
+.venue-icon {
+  color: #d9a857;
+  flex-shrink: 0;
+}
+
+.venue-text {
+  font-family: 'Playfair Display SC', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+/* Виджет с рамкой справа */
+.frame-widget {
+  position: absolute;
+  top: 3%;
+  right: 5%;
+  width: 50%;
+  max-width: 700px;
+  height: 80vh;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.frame-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(217, 168, 87, 0.3));
+}
+
+/* Затемнение ниже всего контента - фон */
+.dark-overlay {
+  position: absolute;
+  top: calc(3% + 80vh + 150px); /* Ниже рамки и всего контента */
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1; /* Ниже контента, но выше основного фона */
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+.dark-overlay-image {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+  object-fit: contain; /* Показываем изображение полностью без обрезки */
+  object-position: top center;
+}
+
+/* Дубликат затемнения ниже первого */
+.dark-overlay-duplicate {
+  position: absolute;
+  top: calc(3% + 80vh + 150px + 150vh); /* Ниже первого затемнения на высоту экрана + отступ */
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1; /* Ниже контента, но выше основного фона */
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+
+/* Надпись "Наши преимущества" */
+.advantages-title {
+  position: absolute;
+  top: 15%; /* Поднято с 18% до 15% */
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Playfair Display SC', serif;
+  font-size: 56px;
+  font-weight: 400;
+  color: #FBC632;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  text-shadow: 
+    0 0 6px rgba(251, 198, 50, 0.4),
+    0 0 12px rgba(251, 198, 50, 0.3);
+  z-index: 2;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+/* Звезда ниже надписи "Наши преимущества" */
+.star-image {
+  position: absolute;
+  top: 15%; /* Поднято с 18% до 15% */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 700px;
+  height: auto;
+  max-width: 90%;
+  object-fit: contain;
+  z-index: 2;
+  filter: drop-shadow(0 0 15px rgba(251, 198, 50, 0.5));
+}
+
+/* Логотип внутри звезды */
+.logo-in-star {
+  position: absolute;
+  top: calc(15% + 280px); /* Поднято с 18% до 15% */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  height: auto;
+  max-width: 55%;
+  object-fit: contain;
+  z-index: 3; /* Выше звезды */
+  filter: drop-shadow(0 0 10px rgba(251, 198, 50, 0.4));
+}
+
+/* Текст "КОМЕДИЯ ВЫСАЧАЙШЕНОГО КАЧЕСТВА" ниже логотипа */
+.comedy-quality-text {
+  position: absolute;
+  top: calc(15% + 260px + 120px); /* Обновлено с 18% до 15% */
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Playfair Display SC', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  text-shadow: 
+    0 0 6px rgba(255, 255, 255, 0.4),
+    0 0 12px rgba(255, 255, 255, 0.3);
+  z-index: 3; /* Выше звезды */
+  width: fit-content;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Текст "Спектакль премиуим сегмента" ниже текста о качестве */
+.premium-segment-text {
+  position: absolute;
+  top: calc(15% + 260px + 120px + 35px); /* Обновлено с 18% до 15% */
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Playfair Display SC', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #FBC632;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  text-shadow: 
+    0 0 8px rgba(251, 198, 50, 0.6),
+    0 0 16px rgba(251, 198, 50, 0.4),
+    0 0 24px rgba(255, 140, 0, 0.3),
+    0 0 32px rgba(255, 100, 0, 0.2);
+  z-index: 3; /* Выше звезды */
+  width: fit-content;
+  text-align: center;
+}
+
+/* Иконка театральной маски над текстом "Лучшие артисты" */
+.artists-icon {
+  position: absolute;
+  top: calc(15% + 260px + 120px + 35px - 240px); /* Обновлено с 18% до 15% */
+  left: 16%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: auto;
+  object-fit: contain;
+  z-index: 3; /* Выше звезды */
+  filter: drop-shadow(0 0 10px rgba(251, 198, 50, 0.5));
+}
+
+/* Текст "Лучшие артисты" слева */
+.best-artists-text {
+  position: absolute;
+  top: calc(18% + 260px + 120px + 35px);
+  left: 16%;
+  transform: translateX(-50%);
+  font-family: 'Playfair Display SC', serif;
+  font-size: 30px;
+  font-weight: 400;
+  color: #FBC632;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  text-shadow: 
+    0 0 8px rgba(251, 198, 50, 0.6),
+    0 0 16px rgba(251, 198, 50, 0.4),
+    0 0 24px rgba(255, 140, 0, 0.3),
+    0 0 32px rgba(255, 100, 0, 0.2);
+  z-index: 3; /* Выше звезды */
+  width: fit-content;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Иконка кинокамеры над текстом "Топовый режиссер" */
+.director-icon {
+  position: absolute;
+  top: calc(18% + 260px + 120px + 35px - 240px);
+  left: 84%;
+  transform: translateX(-50%);
+  width: 240px;
+  height: auto;
+  object-fit: contain;
+  z-index: 3; /* Выше звезды */
+  filter: drop-shadow(0 0 10px rgba(251, 198, 50, 0.5));
+}
+
+/* Текст "Топовый режиссер" справа */
+.top-director-text {
+  position: absolute;
+  top: calc(18% + 260px + 120px + 35px);
+  left: 84%;
+  transform: translateX(-50%);
+  font-family: 'Playfair Display SC', serif;
+  font-size: 30px;
+  font-weight: 400;
+  color: #FBC632;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  text-shadow: 
+    0 0 8px rgba(251, 198, 50, 0.6),
+    0 0 16px rgba(251, 198, 50, 0.4),
+    0 0 24px rgba(255, 140, 0, 0.3),
+    0 0 32px rgba(255, 100, 0, 0.2);
+  z-index: 3; /* Выше звезды */
+  width: fit-content;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* Кнопка "Купить билет" ниже звезды */
+.buy-ticket-button-bottom {
+  position: absolute;
+  top: calc(18% + 700px + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 16px 48px;
+  background: #682302;
+  border: 2px solid #FBC632;
+  border-radius: 12px;
+  font-family: 'Playfair Display SC', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 0 15px rgba(217, 168, 87, 0.3),
+    0 0 30px rgba(217, 168, 87, 0.15);
+  z-index: 3; /* Выше звезды */
+  text-shadow: 
+    0 0 4px rgba(255, 255, 255, 0.3),
+    0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+.buy-ticket-button-bottom:hover {
+  background: #7a3302;
+  border-color: rgba(251, 198, 50, 0.8);
+  box-shadow: 
+    0 0 20px rgba(217, 168, 87, 0.5),
+    0 0 40px rgba(217, 168, 87, 0.3);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.buy-ticket-button-bottom:active {
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* Треугольник слева на затемнении - зафиксирован по центру */
+.triangle-overlay {
+  position: absolute;
+  left: 0;
+  top: 52%; /* Немного ниже центра */
+  transform: translateY(-50%); /* Центрирование по вертикали */
+  height: 75%;
+  width: auto;
+  max-width: 45%; /* Увеличенный размер треугольника */
+  object-fit: contain;
+  object-position: left center;
+  z-index: 4; /* Выше текста text55 и затемнения */
+  pointer-events: none;
+  /* Фиксируем позицию, чтобы не было смещений при обновлении */
+  will-change: transform;
+}
+
+/* Круги со статистикой справа */
+.stats-circles {
+  position: absolute;
+  right: 15%;
+  top: 20%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  z-index: 3; /* Выше треугольника и затемнения */
+  pointer-events: none;
+}
+
+.stat-circle {
+  width: 140px;
+  height: 140px;
+  border: 2px solid #d9a857;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  box-shadow: 
+    0 0 20px rgba(217, 168, 87, 0.4),
+    0 0 40px rgba(217, 168, 87, 0.2),
+    inset 0 0 20px rgba(217, 168, 87, 0.1);
+}
+
+.stat-number {
+  font-family: 'Playfair Display SC', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 
+    0 0 8px rgba(255, 255, 255, 0.5),
+    0 0 16px rgba(255, 255, 255, 0.3);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-family: 'Playfair Display SC', serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #ffffff;
+  text-shadow: 
+    0 0 6px rgba(255, 255, 255, 0.4),
+    0 0 12px rgba(255, 255, 255, 0.2);
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+/* Текст цитаты ниже кругов */
+.quote-text-overlay {
+  position: absolute;
+  right: 15%;
+  top: 32%;
+  max-width: 500px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  z-index: 3; /* Выше треугольника и затемнения */
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(217, 168, 87, 0.3));
+}
+
+/* Длинный текст цитаты ниже первого текста */
+.long-quote-text-overlay {
+  position: absolute;
+  right: 2%;
+  top: 44%;
+  max-width: 1200px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  z-index: 2; /* Ниже треугольника, но выше затемнения */
+  pointer-events: none;
+  filter: drop-shadow(0 0 15px rgba(217, 168, 87, 0.4));
+}
+
+/* На больших экранах (ПК, масштаб 100%) сдвигаем text55.png */
+@media (min-width: 1920px) and (max-width: 2560px) {
+  .long-quote-text-overlay {
+    right: 18%;
+  }
+}
+
+/* Обеспечиваем одинаковое отображение на всех экранах */
+@media (max-width: 1024px) {
+  /* Высота устанавливается динамически через JavaScript */
+  
+  .details-container::before {
+    background-attachment: scroll;
+    background-size: 100% 600vh;
+    height: 600vh;
+  }
+  
+  .details-container::after {
+    top: 600vh;
+    height: 200vh; /* Увеличено в длину */
+  }
+  
+  .date-time-box {
+    top: 3%;
+    left: 8%;
+    padding: 10px 20px;
+    gap: 10px;
+    border-radius: 20px;
+  }
+  
+  .date-time-text {
+    font-size: 16px;
+  }
+  
+  .date-time-number,
+  .date-time-text .date-time-number,
+  .date-time-text span.date-time-number,
+  span.date-time-number {
+    font-size: 24px !important; /* 1.5 * 16px для планшетов */
+    font-weight: 600 !important;
+    display: inline-block !important;
+    vertical-align: baseline !important;
+    line-height: 1 !important;
+    font-family: 'Playfair Display SC', serif !important;
+  }
+  
+  .calendar-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .logo-container {
+    top: calc(3% + 41px);
+    left: calc(5% + 3px);
+  }
+  
+  .logo-image {
+    max-width: 400px;
+  }
+  
+  .location-text {
+    top: calc(3% + 160px);
+    left: 8%;
+    font-size: 34px;
+    max-width: 500px;
+  }
+  
+  .description-text {
+    top: calc(3% + 220px);
+    left: 8%;
+    font-size: 18px;
+    max-width: 500px;
+    line-height: 1.3;
+  }
+  
+  .buy-ticket-button {
+    top: calc(3% + 320px);
+    left: 12%;
+    padding: 12px 28px;
+    font-size: 18px;
+  }
+  
+  .venue-widget {
+    top: calc(3% + 390px);
+    left: 8%;
+    padding: 14px 20px;
+    gap: 14px;
+    width: fit-content;
+    max-width: none;
+  }
+  
+  .venue-text {
+    font-size: 16px;
+  }
+  
+  .venue-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .date-time-box {
+    top: 2%;
+    left: 4%;
+    padding: 8px 16px;
+    gap: 8px;
+    border-radius: 18px;
+  }
+  
+  .date-time-text {
+    font-size: 14px;
+  }
+  
+  .date-time-number,
+  .date-time-text .date-time-number,
+  .date-time-text span.date-time-number,
+  span.date-time-number {
+    font-size: 21px !important; /* 1.5 * 14px для мобильных */
+    font-weight: 600 !important;
+    display: inline-block !important;
+    vertical-align: baseline !important;
+    line-height: 1 !important;
+    font-family: 'Playfair Display SC', serif !important;
+  }
+  
+  .calendar-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .logo-container {
+    top: calc(2% + 36px);
+    left: calc(2% + 2px);
+  }
+  
+  .logo-image {
+    max-width: 300px;
+  }
+  
+  .location-text {
+    top: calc(2% + 120px);
+    left: 4%;
+    font-size: 28px;
+    max-width: 90%;
+  }
+  
+  .description-text {
+    top: calc(2% + 170px);
+    left: 4%;
+    font-size: 16px;
+    max-width: 90%;
+    line-height: 1.3;
+  }
+  
+  .buy-ticket-button {
+    top: calc(2% + 260px);
+    left: 8%;
+    padding: 10px 24px;
+    font-size: 16px;
+  }
+  
+  .venue-widget {
+    top: calc(2% + 320px);
+    left: 4%;
+    padding: 12px 18px;
+    gap: 12px;
+    width: fit-content;
+    max-width: 90%;
+  }
+  
+  .venue-text {
+    font-size: 14px;
+  }
+  
+  .venue-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .frame-widget {
+    top: 3%;
+    right: 3%;
+    width: 45%;
+    max-width: 600px;
+    height: 70vh;
+  }
+  
+  .frame-widget {
+    top: 3%;
+    right: 3%;
+    width: 45%;
+    max-width: 600px;
+    height: 70vh;
+  }
+  
+  .dark-overlay {
+    top: calc(3% + 70vh + 140px);
+  }
+  
+  .stats-circles {
+    right: 10%;
+    top: 15%;
+    gap: 20px;
+  }
+  
+  .stat-circle {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .stat-number {
+    font-size: 28px;
+  }
+  
+  .stat-label {
+    font-size: 12px;
+  }
+  
+  .quote-text-overlay {
+    right: 12%;
+    top: 28%;
+    max-width: 400px;
+  }
+  
+  .long-quote-text-overlay {
+    right: 1%;
+    top: 39%;
+    max-width: 900px;
+  }
+}
+
+@media (max-width: 768px) {
+  .frame-widget {
+    top: 2%;
+    right: 2%;
+    width: 40%;
+    max-width: 400px;
+    height: 60vh;
+  }
+  
+  .dark-overlay {
+    top: calc(2% + 60vh + 130px);
+  }
+  
+  .stats-circles {
+    right: 5%;
+    gap: 15px;
+    flex-direction: column;
+    top: 15%;
+  }
+  
+  .stat-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .stat-number {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  
+  .stat-label {
+    font-size: 11px;
+  }
+  
+  .quote-text-overlay {
+    right: 5%;
+    top: 25%;
+    max-width: 90%;
+  }
+  
+  .long-quote-text-overlay {
+    right: 2%;
+    top: 34%;
+    max-width: 95%;
+  }
+}
+
+/* Медиа-запрос для масштаба 125% (эффективная ширина viewport ~1536px при разрешении 1920x1080) */
+@media (min-width: 1500px) and (max-width: 1600px) {
+  .actors-section-details {
+    margin-top: 200rem !important; /* Поднимаем раздел "Актеры" выше при масштабе 125% */
+  }
+  
+  /* Треугольник зафиксирован немного ниже центра на масштабе 125% */
+  .triangle-overlay {
+    top: 52% !important; /* Немного ниже центра */
+    transform: translateY(-50%) !important; /* Центрирование по вертикали */
+  }
+  
+  /* Высота контейнера и псевдоэлемента ::after устанавливается динамически через JavaScript */
+}
+

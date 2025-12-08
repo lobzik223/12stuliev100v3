@@ -1,0 +1,287 @@
+.gallery-page-wrapper {
+  width: 100%;
+  position: relative;
+  min-height: 100vh;
+  background-image: url(/photo/sacrtion-111.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  will-change: auto;
+}
+
+.gallery-page-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 30%,
+    rgba(0, 0, 0, 0.5) 70%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  filter: blur(2px);
+}
+
+.gallery-container {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  padding-top: 300px;
+  padding-bottom: 200px;
+  padding-left: 40px;
+  padding-right: 40px;
+  z-index: 1;
+}
+
+.hart-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: -100px;
+  padding-top: 0;
+  padding-bottom: 100px;
+}
+
+/* ВАЖНО — задаём область, внутри которой будет кучка (горизонтальная) */
+.hart-cluster {
+  position: relative;
+  width: 1400px;      /* ширина коллажа (горизонтальный формат) */
+  height: 500px;      /* высота коллажа (ниже) */
+  overflow: visible;  /* чтобы фото слегка могли выходить наружу */
+}
+
+.hart-item {
+  position: absolute;
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+  cursor: pointer;
+  border-radius: 6px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  contain: layout style paint;
+}
+
+.hart-item img,
+.hart-item picture {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 4 / 3; /* альбомный формат */
+  pointer-events: none;
+}
+
+.hart-item:hover {
+  z-index: 10;
+}
+
+/* --- ХАОТИЧНОЕ РАСПОЛОЖЕНИЕ ФОТО — горизонтальная кучка в нижней части --- */
+.item-1 { width: 280px; top: 0; left: 0; transform: rotate(-2.5deg); }
+.item-1:hover { transform: rotate(-2.5deg) scale(1.08); }
+
+.item-2 { width: 240px; top: 20px; left: 250px; transform: rotate(2deg); }
+.item-2:hover { transform: rotate(2deg) scale(1.08); }
+
+.item-3 { width: 260px; top: -10px; left: 470px; transform: rotate(-1.8deg); }
+.item-3:hover { transform: rotate(-1.8deg) scale(1.08); }
+
+.item-4 { width: 220px; top: 30px; left: 710px; transform: rotate(2.5deg); }
+.item-4:hover { transform: rotate(2.5deg) scale(1.08); }
+
+.item-5 { width: 300px; top: 60px; left: 910px; transform: rotate(-2deg); }
+.item-5:hover { transform: rotate(-2deg) scale(1.08); }
+
+.item-6 { width: 250px; top: 80px; left: 50px; transform: rotate(1.5deg); }
+.item-6:hover { transform: rotate(1.5deg) scale(1.08); }
+
+.item-7 { width: 230px; top: 120px; left: 280px; transform: rotate(-2.2deg); }
+.item-7:hover { transform: rotate(-2.2deg) scale(1.08); }
+
+.item-8 { width: 240px; top: 100px; left: 490px; transform: rotate(1.8deg); }
+.item-8:hover { transform: rotate(1.8deg) scale(1.08); }
+
+.item-9 { width: 270px; top: 140px; left: 710px; transform: rotate(-1.5deg); }
+.item-9:hover { transform: rotate(-1.5deg) scale(1.08); }
+
+.item-10 { width: 200px; top: 180px; left: 970px; transform: rotate(2.3deg); }
+.item-10:hover { transform: rotate(2.3deg) scale(1.08); }
+
+.item-11 { width: 220px; top: 200px; left: 80px; transform: rotate(-1.8deg); }
+.item-11:hover { transform: rotate(-1.8deg) scale(1.08); }
+
+.item-12 { width: 260px; top: 160px; left: 290px; transform: rotate(2deg); }
+.item-12:hover { transform: rotate(2deg) scale(1.08); }
+
+.item-13 { width: 280px; top: 220px; left: 530px; transform: rotate(-2.5deg); }
+.item-13:hover { transform: rotate(-2.5deg) scale(1.08); }
+
+.item-14 { width: 240px; top: 260px; left: 790px; transform: rotate(1.5deg); }
+.item-14:hover { transform: rotate(1.5deg) scale(1.08); }
+
+.item-15 { width: 250px; top: 240px; left: 1010px; transform: rotate(-2deg); }
+.item-15:hover { transform: rotate(-2deg) scale(1.08); }
+
+.item-16 { width: 210px; top: 300px; left: 120px; transform: rotate(2.2deg); }
+.item-16:hover { transform: rotate(2.2deg) scale(1.08); }
+
+.item-17 { width: 270px; top: 320px; left: 320px; transform: rotate(-1.8deg); }
+.item-17:hover { transform: rotate(-1.8deg) scale(1.08); }
+
+.item-18 { width: 230px; top: 340px; left: 570px; transform: rotate(2deg); }
+.item-18:hover { transform: rotate(2deg) scale(1.08); }
+
+.item-19 { width: 260px; top: 300px; left: 780px; transform: rotate(-1.5deg); }
+.item-19:hover { transform: rotate(-1.5deg) scale(1.08); }
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 1200px) {
+  .hart-cluster {
+    width: 90%;
+    max-width: 1000px;
+    height: auto;
+    min-height: 600px;
+  }
+  
+  .item-1, .item-2, .item-3, .item-4, .item-5, .item-6,
+  .item-7, .item-8, .item-9, .item-10, .item-11, .item-12,
+  .item-13, .item-14, .item-15, .item-16, .item-17, .item-18, .item-19 {
+    width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-container {
+    padding-top: 250px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .hart-cluster {
+    width: 95%;
+    height: auto;
+    min-height: 500px;
+  }
+
+  .item-1, .item-2, .item-3, .item-4, .item-5, .item-6,
+  .item-7, .item-8, .item-9, .item-10, .item-11, .item-12,
+  .item-13, .item-14, .item-15, .item-16, .item-17, .item-18, .item-19 {
+    width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-container {
+    padding-top: 200px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .hart-cluster {
+    width: 100%;
+    height: auto;
+    min-height: 400px;
+  }
+
+  .item-1, .item-2, .item-3, .item-4, .item-5, .item-6,
+  .item-7, .item-8, .item-9, .item-10, .item-11, .item-12,
+  .item-13, .item-14, .item-15, .item-16, .item-17, .item-18, .item-19 {
+    width: 120px;
+  }
+}
+
+/* Адаптивность для фонов */
+@media (max-width: 1024px) {
+  .gallery-page-wrapper::before,
+  .gallery-container::before {
+    background-attachment: scroll;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-page-wrapper::before,
+  .gallery-container::before {
+    background-attachment: scroll;
+  }
+}
+
+/* Плавный переход между фонами */
+.bottom-section {
+  position: relative;
+}
+
+.bottom-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 250px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.8) 0%,
+    rgba(0, 0, 0, 0.5) 30%,
+    rgba(0, 0, 0, 0.2) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(2px);
+}
+
+/* Стили для новой кучки фотографий справа от action-11.png */
+.new-photos-cluster,
+.new-photos-cluster-2,
+.new-photos-cluster-3,
+.new-photos-cluster-4,
+.new-photos-cluster-5 {
+  position: relative;
+  overflow: visible;
+}
+
+.new-photo-item {
+  position: absolute;
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+  cursor: pointer;
+  border-radius: 6px;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  contain: layout style paint;
+}
+
+.new-photo-item img,
+.new-photo-item picture {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  display: block;
+  pointer-events: none;
+  object-fit: cover;
+}
+
+/* Hover эффекты для каждой фотографии с сохранением поворота */
+.new-item-1:hover { transform: rotate(-2.5deg) scale(1.08) !important; z-index: 10; }
+.new-item-2:hover { transform: rotate(2deg) scale(1.08) !important; z-index: 10; }
+.new-item-3:hover { transform: rotate(-1.8deg) scale(1.08) !important; z-index: 10; }
+.new-item-4:hover { transform: rotate(2.5deg) scale(1.08) !important; z-index: 10; }
+.new-item-5:hover { transform: rotate(-2deg) scale(1.08) !important; z-index: 10; }
+.new-item-6:hover { transform: rotate(1.5deg) scale(1.08) !important; z-index: 10; }
+.new-item-7:hover { transform: rotate(-2.2deg) scale(1.08) !important; z-index: 10; }
+.new-item-8:hover { transform: rotate(1.8deg) scale(1.08) !important; z-index: 10; }
+.new-item-9:hover { transform: rotate(-1.5deg) scale(1.08) !important; z-index: 10; }
+.new-item-10:hover { transform: rotate(2.3deg) scale(1.08) !important; z-index: 10; }
+.new-item-11:hover { transform: rotate(-1.8deg) scale(1.08) !important; z-index: 10; }
+.new-item-12:hover { transform: rotate(2deg) scale(1.08) !important; z-index: 10; }
+.new-item-13:hover { transform: rotate(-2.5deg) scale(1.08) !important; z-index: 10; }
+
