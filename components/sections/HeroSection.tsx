@@ -16,7 +16,7 @@ interface HeroSectionProps {
 export default function HeroSection({ onStartJourney }: HeroSectionProps) {
   const logoRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

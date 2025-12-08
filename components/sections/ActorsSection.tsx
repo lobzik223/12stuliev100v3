@@ -40,11 +40,11 @@ export default function ActorsSection() {
       
       // Блокируем removeProperty
       const originalRemoveProperty = button.style.removeProperty.bind(button.style);
-      button.style.removeProperty = function(property: string) {
+      button.style.removeProperty = function(property: string): string {
         if (lockedProperties.includes(property.toLowerCase())) {
-          return; // Игнорируем попытки удалить заблокированные свойства
+          return ''; // Игнорируем попытки удалить заблокированные свойства
         }
-        return originalRemoveProperty(property);
+        return originalRemoveProperty(property) || '';
       };
     };
 
