@@ -109,7 +109,7 @@ const DetailsPage: React.FC = () => {
 
   // Извлекаем город и форматируем дату/время
   let city = 'городе';
-  let dateTime: string | { __html: string } = '';
+  let dateTime: string | { __html: string } | undefined = undefined;
   let buyTicketUrl: string | undefined;
 
   if (isFromEvents && event) {
