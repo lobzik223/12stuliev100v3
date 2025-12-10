@@ -93,7 +93,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       style={{
         minHeight: '400vh',
         width: '100%',
-        marginTop: 'clamp(0vh, 10vh, 20vh)',
+        marginTop: '0',
         paddingTop: '0'
       }}
     >
@@ -121,7 +121,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         ref={officeRef}
         className="absolute z-[5]"
         style={{
-          top: 'clamp(5vh, 15vh, 25vh)',
+          top: '-8vh',
           left: 'clamp(2rem, 4vw, 5rem)'
         }}
       >
@@ -130,7 +130,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             backgroundImage: 'url(/backgrounds/sections/vput.png)',
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'center',
+            backgroundPosition: 'top center',
             width: 'clamp(25rem, 38vw, 45rem)',
             height: 'clamp(18.75rem, 28.5vw, 33.75rem)',
             maxWidth: '100%'

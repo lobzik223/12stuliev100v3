@@ -271,7 +271,7 @@ export default function MainScreen() {
           {/* Контейнер для контента */}
           <div className="relative w-full" style={{ zIndex: 15 }}>
             {/* Раздел "АКТЕРЫ" */}
-            <div ref={actorsSectionRef} className="relative w-full" style={{ zIndex: 15 }}>
+            <div ref={actorsSectionRef} className="relative w-full" style={{ zIndex: 15, marginTop: 'clamp(-10rem, -18vh, -8rem)' }}>
               <ActorsSection />
             </div>
             
