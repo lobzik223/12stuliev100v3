@@ -38,6 +38,46 @@ body {
   }
 }
 
+/* Стили для карточек событий - одинаково на всех экранах */
+.event-card-wrapper {
+  overflow: visible !important;
+  filter: none !important; /* Убираем любую подсветку */
+  box-shadow: none !important; /* Убираем тени */
+}
+
+/* Убираем подсветку между карточками в grid */
+.grid > .event-card-wrapper {
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+.event-card-content {
+  overflow-x: hidden !important; /* Скрываем горизонтальный overflow */
+  overflow-y: visible !important; /* Разрешаем вертикальный overflow для "ПРОДАНО" */
+  /* Единое значение paddingTop для всех экранов - опускаем текст ниже */
+  padding-top: clamp(15.5rem, 23vh, 19rem) !important;
+}
+
+.event-card-title {
+  overflow: visible !important; /* Разрешаем overflow для "ПРОДАНО" */
+}
+
+.event-card-date {
+  word-break: break-word;
+  hyphens: auto;
+  overflow-wrap: break-word;
+  /* Единое значение marginTop для всех экранов */
+  margin-top: clamp(1.2rem, 2.2vh, 1.8rem) !important;
+}
+
+/* Убеждаемся, что текст "ПРОДАНО" виден */
+.sold-out-badge {
+  overflow: visible !important;
+  visibility: visible !important;
+  display: block !important;
+  position: absolute !important;
+}
+
 /* Анимация киноленты */
 @keyframes kinolentaMove {
   0% {
@@ -299,7 +339,7 @@ div.swiper-button-next.swiper-button-next-actors {
 /* Стили для карусели расписания Swiper */
 .schedule-carousel {
   width: 100%;
-  overflow: hidden;
+  overflow: visible;
   padding: 2rem 0;
 }
 
@@ -328,12 +368,12 @@ div.swiper-button-next.swiper-button-next-actors {
 }
 
 .swiper-button-prev-schedule {
-  left: 0.5rem !important;
+  left: clamp(-1rem, -2vw, -0.5rem) !important;
   right: auto !important;
 }
 
 .swiper-button-next-schedule {
-  right: 0.5rem !important;
+  right: clamp(-1rem, -2vw, -0.5rem) !important;
   left: auto !important;
 }
 

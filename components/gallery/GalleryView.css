@@ -25,7 +25,7 @@
     rgba(0, 0, 0, 0.8) 100%
   );
   pointer-events: none;
-  z-index: 2;
+  z-index: 1; /* Ниже шапки (9999) */
   filter: blur(2px);
 }
 
@@ -37,7 +37,8 @@
   padding-bottom: 200px;
   padding-left: 40px;
   padding-right: 40px;
-  z-index: 1;
+  z-index: 1; /* Ниже шапки (99999) */
+  isolation: isolate; /* Создаем отдельный stacking context для галереи */
 }
 
 .hart-wrapper {
@@ -47,6 +48,8 @@
   margin-top: -100px;
   padding-top: 0;
   padding-bottom: 100px;
+  position: relative;
+  z-index: 1; /* Ниже шапки (9999) */
 }
 
 /* ВАЖНО — задаём область, внутри которой будет кучка (горизонтальная) */
@@ -55,6 +58,7 @@
   width: 1400px;      /* ширина коллажа (горизонтальный формат) */
   height: 500px;      /* высота коллажа (ниже) */
   overflow: visible;  /* чтобы фото слегка могли выходить наружу */
+  z-index: 1; /* Ниже шапки (9999) */
 }
 
 .hart-item {
@@ -68,6 +72,7 @@
   transform-style: preserve-3d;
   transform-origin: center center;
   contain: layout style paint;
+  z-index: 1; /* Ниже шапки (9999) */
 }
 
 .hart-item img,
@@ -79,10 +84,17 @@
   object-fit: cover;
   aspect-ratio: 4 / 3; /* альбомный формат */
   pointer-events: none;
+  position: relative;
+  z-index: 1 !important; /* Явно указываем z-index для всех изображений - ниже шапки (9999) */
 }
 
 .hart-item:hover {
-  z-index: 10;
+  z-index: 100 !important; /* При hover выше других фото, но все равно ниже шапки (9999) */
+}
+
+.hart-item:hover img,
+.hart-item:hover picture {
+  z-index: 100 !important; /* При hover изображение тоже получает z-index 100 */
 }
 
 /* --- ХАОТИЧНОЕ РАСПОЛОЖЕНИЕ ФОТО — горизонтальная кучка в нижней части --- */
@@ -258,6 +270,7 @@
   transform-style: preserve-3d;
   transform-origin: center center;
   contain: layout style paint;
+  z-index: 1; /* Ниже шапки (9999) */
 }
 
 .new-photo-item img,
@@ -268,20 +281,22 @@
   display: block;
   pointer-events: none;
   object-fit: cover;
+  position: relative;
+  z-index: 1 !important; /* Явно указываем z-index для всех изображений - ниже шапки (9999) */
 }
 
 /* Hover эффекты для каждой фотографии с сохранением поворота */
-.new-item-1:hover { transform: rotate(-2.5deg) scale(1.08) !important; z-index: 10; }
-.new-item-2:hover { transform: rotate(2deg) scale(1.08) !important; z-index: 10; }
-.new-item-3:hover { transform: rotate(-1.8deg) scale(1.08) !important; z-index: 10; }
-.new-item-4:hover { transform: rotate(2.5deg) scale(1.08) !important; z-index: 10; }
-.new-item-5:hover { transform: rotate(-2deg) scale(1.08) !important; z-index: 10; }
-.new-item-6:hover { transform: rotate(1.5deg) scale(1.08) !important; z-index: 10; }
-.new-item-7:hover { transform: rotate(-2.2deg) scale(1.08) !important; z-index: 10; }
-.new-item-8:hover { transform: rotate(1.8deg) scale(1.08) !important; z-index: 10; }
-.new-item-9:hover { transform: rotate(-1.5deg) scale(1.08) !important; z-index: 10; }
-.new-item-10:hover { transform: rotate(2.3deg) scale(1.08) !important; z-index: 10; }
-.new-item-11:hover { transform: rotate(-1.8deg) scale(1.08) !important; z-index: 10; }
-.new-item-12:hover { transform: rotate(2deg) scale(1.08) !important; z-index: 10; }
-.new-item-13:hover { transform: rotate(-2.5deg) scale(1.08) !important; z-index: 10; }
+.new-item-1:hover { transform: rotate(-2.5deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-2:hover { transform: rotate(2deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-3:hover { transform: rotate(-1.8deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-4:hover { transform: rotate(2.5deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-5:hover { transform: rotate(-2deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-6:hover { transform: rotate(1.5deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-7:hover { transform: rotate(-2.2deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-8:hover { transform: rotate(1.8deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-9:hover { transform: rotate(-1.5deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-10:hover { transform: rotate(2.3deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-11:hover { transform: rotate(-1.8deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-12:hover { transform: rotate(2deg) scale(1.08) !important; z-index: 100 !important; }
+.new-item-13:hover { transform: rotate(-2.5deg) scale(1.08) !important; z-index: 100 !important; }
 

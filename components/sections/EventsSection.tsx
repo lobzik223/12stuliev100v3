@@ -76,11 +76,11 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
       />
       <div className="w-full max-w-[87.5rem]" style={{ position: 'relative', zIndex: 10 }}>
         {/* Карточки */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ marginTop: 'clamp(-16rem, -20vh, -15rem)', position: 'relative', zIndex: 10 }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ marginTop: 'clamp(-16rem, -20vh, -15rem)', position: 'relative', zIndex: 10, filter: 'none' }}>
           {events.map((event) => (
             <ScrollReveal key={event.id} delay={(event.id - 1) * 150}>
-              <div className="relative w-full" style={{ maxWidth: 'clamp(32rem, 42vw, 40rem)' }}>
-                <div className="relative w-full h-auto">
+              <div className="relative w-full event-card-wrapper" style={{ maxWidth: 'clamp(32rem, 42vw, 40rem)', overflow: 'visible' }}>
+                <div className="relative w-full h-auto" style={{ overflow: 'visible' }}>
                   <div
                     style={{
                       backgroundImage: 'url(/backgrounds/sections/plitkanovosti.png)',
@@ -91,23 +91,27 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                       paddingTop: 'clamp(140%, 160%, 180%)'
                     }}
                   />
-                  <div className="absolute inset-0 flex flex-col" style={{ paddingTop: 'clamp(15rem, 26vh, 20.5rem)', paddingBottom: 'clamp(1.5rem, 2vh, 2rem)', paddingLeft: 'clamp(1.5rem, 2vw, 2rem)', paddingRight: 'clamp(1.5rem, 2vw, 2rem)' }}>
+                  <div className="absolute inset-0 flex flex-col event-card-content" style={{ paddingTop: 'clamp(15.5rem, 23vh, 19rem)', paddingBottom: 'clamp(1.5rem, 2vh, 2rem)', paddingLeft: 'clamp(1.5rem, 2vw, 2rem)', paddingRight: 'clamp(1.5rem, 2vw, 2rem)', overflow: 'visible' }}>
                   <p 
-                    className="text-center"
+                    className="text-center event-card-date"
                     style={{ 
                       fontFamily: "'Playfair Display SC', serif",
                       fontSize: 'clamp(0.7rem, 0.9vw, 0.8rem)',
                       color: '#682302',
                       fontWeight: '400',
-                      marginTop: 'clamp(2rem, 3vh, 2.5rem)',
-                      marginBottom: 'clamp(0.25rem, 0.5vh, 0.5rem)'
+                      marginTop: 'clamp(1.2rem, 2.2vh, 1.8rem)',
+                      marginBottom: 'clamp(0.25rem, 0.5vh, 0.5rem)',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100%',
+                      wordWrap: 'break-word'
                     }}
                   >
                     <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.85rem, 1vw, 0.95rem)' }}>{event.date}</span>
                     {' '}{event.location}
                   </p>
                   <h3 
-                    className="text-center"
+                    className="text-center event-card-title"
                     style={{ 
                       fontFamily: "'Playfair Display SC', serif",
                       fontSize: 'clamp(1.1rem, 1.4vw, 1.3rem)',
@@ -115,12 +119,17 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                       fontWeight: '700',
                       textShadow: '0 0 0.5rem rgba(104, 35, 2, 0.4)',
                       marginBottom: event.ticketsLeft === 0 ? 'clamp(1.5rem, 2vh, 2rem)' : 'clamp(0.5rem, 0.75vh, 0.75rem)',
-                      position: 'relative'
+                      position: 'relative',
+                      overflow: 'visible',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '100%',
+                      wordWrap: 'break-word'
                     }}
                   >
                     <span style={{ fontSize: 'clamp(1.4rem, 1.8vw, 1.7rem)' }}>12</span> СТУЛЬЕВ
                     {event.ticketsLeft === 0 && (
                       <div
+                        className="sold-out-badge"
                         style={{
                           position: 'absolute',
                           top: '100%',
@@ -132,7 +141,8 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                           borderRadius: 'clamp(0.5rem, 0.7vw, 0.6rem)',
                           backgroundColor: 'transparent',
                           boxShadow: '0 2px 8px rgba(104, 35, 2, 0.3)',
-                          zIndex: 10
+                          zIndex: 10,
+                          whiteSpace: 'nowrap'
                         }}
                       >
                         <p
@@ -160,12 +170,19 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                           backgroundColor: '#682302',
                           padding: '0.375rem 1.25rem',
                           boxShadow: '0 0 0.625rem rgba(251, 198, 50, 0.3)',
-                          marginBottom: 'clamp(0.5rem, 0.75vh, 0.75rem)'
+                          marginBottom: 'clamp(0.5rem, 0.75vh, 0.75rem)',
+                          maxWidth: '90%'
                         }}
                       >
                         <p 
-                          className="text-white text-center whitespace-nowrap"
-                          style={{ fontFamily: "'Playfair Display SC', serif", fontSize: 'clamp(0.7rem, 0.9vw, 0.8rem)' }}
+                          className="text-white text-center"
+                          style={{ 
+                            fontFamily: "'Playfair Display SC', serif", 
+                            fontSize: 'clamp(0.7rem, 0.9vw, 0.8rem)',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}
                         >
                           ОСТАЛОСЬ{' '}
                           <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.85rem, 1vw, 0.95rem)' }}>{event.ticketsLeft}</span>

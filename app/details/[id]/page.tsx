@@ -6,39 +6,61 @@ import DetailsView from '@/components/details/DetailsView';
 import { events } from '@/data/events';
 import { scheduleItems } from '@/data/schedule';
 
-// Функция для извлечения города из location и склонения
-const getCityInPrepositionalCase = (location: string): string => {
+// Функция для склонения городов в предложный падеж
+const getCityInPrepositionalCase = (cityName: string): string => {
+  const cityMap: { [key: string]: string } = {
+    'КУРСК': 'Курске',
+    'МОСКВА': 'Москве',
+    'НИЖНИЙ НОВГОРОД': 'Нижнем Новгороде',
+    'Курск': 'Курске',
+    'Москва': 'Москве',
+    'Нижний Новгород': 'Нижнем Новгороде',
+    'ВОЛОГДА': 'Вологде',
+    'Вологда': 'Вологде',
+    'ЛИПЕЦК': 'Липецке',
+    'Липецк': 'Липецке',
+    'СТАРЫЙ ОСКОЛ': 'Старом Осколе',
+    'Старый Оскол': 'Старом Осколе',
+    'СМОЛЕНСК': 'Смоленске',
+    'Смоленск': 'Смоленске',
+    'ВЕЛИКИЙ НОВГОРОД': 'Великом Новгороде',
+    'Великий Новгород': 'Великом Новгороде',
+    'ВОРОНЕЖ': 'Воронеже',
+    'Воронеж': 'Воронеже',
+    'ВЛАДИМИР': 'Владимире',
+    'Владимир': 'Владимире',
+  };
+  
+  // Нормализуем название города (убираем лишние пробелы, приводим к нужному регистру)
+  const normalizedCity = cityName.trim();
+  return cityMap[normalizedCity] || normalizedCity;
+};
+
+// Функция для извлечения города из location (для events)
+const getCityFromLocation = (location: string): string => {
   // Извлекаем город из строки вида "ОКТЯБРЯ | КУРСК" или "Театр драмы, ул. Ленина,"
   const parts = location.split('|');
   if (parts.length > 1) {
     const city = parts[1].trim();
-    // Склонение городов в предложный падеж
-    const cityMap: { [key: string]: string } = {
-      'КУРСК': 'Курске',
-      'МОСКВА': 'Москве',
-      'НИЖНИЙ НОВГОРОД': 'Нижнем Новгороде',
-      'Курск': 'Курске',
-      'Москва': 'Москве',
-      'Нижний Новгород': 'Нижнем Новгороде',
-    };
-    return cityMap[city] || city;
+    return getCityInPrepositionalCase(city);
   }
   
   // Если формат другой, пытаемся найти город в строке
-  const cityMatch = location.match(/(Москва|Курск|Нижний Новгород|МОСКВА|КУРСК|НИЖНИЙ НОВГОРОД)/i);
+  const cityMatch = location.match(/(Москва|Курск|Нижний Новгород|МОСКВА|КУРСК|НИЖНИЙ НОВГОРОД|Вологда|ВОЛОГДА|Липецк|ЛИПЕЦК|Старый Оскол|СТАРЫЙ ОСКОЛ|Смоленск|СМОЛЕНСК|Великий Новгород|ВЕЛИКИЙ НОВГОРОД|Воронеж|ВОРОНЕЖ|Владимир|ВЛАДИМИР)/i);
   if (cityMatch) {
-    const city = cityMatch[1];
-    const cityMap: { [key: string]: string } = {
-      'КУРСК': 'Курске',
-      'МОСКВА': 'Москве',
-      'НИЖНИЙ НОВГОРОД': 'Нижнем Новгороде',
-      'Курск': 'Курске',
-      'Москва': 'Москве',
-      'Нижний Новгород': 'Нижнем Новгороде',
-    };
-    return cityMap[city] || city;
+    return getCityInPrepositionalCase(cityMatch[1]);
   }
   
+  return 'городе';
+};
+
+// Функция для извлечения города из title (для schedule)
+const getCityFromTitle = (title: string): string => {
+  // Формат: "12 стульев – [Город]"
+  const match = title.match(/12 стульев – (.+)/);
+  if (match && match[1]) {
+    return getCityInPrepositionalCase(match[1].trim());
+  }
   return 'городе';
 };
 
@@ -86,16 +108,17 @@ const DetailsPage: React.FC = () => {
   const params = useParams();
   const id = params?.id ? parseInt(params.id as string, 10) : null;
 
-  // Ищем событие в events
-  let event = events.find(e => e.id === id);
-  let scheduleItem = null;
-  let isFromEvents = true;
+  // Сначала ищем в scheduleItems (приоритет для расписания спектаклей)
+  // Это гарантирует, что при клике "Подробнее" в SchedulePage откроется правильная карточка
+  let scheduleItem = id ? scheduleItems.find(s => s.id === id) : null;
+  let event = null;
+  let isFromEvents = false;
   
-  // Если не найдено в events, ищем в schedule
-  if (!event && id) {
-    scheduleItem = scheduleItems.find(s => s.id === id);
-    if (scheduleItem) {
-      isFromEvents = false;
+  // Если не найдено в scheduleItems, ищем в events (для обратной совместимости)
+  if (!scheduleItem && id) {
+    event = events.find(e => e.id === id);
+    if (event) {
+      isFromEvents = true;
     }
   }
 
@@ -111,17 +134,21 @@ const DetailsPage: React.FC = () => {
   let city = 'городе';
   let dateTime: string | { __html: string } | undefined = undefined;
   let buyTicketUrl: string | undefined;
+  let address: string | undefined;
 
   if (isFromEvents && event) {
-    city = getCityInPrepositionalCase(event.location);
+    city = getCityFromLocation(event.location);
     dateTime = formatDateTime(event.date, event.location, event.time);
     buyTicketUrl = event.buyTicketUrl;
+    // Для events адрес формируется из location
+    address = event.location;
   } else if (scheduleItem) {
-    // Для schedule нужно определить город из title или location
-    // По умолчанию все события в schedule - Москва
-    city = 'Москве';
+    // Для schedule извлекаем все данные строго из scheduleItem
+    city = getCityFromTitle(scheduleItem.title);
     dateTime = formatDateTime(scheduleItem.date, undefined, scheduleItem.time);
     buyTicketUrl = scheduleItem.buyTicketUrl;
+    // Формируем адрес из location и address (если address не пустой)
+    address = scheduleItem.location + (scheduleItem.address ? ' ' + scheduleItem.address : '');
   }
 
   return (
@@ -129,6 +156,7 @@ const DetailsPage: React.FC = () => {
       city={city}
       dateTime={dateTime}
       buyTicketUrl={buyTicketUrl}
+      address={address}
     />
   );
 };

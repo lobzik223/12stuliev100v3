@@ -210,30 +210,39 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
           >
             Команда
           </p>
-          <div className="w-full max-w-[1600px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 px-4 md:px-6 lg:px-8">
+          <div className="w-full max-w-[4000px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5 px-4 md:px-6 lg:px-8">
             {teamMembers.filter(member => member.date).map((member) => (
               <div key={member.id} className="flex justify-center">
-                <div className="relative" style={{ width: '100%', maxWidth: 'clamp(600px, 45vw, 900px)', pointerEvents: 'auto' }}>
+                <div className="relative" style={{ width: '100%', maxWidth: 'clamp(1600px, 100vw, 2800px)', pointerEvents: 'auto', overflow: 'hidden' }}>
                   <Image
                     src="/backgrounds/sections/command.png"
                     alt={member.name}
-                    width={900}
-                    height={600}
+                    width={2800}
+                    height={1867}
                     className="h-auto w-full"
                     style={{ 
                       objectFit: 'contain',
                       pointerEvents: 'none',
-                      display: 'block'
+                      display: 'block',
+                      width: '100%',
+                      height: 'auto',
+                      minWidth: '100%'
                     }}
                     unoptimized
                   />
                   {/* Текст поверх карточки */}
                   <div 
-                    className="absolute inset-0 flex flex-col items-center justify-center text-center px-8 py-12"
+                    className="absolute inset-0 flex flex-col items-center justify-center text-center"
                     style={{ 
                       pointerEvents: 'none',
                       color: '#8B4513',
-                      fontFamily: 'serif'
+                      fontFamily: 'serif',
+                      paddingTop: 'clamp(2.5rem, 5vh, 4rem)',
+                      paddingBottom: 'clamp(2rem, 4vh, 3.5rem)',
+                      paddingLeft: 'clamp(2rem, 4vw, 3.5rem)',
+                      paddingRight: 'clamp(2rem, 4vw, 3.5rem)',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box'
                     }}
                   >
                     {/* Имя */}
@@ -242,7 +251,16 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                         fontSize: 'clamp(0.75rem, 1.3vw, 1.3rem)',
                         fontWeight: 'bold',
                         marginBottom: 'clamp(0.3rem, 0.6vw, 0.6rem)',
-                        lineHeight: '1.2'
+                        lineHeight: '1.2',
+                        maxWidth: '85%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        wordWrap: 'break-word',
+                        wordBreak: 'break-word',
+                        hyphens: 'auto',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical'
                       }}
                     >
                       {member.name}
@@ -253,7 +271,16 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                         fontSize: 'clamp(0.6rem, 1vw, 1rem)',
                         marginBottom: 'clamp(0.6rem, 1.2vw, 1.2rem)',
                         lineHeight: '1.3',
-                        color: '#000000'
+                        color: '#000000',
+                        maxWidth: '80%',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        wordWrap: 'break-word',
+                        wordBreak: 'break-word',
+                        hyphens: 'auto',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical'
                       }}
                     >
                       {member.position}
@@ -261,10 +288,18 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                     {/* Цитата */}
                     <p 
                       style={{ 
-                        fontSize: 'clamp(0.5rem, 0.85vw, 0.85rem)',
-                        lineHeight: '1.5',
-                        maxWidth: 'clamp(200px, 25vw, 350px)',
-                        fontStyle: 'italic'
+                        fontSize: 'clamp(0.5rem, 0.8vw, 0.8rem)',
+                        lineHeight: '1.4',
+                        maxWidth: 'clamp(160px, 20vw, 280px)',
+                        fontStyle: 'italic',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        wordWrap: 'break-word',
+                        wordBreak: 'break-word',
+                        hyphens: 'auto',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 4,
+                        WebkitBoxOrient: 'vertical'
                       }}
                     >
                       &ldquo;{member.quote}&rdquo;
@@ -501,7 +536,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             </p>
 
             {/* Карусель расписания спектаклей */}
-            <div className="relative w-full mt-10" style={{ padding: '2rem 0' }}>
+            <div className="relative w-full mt-10" style={{ padding: '2rem clamp(2rem, 4vw, 3rem)', overflow: 'visible' }}>
               <Swiper
                 modules={[Navigation]}
                 speed={800}
@@ -536,20 +571,25 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                     <div
                       className="flex flex-col items-stretch h-full"
                       style={{
-                        padding: '0 0.5rem'
+                        padding: '0 0.5rem',
+                        width: '100%',
+                        maxWidth: '100%'
                       }}
                     >
-                      <div
-                        className="flex-1 rounded-xl border-2 border-[#FBC632] bg-[#682302] px-6 py-6 md:px-10 md:py-8"
-                        style={{
-                          boxShadow: '0 0 18px rgba(251, 198, 50, 0.35), 0 0 40px rgba(251, 198, 50, 0.18)',
-                          height: '100%',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between'
-                        }}
-                      >
-                        <div className="w-full h-full flex flex-col justify-between text-center space-y-4 md:space-y-6">
+                        <div
+                          className="flex-1 rounded-xl border-2 border-[#FBC632] bg-[#682302] px-6 py-6 md:px-10 md:py-8"
+                          style={{
+                            boxShadow: 'none',
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            width: '100%',
+                            maxWidth: '100%',
+                            minWidth: 0
+                          }}
+                        >
+                        <div className="w-full h-full flex flex-col justify-between text-center space-y-4 md:space-y-6" style={{ width: '100%', maxWidth: '100%', minWidth: 0 }}>
                           <p
                             className="text-xl md:text-2xl lg:text-3xl uppercase"
                             style={{
@@ -569,7 +609,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                             >
                               12
                             </span>
-                            <span> стульев – Москва</span>
+                            <span> стульев – {item.title.replace('12 стульев – ', '')}</span>
                           </p>
                           <p
                             className="text-lg md:text-xl lg:text-2xl uppercase"
@@ -609,20 +649,36 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                               fontFamily: "'Playfair Display SC', serif",
                               color: '#FFFFFF',
                               letterSpacing: '0.05em',
+                              wordWrap: 'break-word',
+                              wordBreak: 'break-word',
+                              overflowWrap: 'break-word',
+                              hyphens: 'auto',
+                              maxWidth: '100%',
+                              lineHeight: '1.4',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
                             }}
                           >
-                            {item.location}&nbsp;
-                            <span
-                              style={{
-                                fontFamily: "'Noto Serif Malayalam', serif",
-                                fontSize: 'clamp(18px, 1.5vw, 24px)',
-                                fontWeight: 400,
-                                lineHeight: 'normal',
-                                letterSpacing: 0,
-                              }}
-                            >
-                              {item.address}
-                            </span>
+                            {item.location}
+                            {item.address && (
+                              <>
+                                &nbsp;
+                                <span
+                                  style={{
+                                    fontFamily: "'Noto Serif Malayalam', serif",
+                                    fontSize: 'clamp(18px, 1.5vw, 24px)',
+                                    fontWeight: 400,
+                                    lineHeight: 'normal',
+                                    letterSpacing: 0,
+                                  }}
+                                >
+                                  {item.address}
+                                </span>
+                              </>
+                            )}
                           </p>
 
                           <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
@@ -680,7 +736,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   transform: 'translateY(-50%)',
                   position: 'absolute',
                   zIndex: 30,
-                  left: '0.5rem',
+                  left: 'clamp(-1rem, -2vw, -0.5rem)',
                   width: 'clamp(2rem, 3vw, 3rem)',
                   height: 'clamp(2rem, 3vw, 3rem)'
                 }}
@@ -693,7 +749,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   transform: 'translateY(-50%)',
                   position: 'absolute',
                   zIndex: 30,
-                  right: '0.5rem',
+                  right: 'clamp(-1rem, -2vw, -0.5rem)',
                   width: 'clamp(2rem, 3vw, 3rem)',
                   height: 'clamp(2rem, 3vw, 3rem)'
                 }}

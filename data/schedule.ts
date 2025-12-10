@@ -11,75 +11,75 @@ export interface ScheduleItem {
 export const scheduleItems: ScheduleItem[] = [
   {
     id: 1,
-    title: '12 стульев – Курск',
-    date: '15 ноября',
-    time: '22:00',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    title: '12 стульев – Вологда',
+    date: '16 Февраля',
+    time: '19:00',
+    location: 'ДК Подшипникового завода',
+    address: '',
+    buyTicketUrl: ''
   },
   {
     id: 2,
-    title: '12 стульев – Москва',
-    date: '18 ноября',
-    time: '19:30',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    title: '12 стульев – Нижний Новгород',
+    date: '18 Февраля',
+    time: '19:00',
+    location: 'ДК Красное Сормово',
+    address: '',
+    buyTicketUrl: ''
   },
   {
     id: 3,
-    title: '12 стульев – Москва',
-    date: '22 ноября',
-    time: '20:00',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    title: '12 стульев – Липецк',
+    date: '20 Февраля',
+    time: '19:00',
+    location: 'Областной центр культуры народного творчества и кино',
+    address: '',
+    buyTicketUrl: ''
   },
   {
     id: 4,
-    title: '12 стульев – Москва',
-    date: '25 ноября',
-    time: '21:00',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    title: '12 стульев – Старый Оскол',
+    date: '21 Февраля',
+    time: '18:00',
+    location: 'Центр молодёжных инициатив',
+    address: '',
+    buyTicketUrl: ''
   },
   {
     id: 5,
-    title: '12 стульев – Москва',
-    date: '28 ноября',
+    title: '12 стульев – Смоленск',
+    date: '24 Февраля',
     time: '19:00',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    location: 'КЗ Губернский',
+    address: '',
+    buyTicketUrl: ''
   },
   {
     id: 6,
-    title: '12 стульев – Москва',
-    date: '2 декабря',
-    time: '20:30',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    title: '12 стульев – Великий Новгород',
+    date: '26 Февраля',
+    time: '19:00',
+    location: 'КЦ Диалог',
+    address: '',
+    buyTicketUrl: ''
   },
   {
     id: 7,
-    title: '12 стульев – Москва',
-    date: '5 декабря',
-    time: '22:00',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    title: '12 стульев – Воронеж',
+    date: '12 Марта',
+    time: '19:00',
+    location: 'Воронежский концертный зал',
+    address: '',
+    buyTicketUrl: ''
   },
   {
     id: 8,
-    title: '12 стульев – Москва',
-    date: '8 декабря',
-    time: '19:30',
-    location: 'Театр драмы, ул. Ленина,',
-    address: '23',
-    buyTicketUrl: 'https://iframeab-pre11010.intickets.ru/event/68662267/'
+    title: '12 стульев – Владимир',
+    date: '13 Марта',
+    time: '19:00',
+    location: 'АРТ Холл',
+    address: '',
+    buyTicketUrl: ''
   }
 ];
 

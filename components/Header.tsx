@@ -77,7 +77,10 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
       className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'
       }`}
-      style={{ padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(0.5%, 1vw, 1%)' }}
+      style={{ 
+        padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(0.5%, 1vw, 1%)',
+        zIndex: 9999
+      }}
     >
       <div className="relative w-full mx-auto" style={{ maxWidth: '93.75vw', height: 'clamp(3.5rem, 4.25vw, 4.25rem)' }}>
         <svg

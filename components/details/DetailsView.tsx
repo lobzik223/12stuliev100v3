@@ -22,12 +22,14 @@ interface DetailsViewProps {
   city?: string;
   dateTime?: string | { __html: string };
   buyTicketUrl?: string;
+  address?: string;
 }
 
 const DetailsView: React.FC<DetailsViewProps> = ({ 
   city = 'Нижнем Новгороде', 
   dateTime,
-  buyTicketUrl 
+  buyTicketUrl,
+  address
 }) => {
   const router = useRouter();
   // Обрабатываем dateTime - может быть строкой или объектом с HTML
@@ -55,6 +57,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     let rafId: number | null = null;
     let isScrolling = false; // Флаг для предотвращения рекурсивных вызовов
     let maxScrollValue = 0; // Кэшируем максимальное значение скролла
+    let observer: IntersectionObserver | null = null;
 
     // Вычисляем максимальную позицию скролла один раз при загрузке и изменении размера
     const calculateMaxScroll = () => {
@@ -62,10 +65,11 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       const targetRef = legalInfoRef.current || contactsSectionRef.current;
       if (!targetRef || !containerRef.current) return;
       
+      // Ждем, пока элемент будет полностью отрендерен
       const rect = targetRef.getBoundingClientRect();
       const targetBottom = window.scrollY + rect.bottom;
-      // Добавляем небольшой отступ снизу для визуального комфорта
-      const exactHeight = Math.ceil(targetBottom + 20);
+      // Увеличиваем отступ снизу для полной видимости раздела контактов
+      const exactHeight = Math.ceil(targetBottom + 40);
       maxScrollValue = Math.max(0, exactHeight - window.innerHeight);
       
       // Устанавливаем точную высоту документа и контейнера, чтобы не было лишнего пространства
@@ -114,7 +118,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         // Пересчитываем максимальный скролл для точности
         const rect = targetRef.getBoundingClientRect();
         const targetBottom = window.scrollY + rect.bottom;
-        const exactHeight = Math.ceil(targetBottom + 20);
+        const exactHeight = Math.ceil(targetBottom + 40);
         const calculatedMaxScroll = Math.max(0, exactHeight - window.innerHeight);
         
         // Обновляем кэш
@@ -144,10 +148,41 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     // Вычисляем высоту после загрузки контента и изображений
     const initHeight = () => {
       calculateMaxScroll();
-      // Повторяем расчет после небольшой задержки для учета загрузки изображений
+      // Несколько попыток пересчета для учета загрузки всех элементов
       setTimeout(() => {
         calculateMaxScroll();
       }, 300);
+      setTimeout(() => {
+        calculateMaxScroll();
+      }, 600);
+      setTimeout(() => {
+        calculateMaxScroll();
+      }, 1000);
+    };
+    
+    // Используем IntersectionObserver для отслеживания загрузки раздела контактов
+    if (legalInfoRef.current) {
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(() => {
+          // Пересчитываем высоту когда элемент становится видимым
+          setTimeout(() => {
+            calculateMaxScroll();
+          }, 100);
+        });
+      }, {
+        threshold: 0.1
+      });
+      observer.observe(legalInfoRef.current);
+    }
+    
+    // Обработчик изменения видимости вкладки
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Пересчитываем высоту при возврате на вкладку
+        setTimeout(() => {
+          calculateMaxScroll();
+        }, 200);
+      }
     };
     
     setTimeout(initHeight, 100);
@@ -159,12 +194,17 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     
     window.addEventListener('resize', handleResize);
     window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
+      }
+      if (observer) {
+        observer.disconnect();
       }
       isScrolling = false;
       // Восстанавливаем стили
@@ -325,21 +365,21 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       gsap.fromTo(starImageRef.current,
         {
           opacity: 0,
-          scale: 0.8,
-          rotation: -180
+          scale: 0.9,
+          rotation: -90
         },
         {
           opacity: 1,
           scale: 1,
           rotation: 0,
-          duration: 1,
-          ease: 'back.out(1.7)',
+          duration: 1.4,
+          ease: 'back.out(1.2)',
           scrollTrigger: {
             trigger: starImageRef.current,
             start: 'top 85%',
             toggleActions: 'play none none reverse'
           },
-          delay: 0.2
+          delay: 0.15
         }
       );
     }
@@ -614,7 +654,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           />
         </svg>
         <div className="venue-text">
-          Академический театр оперы и балета
+          {address || 'Академический театр оперы и балета'}
         </div>
       </div>
       <div className="frame-widget">
@@ -805,22 +845,26 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         </button>
       </div>
 
-      {/* Раздел "Актеры" */}
-      <div className="actors-section-details" style={{ 
-        marginTop: '235rem', 
-        width: '100%', 
-        position: 'relative',
-        zIndex: 20
-      }}>
+      {/* Раздел "Актеры" - позиционируется после dark-overlay-duplicate */}
+      <div 
+        className="actors-section-details" 
+        style={{ 
+          width: '100%', 
+          position: 'relative',
+          zIndex: 20
+        }}
+      >
         <ActorsSection />
       </div>
 
       {/* Раздел "ОТЗЫВЫ" */}
       <div className="w-full flex flex-col items-center" style={{ 
-        marginTop: 'clamp(4rem, 8vh, 6rem)', 
+        marginTop: 'clamp(8rem, 12vh, 10rem)', 
         width: '100%', 
         position: 'relative',
-        zIndex: 20
+        zIndex: 20,
+        paddingTop: 'clamp(3rem, 6vh, 5rem)',
+        paddingBottom: 'clamp(2rem, 4vh, 3rem)'
       }}>
         <p 
           className="text-2xl md:text-3xl lg:text-4xl uppercase mb-10 md:mb-12"
@@ -1086,7 +1130,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               letterSpacing: '0.08em'
             }}
           >
-            {city.charAt(0).toUpperCase() + city.slice(1)}
+            В {city.charAt(0).toUpperCase() + city.slice(1)}
           </p>
 
           {/* Адрес театра */}
@@ -1100,7 +1144,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               lineHeight: '1.6'
             }}
           >
-            Академический театр оперы и балета | пл. Куйбышева 1
+            {address || 'Академический театр оперы и балета | пл. Куйбышева 1'}
           </p>
 
           {/* Дата и время */}

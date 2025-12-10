@@ -268,7 +268,7 @@ span.date-time-number {
 /* Надпись "Наши преимущества" */
 .advantages-title {
   position: absolute;
-  top: 15%; /* Поднято с 18% до 15% */
+  top: 8%; /* Поднято выше */
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Playfair Display SC', serif;
@@ -288,7 +288,7 @@ span.date-time-number {
 /* Звезда ниже надписи "Наши преимущества" */
 .star-image {
   position: absolute;
-  top: 15%; /* Поднято с 18% до 15% */
+  top: 8%; /* Поднято вместе с заголовком */
   left: 50%;
   transform: translateX(-50%);
   width: 700px;
@@ -302,7 +302,7 @@ span.date-time-number {
 /* Логотип внутри звезды */
 .logo-in-star {
   position: absolute;
-  top: calc(15% + 280px); /* Поднято с 18% до 15% */
+  top: calc(8% + 280px); /* Поднято вместе с заголовком */
   left: 50%;
   transform: translate(-50%, -50%);
   width: 350px;
@@ -316,7 +316,7 @@ span.date-time-number {
 /* Текст "КОМЕДИЯ ВЫСАЧАЙШЕНОГО КАЧЕСТВА" ниже логотипа */
 .comedy-quality-text {
   position: absolute;
-  top: calc(15% + 260px + 120px); /* Обновлено с 18% до 15% */
+  top: calc(8% + 260px + 120px); /* Обновлено с 12% до 8% */
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Playfair Display SC', serif;
@@ -337,7 +337,7 @@ span.date-time-number {
 /* Текст "Спектакль премиуим сегмента" ниже текста о качестве */
 .premium-segment-text {
   position: absolute;
-  top: calc(15% + 260px + 120px + 35px); /* Обновлено с 18% до 15% */
+  top: calc(8% + 260px + 120px + 35px); /* Обновлено с 12% до 8% */
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Playfair Display SC', serif;
@@ -359,7 +359,7 @@ span.date-time-number {
 /* Иконка театральной маски над текстом "Лучшие артисты" */
 .artists-icon {
   position: absolute;
-  top: calc(15% + 260px + 120px + 35px - 240px); /* Обновлено с 18% до 15% */
+  top: calc(8% + 260px + 120px + 35px - 240px); /* Обновлено с 12% до 8% */
   left: 16%;
   transform: translateX(-50%);
   width: 240px;
@@ -372,7 +372,7 @@ span.date-time-number {
 /* Текст "Лучшие артисты" слева */
 .best-artists-text {
   position: absolute;
-  top: calc(18% + 260px + 120px + 35px);
+  top: calc(8% + 260px + 120px + 35px); /* Обновлено с 12% до 8% */
   left: 16%;
   transform: translateX(-50%);
   font-family: 'Playfair Display SC', serif;
@@ -395,7 +395,7 @@ span.date-time-number {
 /* Иконка кинокамеры над текстом "Топовый режиссер" */
 .director-icon {
   position: absolute;
-  top: calc(18% + 260px + 120px + 35px - 240px);
+  top: calc(8% + 260px + 120px + 35px - 240px); /* Обновлено с 12% до 8% */
   left: 84%;
   transform: translateX(-50%);
   width: 240px;
@@ -408,7 +408,7 @@ span.date-time-number {
 /* Текст "Топовый режиссер" справа */
 .top-director-text {
   position: absolute;
-  top: calc(18% + 260px + 120px + 35px);
+  top: calc(8% + 260px + 120px + 35px); /* Обновлено с 12% до 8% */
   left: 84%;
   transform: translateX(-50%);
   font-family: 'Playfair Display SC', serif;
@@ -431,7 +431,7 @@ span.date-time-number {
 /* Кнопка "Купить билет" ниже звезды */
 .buy-ticket-button-bottom {
   position: absolute;
-  top: calc(18% + 700px + 20px);
+  top: calc(8% + 700px + 20px); /* Обновлено с 12% до 8% */
   left: 50%;
   transform: translateX(-50%);
   padding: 16px 48px;
@@ -848,10 +848,6 @@ span.date-time-number {
 
 /* Медиа-запрос для масштаба 125% (эффективная ширина viewport ~1536px при разрешении 1920x1080) */
 @media (min-width: 1500px) and (max-width: 1600px) {
-  .actors-section-details {
-    margin-top: 200rem !important; /* Поднимаем раздел "Актеры" выше при масштабе 125% */
-  }
-  
   /* Треугольник зафиксирован немного ниже центра на масштабе 125% */
   .triangle-overlay {
     top: 52% !important; /* Немного ниже центра */
@@ -859,5 +855,51 @@ span.date-time-number {
   }
   
   /* Высота контейнера и псевдоэлемента ::after устанавливается динамически через JavaScript */
+}
+
+/* Адаптивные отступы для раздела актеров на разных экранах */
+/* dark-overlay-duplicate начинается на calc(3% + 80vh + 150px + 150vh) = calc(3% + 230vh + 150px) */
+/* Высота dark-overlay-duplicate примерно 100-120vh (зависит от контента) */
+/* Кнопка "Купить билет" находится внизу dark-overlay-duplicate */
+/* Раздел актеров должен начинаться после кнопки с достаточным отступом */
+/* ActorsSection имеет marginTop: clamp(-7rem, -12vh, -6rem), учитываем это */
+.actors-section-details {
+  position: relative;
+  z-index: 20;
+  /* Увеличено еще больше: начало dark-overlay-duplicate (3% + 230vh + 150px) + его высота (120vh) + увеличенный отступ после кнопки (55vh) */
+  /* Итого: 3% + 405vh + 150px */
+  margin-top: calc(3% + 405vh + 150px);
+  padding-top: clamp(4rem, 8vh, 6rem);
+  padding-bottom: clamp(2rem, 4vh, 3rem);
+}
+
+/* Для больших экранов (1920px и выше) - больше отступ для безопасности */
+@media (min-width: 1920px) {
+  .actors-section-details {
+    margin-top: calc(3% + 415vh + 180px);
+  }
+}
+
+/* Для средних экранов (1024px - 1919px) */
+@media (min-width: 1024px) and (max-width: 1919px) {
+  .actors-section-details {
+    margin-top: calc(3% + 405vh + 150px);
+  }
+}
+
+/* Для планшетов (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .actors-section-details {
+    margin-top: calc(3% + 395vh + 120px);
+    padding-top: clamp(3rem, 6vh, 5rem);
+  }
+}
+
+/* Для мобильных (до 767px) */
+@media (max-width: 767px) {
+  .actors-section-details {
+    margin-top: calc(3% + 385vh + 100px);
+    padding-top: clamp(2rem, 4vh, 3rem);
+  }
 }
 

@@ -12,6 +12,7 @@ export default function SchedulePage() {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const legalInfoRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const bgWrapperRef = useRef<HTMLDivElement>(null);
 
   const handleBuyTicket = (url: string | undefined) => {
     if (url) {
@@ -30,15 +31,22 @@ export default function SchedulePage() {
     let rafId: number | null = null;
     let isScrolling = false; // Флаг для предотвращения рекурсивных вызовов
     let maxScrollValue = 0; // Кэшируем максимальное значение скролла
+    let initTimeout: NodeJS.Timeout | null = null;
 
     const calculateMaxScroll = () => {
       if (!legalInfoRef.current || !containerRef.current) return;
       
-      // Получаем позицию нижней границы текста с ИНН/ОГРНИП
+      // Ждем, пока элемент будет полностью отрендерен
       const rect = legalInfoRef.current.getBoundingClientRect();
+      if (rect.height === 0) {
+        // Элемент еще не отрендерен, повторяем попытку
+        return;
+      }
+      
+      // Получаем позицию нижней границы текста с ИНН/ОГРНИП (последний элемент footer)
       const legalBottom = window.scrollY + rect.bottom;
-      // Добавляем небольшой отступ снизу для визуального комфорта
-      const exactHeight = Math.ceil(legalBottom + 20);
+      // Добавляем небольшой отступ снизу для визуального комфорта (footer должен быть виден полностью)
+      const exactHeight = Math.ceil(legalBottom + 40);
       maxScrollValue = Math.max(0, exactHeight - window.innerHeight);
       
       if (document.body && document.documentElement && containerRef.current) {
@@ -53,8 +61,14 @@ export default function SchedulePage() {
         containerRef.current.style.height = `${exactHeight}px`;
         containerRef.current.style.maxHeight = `${exactHeight}px`;
         containerRef.current.style.overflow = 'hidden'; // Убираем скролл с контейнера
-        // Убеждаемся, что фон тоже имеет правильную высоту и обрезается
-        const bgElement = containerRef.current.querySelector('[style*="backgroundImage"]') as HTMLElement;
+        
+        // Фон должен заканчиваться на footer - обрезаем его на высоте контента
+        if (bgWrapperRef.current) {
+          bgWrapperRef.current.style.height = `${exactHeight}px`;
+          bgWrapperRef.current.style.maxHeight = `${exactHeight}px`;
+          bgWrapperRef.current.style.overflow = 'hidden';
+        }
+        const bgElement = bgWrapperRef.current?.querySelector('[style*="backgroundImage"]') as HTMLElement;
         if (bgElement) {
           bgElement.style.height = `${exactHeight}px`;
           bgElement.style.maxHeight = `${exactHeight}px`;
@@ -78,10 +92,12 @@ export default function SchedulePage() {
 
         const currentScroll = window.scrollY;
         
-        // Пересчитываем максимальный скролл для точности
+        // Пересчитываем максимальный скролл для точности (footer - последний элемент)
         const rect = legalInfoRef.current.getBoundingClientRect();
+        if (rect.height === 0) return; // Элемент еще не отрендерен
+        
         const legalBottom = window.scrollY + rect.bottom;
-        const exactHeight = Math.ceil(legalBottom + 20);
+        const exactHeight = Math.ceil(legalBottom + 40); // Увеличиваем отступ для полной видимости footer
         const calculatedMaxScroll = Math.max(0, exactHeight - window.innerHeight);
         
         // Обновляем кэш
@@ -108,30 +124,95 @@ export default function SchedulePage() {
       });
     };
 
-    // Вычисляем высоту после загрузки контента и изображений
+    // Ожидаем полной загрузки всех изображений
+    const waitForImages = (callback: () => void) => {
+      const images = document.querySelectorAll('img');
+      let loadedCount = 0;
+      const totalImages = images.length;
+
+      if (totalImages === 0) {
+        callback();
+        return;
+      }
+
+      const checkComplete = () => {
+        loadedCount++;
+        if (loadedCount === totalImages) {
+          callback();
+        }
+      };
+
+      images.forEach((img) => {
+        if ((img as HTMLImageElement).complete) {
+          checkComplete();
+        } else {
+          img.addEventListener('load', checkComplete, { once: true });
+          img.addEventListener('error', checkComplete, { once: true });
+        }
+      });
+    };
+
+    // Вычисляем высоту после полной загрузки контента и изображений
     const initHeight = () => {
-      calculateMaxScroll();
-      // Повторяем расчет после небольшой задержки для учета загрузки изображений
-      setTimeout(() => {
-        calculateMaxScroll();
-      }, 300);
+      // Сначала ждем, пока DOM полностью отрендерится
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          waitForImages(() => {
+            // Ждем еще немного для полной отрисовки
+            setTimeout(() => {
+              calculateMaxScroll();
+              // Повторяем расчет после дополнительной задержки для учета всех изменений
+              setTimeout(() => {
+                calculateMaxScroll();
+              }, 200);
+            }, 100);
+          });
+        });
+      } else {
+        waitForImages(() => {
+          // Ждем еще немного для полной отрисовки
+          setTimeout(() => {
+            calculateMaxScroll();
+            // Повторяем расчет после дополнительной задержки для учета всех изменений
+            setTimeout(() => {
+              calculateMaxScroll();
+            }, 200);
+          }, 100);
+        });
+      }
     };
     
-    setTimeout(initHeight, 100);
+    // Запускаем инициализацию с задержкой для гарантии полной загрузки
+    initTimeout = setTimeout(initHeight, 100);
     
     const handleResize = () => {
       maxScrollValue = 0; // Сбрасываем кэш при изменении размера
-      calculateMaxScroll();
+      // Ждем завершения изменения размера
+      setTimeout(() => {
+        calculateMaxScroll();
+      }, 100);
     };
     
     window.addEventListener('resize', handleResize);
     window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Также пересчитываем при изменении видимости страницы (например, при возврате на вкладку)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        setTimeout(() => {
+          calculateMaxScroll();
+        }, 100);
+      }
+    });
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
+      }
+      if (initTimeout) {
+        clearTimeout(initTimeout);
       }
       isScrolling = false;
       if (document.body && document.documentElement) {
@@ -169,7 +250,7 @@ export default function SchedulePage() {
         }}
       >
         {/* Фон раздела - растянут в длину как в разделе "В ПУТЬ", обрезается на тексте с ИНН/ОГРНИП */}
-        <div className="absolute inset-0 z-0" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+        <div ref={bgWrapperRef} className="absolute inset-0 z-0" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
           <div
             style={{
               backgroundImage: 'url(/backgrounds/sections/section-4.png)',
@@ -261,18 +342,7 @@ export default function SchedulePage() {
                         letterSpacing: '0.08em',
                       }}
                     >
-                      <span
-                        style={{
-                          fontFamily: "'Noto Serif Malayalam', serif",
-                          fontSize: 'clamp(24px, 2vw, 32px)',
-                          fontWeight: 400,
-                          lineHeight: 'normal',
-                          letterSpacing: 0,
-                        }}
-                      >
-                        12
-                      </span>
-                      <span> стульев – Москва</span>
+                      {item.title.replace('12 стульев – ', '')}
                     </p>
                     <p
                       className="text-lg md:text-xl lg:text-2xl uppercase"
@@ -314,18 +384,23 @@ export default function SchedulePage() {
                         letterSpacing: '0.05em',
                       }}
                     >
-                      {item.location}&nbsp;
-                      <span
-                        style={{
-                          fontFamily: "'Noto Serif Malayalam', serif",
-                          fontSize: 'clamp(18px, 1.5vw, 24px)',
-                          fontWeight: 400,
-                          lineHeight: 'normal',
-                          letterSpacing: 0,
-                        }}
-                      >
-                        {item.address}
-                      </span>
+                      {item.location}
+                      {item.address && (
+                        <>
+                          &nbsp;
+                          <span
+                            style={{
+                              fontFamily: "'Noto Serif Malayalam', serif",
+                              fontSize: 'clamp(18px, 1.5vw, 24px)',
+                              fontWeight: 400,
+                              lineHeight: 'normal',
+                              letterSpacing: 0,
+                            }}
+                          >
+                            {item.address}
+                          </span>
+                        </>
+                      )}
                     </p>
 
                     <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
@@ -373,13 +448,13 @@ export default function SchedulePage() {
             ))}
           </div>
 
-          {/* Раздел "Контакты и партнёры" - Финальная секция */}
+          {/* Раздел "Контакты и партнёры" - Footer (последний раздел) */}
           <div 
             className="w-full flex flex-col items-center" 
             style={{ 
-              marginTop: 'clamp(25rem, 45vh, 55rem)',
+              marginTop: 'clamp(10rem, 18vh, 14rem)',
               paddingTop: 'clamp(4rem, 8vh, 8rem)',
-              paddingBottom: 'clamp(4rem, 8vh, 8rem)',
+              paddingBottom: 'clamp(2rem, 4vh, 3rem)',
               width: '100%', 
               paddingLeft: 'clamp(1rem, 4vw, 4rem)',
               paddingRight: 'clamp(1rem, 4vw, 4rem)'
@@ -575,8 +650,8 @@ export default function SchedulePage() {
                 </div>
               </div>
 
-              {/* Нижняя строка с юридической информацией */}
-              <div ref={legalInfoRef} className="text-center space-y-2 pb-4 md:pb-6" style={{ width: '100%', paddingBottom: '0', marginBottom: '0' }}>
+              {/* Нижняя строка с юридической информацией - последний элемент footer */}
+              <div ref={legalInfoRef} className="text-center space-y-2" style={{ width: '100%', paddingBottom: 'clamp(2rem, 4vh, 3rem)', marginBottom: '0' }}>
                 <p
                   style={{ 
                     fontFamily: "'Playfair Display SC', serif",
