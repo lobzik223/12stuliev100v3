@@ -19,6 +19,29 @@ const nextConfig = {
   },
   // Улучшаем загрузку на мобильных
   swcMinify: true,
+  // Убеждаемся что статические файлы доступны
+  async headers() {
+    return [
+      {
+        source: '/backgrounds/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/photo/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

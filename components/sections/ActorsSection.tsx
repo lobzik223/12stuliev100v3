@@ -342,8 +342,8 @@ export default function ActorsSection() {
                   boxShadow: '0 0 1.5625rem rgba(217, 217, 217, 0.6), inset 0 0 0.625rem rgba(217, 217, 217, 0.2)'
                 }}
               >
-                        <div className="w-full h-full bg-gray-900">
-                          {actor.image && (
+                        <div className="w-full h-full bg-gray-900 relative">
+                          {actor.image ? (
                             <Image 
                               src={actor.image} 
                               alt={actor.name}
@@ -351,7 +351,16 @@ export default function ActorsSection() {
                               height={600}
                               className="w-full h-full object-cover"
                               unoptimized
+                              onError={(e) => {
+                                // Скрываем изображение при ошибке загрузки
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                              }}
                             />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+                              <span className="text-gray-500 text-sm">Нет фото</span>
+                            </div>
                           )}
                         </div>
               </div>

@@ -9,6 +9,31 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Принудительная загрузка фоновых изображений на мобильных устройствах */
+@media (max-width: 768px) {
+  /* Убеждаемся что фоновые изображения загружаются принудительно */
+  [style*="backgroundImage"] {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000;
+    perspective: 1000;
+  }
+  
+  /* Принудительная загрузка критических фонов */
+  .hero-section-bg,
+  .journey-bg-mobile,
+  [style*="section-1.png"],
+  [style*="section-2.png"],
+  [style*="section-3.png"],
+  [style*="section-4.png"] {
+    will-change: auto !important;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}
+
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 0, 0, 0;

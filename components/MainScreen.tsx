@@ -90,6 +90,26 @@ export default function MainScreen() {
 
   return (
     <main className="relative min-h-screen w-full bg-black" style={{ overflowX: 'hidden' }}>
+      {/* Скрытые изображения для принудительной загрузки на мобильных устройствах */}
+      <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}>
+        <img src="/backgrounds/sections/section-1.png" alt="" loading="eager" fetchPriority="high" />
+        <img src="/backgrounds/sections/section-2.png" alt="" loading="eager" fetchPriority="high" />
+        <img src="/backgrounds/sections/section-3.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/section-4.png" alt="" loading="eager" fetchPriority="high" />
+        <img src="/backgrounds/sections/logo100let.png" alt="" loading="eager" fetchPriority="high" />
+        <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput2.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput3.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput4.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/tiraj.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/flash.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/stul100let.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/analiz.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/pamat15.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/computer.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/tabletki.png" alt="" loading="eager" />
+      </div>
       <Header 
         isVisible={isMainHeaderVisible}
         onTicketsClick={() => {

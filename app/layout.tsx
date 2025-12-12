@@ -26,12 +26,21 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="stylesheet" href="//s3.intickets.ru/interposed-frame.min.css" />
-        {/* Preload критических фоновых изображений для быстрой загрузки */}
-        <link rel="preload" href="/backgrounds/sections/section-1.png" as="image" />
-        <link rel="preload" href="/backgrounds/sections/section-3.png" as="image" />
-        <link rel="preload" href="/backgrounds/sections/section-4.png" as="image" />
-        <link rel="preload" href="/photo/section-34839282.png" as="image" />
-        <link rel="preload" href="/backgrounds/sections/logo100let.png" as="image" />
+        {/* Preconnect для быстрой загрузки ресурсов */}
+        <link rel="preconnect" href="https://12stuliev100v4.vercel.app" />
+        <link rel="dns-prefetch" href="https://12stuliev100v4.vercel.app" />
+        {/* Preload критических фоновых изображений для быстрой загрузки на мобильных */}
+        <link rel="preload" href="/backgrounds/sections/section-1.png" as="image" type="image/png" fetchpriority="high" />
+        <link rel="preload" href="/backgrounds/sections/section-2.png" as="image" type="image/png" fetchpriority="high" />
+        <link rel="preload" href="/backgrounds/sections/section-3.png" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/section-4.png" as="image" type="image/png" fetchpriority="high" />
+        <link rel="preload" href="/backgrounds/sections/logo100let.png" as="image" type="image/png" fetchpriority="high" />
+        <link rel="preload" href="/backgrounds/sections/plitkanovosti.png" as="image" type="image/png" />
+        {/* Preload критических изображений для JourneySection */}
+        <link rel="preload" href="/backgrounds/sections/vput.png" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/vput2.png" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/vput3.png" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/vput4.png" as="image" type="image/png" />
       </head>
       <body>
         {children}
