@@ -5,6 +5,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "12 Стульев - 100 лет спустя",
   description: "Театральное путешествие Ильфа и Петрова",
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
 };
 
 export default function RootLayout({
@@ -15,6 +21,10 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="stylesheet" href="//s3.intickets.ru/interposed-frame.min.css" />
         {/* Preload критических фоновых изображений для быстрой загрузки */}
         <link rel="preload" href="/backgrounds/sections/section-1.png" as="image" />
@@ -28,6 +38,12 @@ export default function RootLayout({
         <Script 
           src="//s3.intickets.ru/interposed-frame.min.js" 
           strategy="afterInteractive"
+          onError={(e) => {
+            console.error('Ошибка загрузки скрипта intickets:', e);
+          }}
+          onLoad={() => {
+            console.log('Скрипт intickets загружен');
+          }}
         />
       </body>
     </html>

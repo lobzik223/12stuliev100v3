@@ -24,6 +24,12 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Улучшаем рендеринг на мобильных */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -31,10 +37,17 @@ body {
   background: rgb(var(--background-start-rgb));
   overflow-x: hidden;
   overflow-y: auto;
+  /* Улучшаем touch events на мобильных */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
+  /* Предотвращаем проблемы с прокруткой на iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 html {
   overflow-y: auto;
+  /* Предотвращаем проблемы с прокруткой на iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
 @layer utilities {
@@ -458,6 +471,57 @@ div.swiper-button-next.swiper-button-next-actors {
     -moz-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     text-size-adjust: 100%;
+  }
+
+  /* Улучшаем работу кнопок и интерактивных элементов на мобильных */
+  button, a, [role="button"], .swiper-button-prev, .swiper-button-next {
+    -webkit-tap-highlight-color: rgba(251, 198, 50, 0.3);
+    touch-action: manipulation;
+    cursor: pointer;
+    /* Увеличиваем область клика для лучшей работы на touch устройствах */
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Улучшаем работу ссылок */
+  a {
+    -webkit-tap-highlight-color: rgba(251, 198, 50, 0.2);
+    touch-action: manipulation;
+  }
+
+  /* Улучшаем работу Swiper навигации */
+  .swiper-button-prev,
+  .swiper-button-next {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(251, 198, 50, 0.4);
+    z-index: 100 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Улучшаем загрузку и отображение на мобильных */
+  * {
+    /* Предотвращаем проблемы с рендерингом */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Улучшаем производительность */
+    will-change: auto;
+  }
+
+  /* Улучшаем работу с изображениями */
+  img {
+    /* Предотвращаем проблемы с загрузкой */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    /* Улучшаем производительность */
+    content-visibility: auto;
+  }
+
+  /* Улучшаем работу с контейнерами */
+  section, main, div[class*="container"] {
+    /* Предотвращаем проблемы с overflow */
+    overflow-x: hidden;
+    /* Улучшаем производительность */
+    contain: layout style paint;
   }
 
   /* Карточки событий на мобильных - сохраняем пропорции как на десктопе */
