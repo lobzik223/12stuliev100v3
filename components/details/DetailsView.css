@@ -13,14 +13,16 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 600vh;
+  height: 500vh; /* Немного увеличено с 400vh */
   background-image: url(/photo/section-34839282.png);
-  background-size: 100% 600vh; /* Растягиваем фон на 6 разделов */
+  background-size: 100% 500vh; /* Немного увеличено растяжение фона */
   background-position: top center;
   background-repeat: no-repeat;
   background-attachment: scroll; /* Фон прокручивается вместе с контентом */
   transform: scaleX(-1); /* Горизонтальное отзеркаливание */
   z-index: -1; /* Фон за контентом */
+  /* Добавляем блюр на нижней границе для плавного перехода к черному экрану */
+  box-shadow: 0 500vh 40px rgba(0, 0, 0, 0.6);
 }
 
 
@@ -28,7 +30,7 @@
 .details-container::after {
   content: '';
   position: absolute;
-  top: 600vh; /* Начинается сразу после изображения */
+  top: 500vh; /* Начинается сразу после изображения - обновлено в соответствии с новой высотой */
   left: 0;
   width: 100%;
   height: var(--after-height, 200vh); /* Высота устанавливается динамически через JavaScript */
@@ -233,7 +235,7 @@ span.date-time-number {
 /* Затемнение ниже всего контента - фон */
 .dark-overlay {
   position: absolute;
-  top: calc(3% + 80vh + 150px); /* Ниже рамки и всего контента */
+  top: calc(3% + 80vh + 250px); /* Опущено ниже: увеличено с 150px до 250px */
   left: 0;
   right: 0;
   width: 100%;
@@ -255,7 +257,7 @@ span.date-time-number {
 /* Дубликат затемнения ниже первого */
 .dark-overlay-duplicate {
   position: absolute;
-  top: calc(3% + 80vh + 150px + 150vh); /* Ниже первого затемнения на высоту экрана + отступ */
+  top: calc(3% + 80vh + 250px + 150vh); /* Опущено ниже: увеличено с 150px до 250px в первом слагаемом */
   left: 0;
   right: 0;
   width: 100%;
@@ -492,15 +494,15 @@ span.date-time-number {
   top: 20%;
   transform: translateY(-50%);
   display: flex;
-  flex-direction: row;
-  gap: 30px;
+  flex-direction: row; /* Горизонтально в ряд */
+  gap: 20px; /* Уменьшен gap с 30px для меньших кругов */
   z-index: 3; /* Выше треугольника и затемнения */
   pointer-events: none;
 }
 
 .stat-circle {
-  width: 140px;
-  height: 140px;
+  width: 110px; /* Уменьшено с 140px */
+  height: 110px; /* Уменьшено с 140px */
   border: 2px solid #d9a857;
   border-radius: 50%;
   display: flex;
@@ -517,19 +519,19 @@ span.date-time-number {
 
 .stat-number {
   font-family: 'Playfair Display SC', serif;
-  font-size: 32px;
+  font-size: 26px; /* Уменьшено с 32px */
   font-weight: 700;
   color: #ffffff;
   text-shadow: 
     0 0 8px rgba(255, 255, 255, 0.5),
     0 0 16px rgba(255, 255, 255, 0.3);
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 6px; /* Уменьшено с 8px */
 }
 
 .stat-label {
   font-family: 'Playfair Display SC', serif;
-  font-size: 14px;
+  font-size: 12px; /* Уменьшено с 14px */
   font-weight: 400;
   color: #ffffff;
   text-shadow: 
@@ -539,7 +541,7 @@ span.date-time-number {
   text-align: center;
 }
 
-/* Текст цитаты ниже кругов */
+/* Текст цитаты ниже кругов - десктопная версия */
 .quote-text-overlay {
   position: absolute;
   right: 15%;
@@ -551,9 +553,11 @@ span.date-time-number {
   z-index: 3; /* Выше треугольника и затемнения */
   pointer-events: none;
   filter: drop-shadow(0 0 10px rgba(217, 168, 87, 0.3));
+  left: auto; /* Явно убираем left для десктопа */
+  transform: none; /* Убираем transform для десктопа */
 }
 
-/* Длинный текст цитаты ниже первого текста */
+/* Длинный текст цитаты ниже первого текста - десктопная версия */
 .long-quote-text-overlay {
   position: absolute;
   right: 2%;
@@ -565,6 +569,8 @@ span.date-time-number {
   z-index: 2; /* Ниже треугольника, но выше затемнения */
   pointer-events: none;
   filter: drop-shadow(0 0 15px rgba(217, 168, 87, 0.4));
+  left: auto; /* Явно убираем left для десктопа */
+  transform: none; /* Убираем transform для десктопа */
 }
 
 /* На больших экранах (ПК, масштаб 100%) сдвигаем text55.png */
@@ -669,9 +675,58 @@ span.date-time-number {
 }
 
 @media (max-width: 768px) {
+  /* Растягиваем фон на мобильных еще больше */
+  .details-container::before {
+    background-attachment: scroll;
+    background-size: 100% 65% !important; /* Немного увеличено растяжение фона */
+    background-position: center top !important;
+    height: clamp(290vh, 310vh, 330vh) !important; /* Еще немного уменьшена высота фона */
+    max-height: clamp(290vh, 310vh, 330vh) !important;
+    /* Добавляем градиентную маску для плавного перехода к черному фону - очень агрессивная */
+    mask-image: linear-gradient(to bottom, 
+      black 0%, 
+      black calc(100% - 200px), 
+      rgba(0, 0, 0, 0.95) calc(100% - 180px),
+      rgba(0, 0, 0, 0.85) calc(100% - 150px),
+      rgba(0, 0, 0, 0.7) calc(100% - 120px),
+      rgba(0, 0, 0, 0.5) calc(100% - 90px),
+      rgba(0, 0, 0, 0.3) calc(100% - 60px),
+      rgba(0, 0, 0, 0.15) calc(100% - 30px),
+      transparent 100%
+    ) !important;
+    -webkit-mask-image: linear-gradient(to bottom, 
+      black 0%, 
+      black calc(100% - 200px), 
+      rgba(0, 0, 0, 0.95) calc(100% - 180px),
+      rgba(0, 0, 0, 0.85) calc(100% - 150px),
+      rgba(0, 0, 0, 0.7) calc(100% - 120px),
+      rgba(0, 0, 0, 0.5) calc(100% - 90px),
+      rgba(0, 0, 0, 0.3) calc(100% - 60px),
+      rgba(0, 0, 0, 0.15) calc(100% - 30px),
+      transparent 100%
+    ) !important;
+    /* Добавляем блюр на нижней границе для плавного перехода к черному экрану в мобильной версии */
+    box-shadow: 0 clamp(290vh, 310vh, 330vh) 40px rgba(0, 0, 0, 0.6) !important;
+  }
+  
+  /* Черный фон под изображением с плавным началом */
+  .details-container::after {
+    top: calc(clamp(290vh, 310vh, 330vh) - 100px) !important; /* Начинается немного раньше для перекрытия */
+    height: calc(var(--after-height, 200vh) + 100px) !important; /* Добавляем высоту для перекрытия */
+    background: linear-gradient(to top, 
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.3) 30px,
+      rgba(0, 0, 0, 0.7) 60px,
+      rgba(0, 0, 0, 1) 100px,
+      #000000 100px
+    ) !important;
+    z-index: -1 !important; /* Фон за контентом */
+  }
+  
   .date-time-box {
-    top: 2%;
-    left: 4%;
+    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem) !important; /* Сразу после рамки */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     padding: 8px 16px;
     gap: 8px;
     border-radius: 18px;
@@ -699,43 +754,55 @@ span.date-time-number {
   }
   
   .logo-container {
-    top: calc(2% + 36px);
-    left: calc(2% + 2px);
+    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 50px) !important; /* Сразу после рамки */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
   }
   
   .logo-image {
-    max-width: 300px;
+    max-width: 280px;
+    margin: 0 auto;
+    display: block;
   }
   
   .location-text {
-    top: calc(2% + 120px);
-    left: 4%;
+    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 130px) !important; /* Сразу после рамки */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     font-size: 28px;
     max-width: 90%;
+    text-align: center !important;
+    width: 90%;
   }
   
   .description-text {
-    top: calc(2% + 170px);
-    left: 4%;
+    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 200px) !important; /* Сразу после рамки */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     font-size: 16px;
     max-width: 90%;
+    width: 90%;
     line-height: 1.3;
+    text-align: center !important;
   }
   
   .buy-ticket-button {
-    top: calc(2% + 260px);
-    left: 8%;
+    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 300px) !important; /* Сразу после рамки */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     padding: 10px 24px;
     font-size: 16px;
   }
   
   .venue-widget {
-    top: calc(2% + 320px);
-    left: 4%;
+    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 370px) !important; /* Сразу после рамки */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     padding: 12px 18px;
     gap: 12px;
     width: fit-content;
     max-width: 90%;
+    justify-content: center;
   }
   
   .venue-text {
@@ -747,102 +814,269 @@ span.date-time-number {
     height: 18px;
   }
   
-  .frame-widget {
-    top: 3%;
-    right: 3%;
-    width: 45%;
-    max-width: 600px;
-    height: 70vh;
-  }
-  
-  .frame-widget {
-    top: 3%;
-    right: 3%;
-    width: 45%;
-    max-width: 600px;
-    height: 70vh;
-  }
   
   .dark-overlay {
-    top: calc(3% + 70vh + 140px);
+    top: calc(3% + 70vh + 240px); /* Опущено ниже: увеличено с 140px до 240px */
   }
   
   .stats-circles {
     right: 10%;
     top: 15%;
-    gap: 20px;
+    gap: 16px; /* Уменьшен gap */
+    flex-direction: row; /* Горизонтально в ряд */
   }
   
   .stat-circle {
-    width: 120px;
-    height: 120px;
+    width: 100px; /* Уменьшено с 120px */
+    height: 100px; /* Уменьшено с 120px */
   }
   
   .stat-number {
-    font-size: 28px;
+    font-size: 24px; /* Уменьшено с 28px */
   }
   
   .stat-label {
-    font-size: 12px;
+    font-size: 11px; /* Уменьшено с 12px */
   }
   
+  /* Планшеты - сохраняем исходные позиции справа */
   .quote-text-overlay {
-    right: 12%;
-    top: 28%;
+    right: 12% !important;
+    left: auto !important;
+    top: 28% !important;
     max-width: 400px;
+    transform: none !important;
   }
   
   .long-quote-text-overlay {
-    right: 1%;
-    top: 39%;
+    right: 1% !important;
+    left: auto !important;
+    top: 39% !important;
     max-width: 900px;
+    transform: none !important;
   }
 }
 
 @media (max-width: 768px) {
+  /* Рамка в начале на мобильных - позиционируется первой сверху по центру */
+  .frame-widget-mobile-first,
   .frame-widget {
-    top: 2%;
-    right: 2%;
-    width: 40%;
-    max-width: 400px;
-    height: 60vh;
+    position: absolute !important;
+    top: 0.5% !important; /* Поднято выше с 2% до 0.5% */
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: 85% !important;
+    max-width: 400px !important;
+    height: clamp(45vh, 50vh, 55vh) !important;
+    z-index: 20 !important;
   }
   
   .dark-overlay {
-    top: calc(2% + 60vh + 130px);
+    top: calc(2% + 60vh + 280px) !important; /* Опущено ниже еще на 50px: с 230px до 280px */
+  }
+  
+  /* Затемнение (temno11.png) - уменьшена длина на мобильных */
+  .dark-overlay .dark-overlay-image,
+  .dark-overlay-duplicate .dark-overlay-image {
+    height: auto !important;
+    min-height: 100vh !important; /* Уменьшено с 150vh до 100vh для менее длинного затемнения */
+    max-height: 120vh !important; /* Ограничиваем максимальную высоту */
+    object-fit: cover !important; /* Растягиваем изображение для заполнения пространства */
+    object-position: center top !important;
+    width: 100% !important;
   }
   
   .stats-circles {
-    right: 5%;
-    gap: 15px;
-    flex-direction: column;
-    top: 15%;
+    left: 50% !important; /* Центрируем круги */
+    right: auto !important;
+    gap: 12px;
+    flex-direction: row !important; /* Горизонтально в ряд */
+    top: 20% !important;
+    transform: translateX(-50%) translateY(-50%); /* Центрирование по горизонтали и вертикали */
   }
   
   .stat-circle {
-    width: 100px;
-    height: 100px;
+    width: 95px !important; /* Увеличено с 80px */
+    height: 95px !important; /* Увеличено с 80px */
   }
   
   .stat-number {
-    font-size: 24px;
-    margin-bottom: 6px;
+    font-size: 22px !important; /* Увеличено с 20px */
+    margin-bottom: 5px !important;
   }
   
   .stat-label {
-    font-size: 11px;
+    font-size: 11px !important; /* Увеличено с 10px */
   }
   
+  /* Скрываем треугольник на мобильных */
+  .triangle-overlay {
+    display: none !important;
+  }
+  
+  /* text1.png идет после кругов - увеличен и центрирован - ТОЛЬКО ДЛЯ МОБИЛЬНЫХ */
   .quote-text-overlay {
-    right: 5%;
-    top: 25%;
-    max-width: 90%;
+    left: 50% !important; /* Центрируем */
+    right: auto !important;
+    transform: translateX(-50%) scale(1.8) !important; /* Центрирование и увеличение на 80% */
+    top: calc(20% + 95px - 5px) !important; /* Поднято еще выше - отрицательный отступ -5px для максимальной близости к кругам */
+    max-width: 100% !important; /* Максимальный размер */
+    width: auto;
   }
   
+  /* textmibile.png идет после text1.png - ТОЛЬКО ДЛЯ МОБИЛЬНЫХ */
   .long-quote-text-overlay {
-    right: 2%;
-    top: 34%;
-    max-width: 95%;
+    left: 50% !important; /* Центрируем */
+    right: auto !important;
+    transform: translateX(-50%) scale(1.6) !important; /* Увеличение на 60% */
+    top: calc(20% + 95px + 30px + 120px) !important; /* Поднято выше - уменьшен отступ с 150px до 120px */
+    max-width: 100% !important; /* Увеличено до 100% для максимального размера */
+    width: auto;
+  }
+  
+  /* Текст "НАШИ ПРЕИМУЩЕСТВА" сразу после textmibile.png на мобильных */
+  /* Позиция top управляется JavaScript для точного позиционирования после textmibile.png */
+  .advantages-title {
+    position: absolute !important;
+    /* top НЕ устанавливается здесь - управляется JavaScript динамически через inline стили */
+    display: block !important; /* Гарантируем видимость */
+    visibility: visible !important; /* Гарантируем видимость */
+    opacity: 1 !important; /* Гарантируем видимость */
+    left: 50% !important;
+    transform: translateX(-50%) !important; /* Центрируем */
+    font-family: 'Playfair Display SC', serif !important;
+    font-size: 28px !important; /* Размер шрифта для мобильных */
+    font-weight: 400 !important;
+    color: #FBC632 !important; /* Золотой цвет */
+    letter-spacing: 0.5px !important;
+    line-height: 1.2 !important;
+    text-shadow: 
+      0 0 6px rgba(251, 198, 50, 0.4),
+      0 0 12px rgba(251, 198, 50, 0.3) !important;
+    z-index: 10 !important; /* Выше других элементов */
+    width: fit-content !important;
+    white-space: nowrap !important; /* В одну строку */
+    max-width: 95% !important; /* Ограничиваем ширину */
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  
+  /* Класс для переопределения позиции через JavaScript - inline стили имеют приоритет */
+  .advantages-title-mobile-positioned {
+    /* Позиция top устанавливается через inline стили в JavaScript */
+    /* Inline стили имеют приоритет над CSS, даже с !important */
+  }
+  
+  /* Звезда под текстом "Наши преимущества" на мобильных */
+  /* Позиция top управляется JavaScript для точного позиционирования под текстом */
+  .star-image {
+    position: absolute !important;
+    /* top НЕ устанавливается здесь - управляется JavaScript динамически через inline стили */
+    display: block !important; /* Гарантируем видимость */
+    visibility: visible !important; /* Гарантируем видимость */
+    opacity: 1 !important; /* Гарантируем видимость */
+    left: 50% !important;
+    transform: translateX(-50%) !important; /* Центрируем */
+    width: clamp(250px, 60vw, 400px) !important; /* Адаптивный размер для мобильных */
+    height: auto !important;
+    max-width: 90% !important;
+    z-index: 9 !important; /* Ниже текста "Наши преимущества" */
+    filter: drop-shadow(0 0 15px rgba(251, 198, 50, 0.5)) !important;
+  }
+  
+  /* Класс для переопределения позиции звезды через JavaScript */
+  .star-image-mobile-positioned {
+    /* Позиция top устанавливается через inline стили в JavaScript */
+  }
+  
+  /* dark-overlay-duplicate под звездой на мобильных */
+  /* Позиция top управляется JavaScript для точного позиционирования под звездой */
+  .dark-overlay-duplicate {
+    position: absolute !important;
+    /* top НЕ устанавливается здесь - управляется JavaScript динамически через inline стили */
+    display: block !important; /* Гарантируем видимость */
+    visibility: visible !important; /* Гарантируем видимость */
+    opacity: 1 !important; /* Гарантируем видимость */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1 !important; /* Ниже контента, но выше основного фона */
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  
+  /* Класс для переопределения позиции dark-overlay-duplicate через JavaScript */
+  .dark-overlay-duplicate-mobile-positioned {
+    /* Позиция top устанавливается через inline стили в JavaScript */
+  }
+  
+  /* Скрываем указанные элементы на мобильных */
+  /* Для абсолютно позиционированных элементов просто скрываем */
+  .advantages-title,
+  .star-image,
+  .artists-icon,
+  .director-icon,
+  .top-director-text,
+  .best-artists-text,
+  .premium-segment-text,
+  .buy-ticket-button-bottom,
+  .comedy-quality-text,
+  .logo-in-star {
+    display: none !important;
+  }
+  
+  /* Убираем затемнение и блюр только в области раздела "Контакты и партнеры" на мобильных */
+  /* Раздел контактов имеет высокий z-index, чтобы быть выше затемнения */
+  .contacts-section-no-overlay {
+    position: relative !important;
+    z-index: 25 !important; /* Выше затемнения, чтобы оно не перекрывало раздел контактов */
+  }
+  
+  /* Скрываем затемнение только если оно находится в области раздела контактов */
+  /* Используем JavaScript для более точного контроля, но здесь просто убеждаемся, что раздел контактов выше */
+  
+  /* Для раздела актеров полностью убираем из потока документа в мобильной версии */
+  .actors-section-details {
+    display: none !important; /* Полностью убираем, чтобы не занимал место */
+  }
+  
+  /* Убираем пустое пространство перед разделом "Отзывы" - позиционируем его сразу после фона */
+  /* margin-top управляется JavaScript для точного позиционирования после фона */
+  .reviews-section-details {
+    position: relative !important;
+    /* margin-top устанавливается JavaScript динамически */
+    padding-top: 0 !important; /* Убираем padding-top полностью для максимально плотного прилегания */
+    z-index: 20 !important;
+  }
+  
+  /* Уменьшаем отступ заголовка "ОТЗЫВЫ" от карточек на мобильной версии */
+  .reviews-section-details > p {
+    margin-bottom: 0.25rem !important;
+  }
+  
+  /* Overlay с блюром для скрытия стыка между фоном и черным экраном */
+  .mobile-background-blur-overlay {
+    position: absolute !important;
+    top: calc(clamp(290vh, 310vh, 330vh) - 250px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 300px !important;
+    width: 100% !important;
+    background: linear-gradient(to bottom, 
+      rgba(0, 0, 0, 0) 0%, 
+      rgba(0, 0, 0, 0.2) 15%, 
+      rgba(0, 0, 0, 0.5) 35%, 
+      rgba(0, 0, 0, 0.75) 55%, 
+      rgba(0, 0, 0, 0.9) 75%, 
+      rgba(0, 0, 0, 0.98) 90%, 
+      rgba(0, 0, 0, 1) 100%
+    ) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px) !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
   }
 }
 

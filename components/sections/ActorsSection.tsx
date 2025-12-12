@@ -169,7 +169,7 @@ export default function ActorsSection() {
 
   return (
     <section 
-      className="relative w-full"
+      className="relative w-full actors-section-mobile"
       style={{
         minHeight: '100vh',
         padding: '0 4% clamp(4rem, 8vh, 6rem) 4%',
@@ -312,9 +312,10 @@ export default function ActorsSection() {
               }, 200);
             }}
             breakpoints={{
-              640: {
-                slidesPerView: 3,
-                spaceBetween: 40,
+              0: {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                effect: 'slide',
               },
               768: {
                 slidesPerView: 3,

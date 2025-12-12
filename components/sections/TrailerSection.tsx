@@ -77,14 +77,14 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         </div>
 
         {/* Видео блок под текстом */}
-        <div className="flex justify-center mb-6 md:mb-8 mt-6 md:mt-8">
+        <div className="flex justify-center mb-6 md:mb-8 mt-6 md:mt-8 px-2">
           <Image
             src="/backgrounds/sections/video.png"
             alt="Видео"
             width={1200}
             height={675}
             style={{ 
-              width: 'clamp(43.75rem, 70vw, 75rem)', 
+              width: 'clamp(20rem, 70vw, 75rem)', 
               maxWidth: '100%',
               height: 'auto'
             }}
@@ -114,7 +114,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         </div>
 
         {/* Раздел "ГАЛЕРЕЯ" */}
-        <div ref={gallerySectionRef} className="text-center mb-8 md:mb-12">
+        <div ref={gallerySectionRef} className="text-center mb-8 md:mb-12 gallery-section-mobile">
           <p
             className="uppercase mb-4 md:mb-6"
             style={{
@@ -147,7 +147,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         </div>
 
         {/* Кнопка "ФОТО СО СПЕКТАКЛЯ" */}
-        <div className="flex justify-center mb-8 md:mb-12" style={{ marginTop: 'clamp(6rem, 10vh, 10rem)' }}>
+        <div className="flex justify-center mb-8 md:mb-12 gallery-button-mobile" style={{ marginTop: 'clamp(6rem, 10vh, 10rem)' }}>
           <button
             onClick={() => router.push('/gallery')}
             className="rounded-lg border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
@@ -170,7 +170,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         </div>
 
         {/* Кинолента 1 */}
-        <div className="w-full flex justify-start overflow-x-visible" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-4rem' }}>
+        <div className="w-full flex justify-start overflow-x-visible kinolenta-container-mobile" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-4rem' }}>
           <Image
             src="/backgrounds/sections/kinolenta.png"
             alt="Кинолента"
@@ -183,7 +183,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         </div>
 
         {/* Кинолента 2 */}
-        <div className="w-full flex justify-start overflow-x-visible" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-12rem' }}>
+        <div className="w-full flex justify-start overflow-x-visible kinolenta2-container-mobile" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-12rem' }}>
           <Image
             src="/backgrounds/sections/kinolenta2.png"
             alt="Кинолента 2"
@@ -198,7 +198,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         {/* Раздел "КОМАНДА" */}
         <div ref={teamSectionRef} className="w-full flex flex-col items-center" style={{ marginTop: 'clamp(4rem, 8vh, 6rem)' }}>
           <p 
-            className="text-2xl md:text-3xl lg:text-4xl uppercase mb-10 md:mb-12 lg:mb-14"
+            className="text-2xl md:text-3xl lg:text-4xl uppercase mb-2 md:mb-12"
             style={{
               fontFamily: "'Playfair Display SC', serif",
               color: '#FBC632',
@@ -210,110 +210,182 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
           >
             Команда
           </p>
-          <div className="w-full max-w-[4000px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-5 px-4 md:px-6 lg:px-8">
-            {teamMembers.filter(member => member.date).map((member) => (
-              <div key={member.id} className="flex justify-center">
-                <div className="relative" style={{ width: '100%', maxWidth: 'clamp(1600px, 100vw, 2800px)', pointerEvents: 'auto', overflow: 'hidden' }}>
-                  <Image
-                    src="/backgrounds/sections/command.png"
-                    alt={member.name}
-                    width={2800}
-                    height={1867}
-                    className="h-auto w-full"
-                    style={{ 
-                      objectFit: 'contain',
-                      pointerEvents: 'none',
-                      display: 'block',
+
+          {/* Блок команды с каруселью Swiper - по логике отзывов */}
+          <div className="relative w-full mt-2 md:mt-10 team-carousel-mobile-wrapper" style={{ padding: '1rem 0' }}>
+            <Swiper
+              modules={[Navigation]}
+              speed={800}
+              spaceBetween={0}
+              loop={true}
+              slidesPerView={3}
+              slidesPerGroup={1}
+              centeredSlides={false}
+              grabCursor={true}
+              navigation={{
+                nextEl: '.swiper-button-next-team',
+                prevEl: '.swiper-button-prev-team',
+              }}
+              breakpoints={{
+                320: {
+                  slidesPerView: 1,
+                  spaceBetween: 0,
+                },
+                640: {
+                  slidesPerView: 2,
+                  spaceBetween: 0,
+                },
+                1024: {
+                  slidesPerView: 3,
+                  spaceBetween: 0,
+                },
+              }}
+              className="team-carousel"
+            >
+              {teamMembers.filter(member => member.date).map((member) => (
+                <SwiperSlide key={member.id}>
+                  <div
+                    className="flex flex-col items-center"
+                    style={{
                       width: '100%',
-                      height: 'auto',
-                      minWidth: '100%'
-                    }}
-                    unoptimized
-                  />
-                  {/* Текст поверх карточки */}
-                  <div 
-                    className="absolute inset-0 flex flex-col items-center justify-center text-center"
-                    style={{ 
-                      pointerEvents: 'none',
-                      color: '#8B4513',
-                      fontFamily: 'serif',
-                      paddingTop: 'clamp(2.5rem, 5vh, 4rem)',
-                      paddingBottom: 'clamp(2rem, 4vh, 3.5rem)',
-                      paddingLeft: 'clamp(2rem, 4vw, 3.5rem)',
-                      paddingRight: 'clamp(2rem, 4vw, 3.5rem)',
-                      overflow: 'hidden',
-                      boxSizing: 'border-box'
+                      padding: '0'
                     }}
                   >
-                    {/* Имя */}
-                    <p 
-                      style={{ 
-                        fontSize: 'clamp(0.75rem, 1.3vw, 1.3rem)',
-                        fontWeight: 'bold',
-                        marginBottom: 'clamp(0.3rem, 0.6vw, 0.6rem)',
-                        lineHeight: '1.2',
-                        maxWidth: '85%',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        wordWrap: 'break-word',
-                        wordBreak: 'break-word',
-                        hyphens: 'auto',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical'
+                    {/* Карточка с текстом внутри */}
+                    <div
+                      className="relative team-card-mobile"
+                      style={{
+                        width: '100%',
+                        maxWidth: 'clamp(350px, 30vw, 500px)',
+                        pointerEvents: 'auto'
                       }}
                     >
-                      {member.name}
-                    </p>
-                    {/* Должность */}
-                    <p 
-                      style={{ 
-                        fontSize: 'clamp(0.6rem, 1vw, 1rem)',
-                        marginBottom: 'clamp(0.6rem, 1.2vw, 1.2rem)',
-                        lineHeight: '1.3',
-                        color: '#000000',
-                        maxWidth: '80%',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        wordWrap: 'break-word',
-                        wordBreak: 'break-word',
-                        hyphens: 'auto',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical'
-                      }}
-                    >
-                      {member.position}
-                    </p>
-                    {/* Цитата */}
-                    <p 
-                      style={{ 
-                        fontSize: 'clamp(0.5rem, 0.8vw, 0.8rem)',
-                        lineHeight: '1.4',
-                        maxWidth: 'clamp(160px, 20vw, 280px)',
-                        fontStyle: 'italic',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        wordWrap: 'break-word',
-                        wordBreak: 'break-word',
-                        hyphens: 'auto',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 4,
-                        WebkitBoxOrient: 'vertical'
-                      }}
-                    >
-                      &ldquo;{member.quote}&rdquo;
-                    </p>
+                      <Image
+                        src="/backgrounds/sections/command.png"
+                        alt={member.name}
+                        width={2800}
+                        height={1867}
+                        className="h-auto w-full"
+                        style={{ 
+                          objectFit: 'contain',
+                          display: 'block',
+                          pointerEvents: 'none'
+                        }}
+                        unoptimized
+                      />
+                      
+                      {/* Текст поверх карточки */}
+                      <div 
+                        className="absolute inset-0 flex flex-col items-center justify-center text-center"
+                        style={{ 
+                          pointerEvents: 'none',
+                          color: '#8B4513',
+                          fontFamily: 'serif',
+                          paddingTop: 'clamp(2rem, 5vh, 4rem)',
+                          paddingBottom: 'clamp(1.5rem, 4vh, 3.5rem)',
+                          paddingLeft: 'clamp(2.2rem, 5.5vw, 4.5rem)',
+                          paddingRight: 'clamp(2.2rem, 5.5vw, 4.5rem)',
+                          overflow: 'hidden',
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        {/* Имя */}
+                        <p 
+                          style={{ 
+                            fontSize: 'clamp(0.7rem, 1.3vw, 1.3rem)',
+                            fontWeight: 'bold',
+                            marginBottom: 'clamp(0.25rem, 0.6vw, 0.6rem)',
+                            lineHeight: '1.2',
+                            maxWidth: '90%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            wordWrap: 'break-word',
+                            wordBreak: 'break-word',
+                            hyphens: 'auto',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical'
+                          }}
+                        >
+                          {member.name}
+                        </p>
+                        {/* Должность */}
+                        <p 
+                          style={{ 
+                            fontSize: 'clamp(0.55rem, 1vw, 1rem)',
+                            marginBottom: 'clamp(0.5rem, 1.2vw, 1.2rem)',
+                            lineHeight: '1.3',
+                            color: '#000000',
+                            maxWidth: '85%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            wordWrap: 'break-word',
+                            wordBreak: 'break-word',
+                            hyphens: 'auto',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical'
+                          }}
+                        >
+                          {member.position}
+                        </p>
+                        {/* Цитата */}
+                        <p 
+                          style={{ 
+                            fontSize: 'clamp(0.6rem, 1vw, 0.95rem)',
+                            lineHeight: '1.3',
+                            maxWidth: 'clamp(160px, 22vw, 300px)',
+                            fontStyle: 'italic',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            wordWrap: 'break-word',
+                            wordBreak: 'break-word',
+                            hyphens: 'auto',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 4,
+                            WebkitBoxOrient: 'vertical',
+                            paddingLeft: '0.3rem',
+                            paddingRight: '0.3rem'
+                          }}
+                        >
+                          &ldquo;{member.quote}&rdquo;
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            
+            {/* Кнопки навигации Swiper - меньшие и тусклые на десктопе, яркие на мобильных */}
+            <div 
+              className="swiper-button-prev swiper-button-prev-team" 
+              style={{ 
+                color: '#FBC632',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                position: 'absolute',
+                zIndex: 30,
+                left: '-1rem'
+              }}
+            ></div>
+            <div 
+              className="swiper-button-next swiper-button-next-team" 
+              style={{ 
+                color: '#FBC632',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                position: 'absolute',
+                zIndex: 30,
+                right: '-1rem'
+              }}
+            ></div>
           </div>
 
           {/* Раздел "ОТЗЫВЫ" */}
           <div ref={reviewsSectionRef} className="w-full flex flex-col items-center mt-14 md:mt-16 lg:mt-20">
             <p 
-              className="text-2xl md:text-3xl lg:text-4xl uppercase mb-10 md:mb-12"
+              className="text-2xl md:text-3xl lg:text-4xl uppercase mb-2 md:mb-12"
               style={{
                 fontFamily: "'Playfair Display SC', serif",
                 color: '#FBC632',
@@ -327,7 +399,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             </p>
 
             {/* Блок отзывов с каруселью Swiper */}
-            <div className="relative w-full mt-10" style={{ padding: '2rem 0' }}>
+            <div className="relative w-full mt-2 md:mt-10 reviews-carousel-mobile-wrapper" style={{ padding: '1rem 0' }}>
               <Swiper
                 modules={[Navigation]}
                 speed={800}
@@ -368,7 +440,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                     >
                       {/* Карточка с текстом внутри - единое целое */}
                       <div
-                        className="relative"
+                        className="relative review-card-mobile"
                         style={{
                           width: '100%',
                           maxWidth: 'clamp(550px, 42vw, 900px)',
@@ -512,7 +584,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
           {/* Раздел "РАСПИСАНИЕ СПЕКТАКЛЕЙ" */}
           <div className="w-full flex flex-col items-center mt-20 md:mt-24 lg:mt-28">
             <p 
-              className="text-2xl md:text-3xl lg:text-4xl uppercase text-center"
+              className="text-2xl md:text-3xl lg:text-4xl uppercase text-center schedule-title-mobile"
               style={{
                 fontFamily: "'Playfair Display SC', serif",
                 color: '#FBC632',
@@ -536,7 +608,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             </p>
 
             {/* Карусель расписания спектаклей */}
-            <div className="relative w-full mt-10" style={{ padding: '2rem clamp(2rem, 4vw, 3rem)', overflow: 'visible' }}>
+            <div className="relative w-full mt-10 schedule-carousel-wrapper" style={{ padding: '2rem clamp(2rem, 4vw, 3rem)', overflow: 'visible' }}>
               <Swiper
                 modules={[Navigation]}
                 speed={800}
@@ -684,7 +756,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                           <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
                             <button
                               onClick={() => router.push(`/details/${item.id}`)}
-                              className="px-10 md:px-12 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
+                              className="px-10 md:px-12 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105 cursor-pointer schedule-details-button-mobile"
                               style={{
                                 fontFamily: "'Playfair Display SC', serif",
                                 fontSize: 'clamp(14px, 1vw, 16px)',
@@ -729,27 +801,25 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               
               {/* Кнопки навигации Swiper */}
               <div 
-                className="swiper-button-prev swiper-button-prev-schedule" 
+                className="swiper-button-prev swiper-button-prev-schedule schedule-nav-arrow-mobile" 
                 style={{ 
                   color: '#FBC632',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   position: 'absolute',
                   zIndex: 30,
-                  left: 'clamp(-1rem, -2vw, -0.5rem)',
                   width: 'clamp(2rem, 3vw, 3rem)',
                   height: 'clamp(2rem, 3vw, 3rem)'
                 }}
               ></div>
               <div 
-                className="swiper-button-next swiper-button-next-schedule" 
+                className="swiper-button-next swiper-button-next-schedule schedule-nav-arrow-mobile" 
                 style={{ 
                   color: '#FBC632',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   position: 'absolute',
                   zIndex: 30,
-                  right: 'clamp(-1rem, -2vw, -0.5rem)',
                   width: 'clamp(2rem, 3vw, 3rem)',
                   height: 'clamp(2rem, 3vw, 3rem)'
                 }}
@@ -801,7 +871,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             <div className="mt-8 md:mt-12 w-full mx-auto text-white" style={{ maxWidth: 'clamp(1200px, 90vw, 1600px)' }}>
               <div className="flex flex-col md:flex-row items-start justify-between gap-6 md:gap-8 lg:gap-12">
                 {/* Левая колонка — контакты */}
-                <div className="flex-1 text-center md:text-left space-y-2" style={{ 
+                <div className="flex-1 text-center md:text-left space-y-2 contacts-info-mobile" style={{ 
                   marginLeft: 'clamp(-4rem, -6vw, -2rem)', 
                   paddingLeft: 'clamp(1rem, 3vw, 2rem)',
                   minWidth: 'clamp(200px, 20vw, 300px)'
@@ -847,7 +917,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 </div>
 
                 {/* Центральная колонка — логотип */}
-                <div className="flex-1 flex flex-col items-center justify-center" style={{ 
+                <div className="flex-1 flex flex-col items-center justify-center contacts-logo-mobile" style={{ 
                   marginTop: 'clamp(1rem, 2vh, 2rem)',
                   minWidth: 'clamp(250px, 25vw, 400px)'
                 }}>

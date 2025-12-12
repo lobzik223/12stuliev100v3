@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -20,6 +20,16 @@ interface JourneySectionProps {
 
 export default function JourneySection({ sectionEndRef, finalTextRef, officeRef, psychushkaRef, kisaRef, yaryginaRef }: JourneySectionProps) {
   const vputSectionRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     // GSAP параллакс для объектов в разделе "В ПУТЬ" (как на hlado.ru)
@@ -89,7 +99,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
   return (
     <section 
       ref={vputSectionRef}
-      className="relative w-full"
+      className="relative w-full journey-section-container"
       style={{
         minHeight: '400vh',
         width: '100%',
@@ -100,6 +110,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       {/* Фон раздела */}
       <div className="relative w-full z-0" style={{ minHeight: '400vh', width: '100%' }}>
         <div
+          className="journey-bg-mobile"
           style={{
             backgroundImage: 'url(/backgrounds/sections/section-4.png)',
             backgroundSize: '100% 100%',
@@ -119,13 +130,14 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       {/* Изображение vput.png поверх фона сверху */}
       <div 
         ref={officeRef}
-        className="absolute z-[5]"
+        className="absolute z-[5] vput-element-mobile"
         style={{
           top: '-8vh',
           left: 'clamp(2rem, 4vw, 5rem)'
         }}
       >
         <div
+          className="vput-inner-mobile"
           style={{
             backgroundImage: 'url(/backgrounds/sections/vput.png)',
             backgroundSize: 'contain',
@@ -140,7 +152,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
       {/* Изображение tiraj.png */}
       <div 
-        className="absolute z-[5]"
+        className="absolute z-[5] tiraj-desktop tiraj-element-mobile"
         data-animate="vput"
         data-speed="0.3"
         style={{
@@ -163,7 +175,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
       {/* Изображение flash.png */}
       <div 
-        className="absolute z-[5]"
+        className="absolute z-[5] flash-desktop flash-mobile"
         data-animate="vput"
         data-speed="0.5"
         style={{
@@ -187,7 +199,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       {/* Текст отдельно от flash.png */}
       <div 
         ref={officeRef}
-        className="absolute z-[5] text-center"
+        className="absolute z-[5] text-center office-text-desktop office-text-mobile"
         style={{
           top: 'clamp(55vh, 65vh, 75vh)',
           right: 'clamp(4rem, 6vw, 7rem)',
@@ -197,7 +209,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         }}
       >
         <p
-          className="uppercase mb-2"
+          className="uppercase mb-2 office-title-mobile"
           style={{
             fontFamily: "'Playfair Display SC', serif",
             fontSize: 'clamp(1.25rem, 1.875vw, 1.875rem)',
@@ -210,6 +222,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»
         </p>
         <p
+          className="office-description-mobile"
           style={{
             fontFamily: "'Playfair Display SC', serif",
             fontSize: 'clamp(1.125rem, 1.25vw, 1.25rem)',
@@ -227,7 +240,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
       {/* Изображение stul100let.png слева от vput2.png */}
       <div 
-        className="absolute z-[5]"
+        className="absolute z-[5] stul100let-mobile"
         data-animate="vput"
         data-speed="0.4"
         style={{
@@ -236,6 +249,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         }}
       >
         <div
+          className="stul100let-inner-mobile"
           style={{
             backgroundImage: 'url(/backgrounds/sections/stul100let.png)',
             backgroundSize: 'contain',
@@ -251,7 +265,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       {/* Изображение vput2.png ниже и справа */}
       <div 
         ref={psychushkaRef}
-        className="absolute z-[5]"
+        className="absolute z-[5] vput2-mobile"
         style={{
           top: 'clamp(85vh, 100vh, 120vh)',
           left: 'clamp(26rem, 34vw, 40rem)'
@@ -272,7 +286,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
       {/* Изображение analiz.png справа от vput2.png */}
       <div 
-        className="absolute z-[5]"
+        className="absolute z-[5] analiz-mobile"
         data-animate="vput"
         data-speed="0.7"
         style={{
@@ -295,7 +309,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
       {/* Текст "Психушка" ниже analiz.png */}
       <div 
-        className="absolute z-[5] text-center"
+        className="absolute z-[5] text-center psychushka-text-mobile"
         style={{
           top: 'clamp(115.625vh, 143.75vh, 156.25vh)',
           left: 'clamp(55rem, 71vw, 88rem)',
@@ -327,19 +341,18 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           }}
         >
           СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ<br />
-          СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ<br />
-          СИСТЕМУ.
+          СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.
         </p>
       </div>
 
       {/* Изображение pamat15.png слева от vput3.png */}
       <div 
-        className="absolute z-[5]"
+        className="absolute z-[5] pamat15-mobile"
         data-animate="vput"
         data-speed="0.3"
         style={{
           top: 'clamp(175vh, 207.5vh, 200vh)',
-          left: 'clamp(0rem, 2.5vw, 6.25rem)'
+          left: 'clamp(-2rem, 0vw, 3rem)'
         }}
       >
         <div
@@ -348,8 +361,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
-            width: 'clamp(32rem, 40vw, 40rem)',
-            height: 'clamp(24rem, 30vw, 30rem)',
+            width: 'clamp(28rem, 35vw, 35rem)',
+            height: 'clamp(21rem, 26.25vw, 26.25rem)',
             maxWidth: '100%'
           }}
         />
@@ -357,7 +370,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
       {/* Текст "КВАРТИРА КИСЫ" ниже pamat15.png */}
       <div 
-        className="absolute z-[5] text-center"
+        className="absolute z-[5] text-center kvartira-kisy-mobile"
         style={{
           top: 'clamp(238vh, 272.5vh, 250vh)',
           left: 'clamp(6rem, 11vw, 21rem)',
@@ -365,7 +378,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         }}
       >
         <p
-          className="uppercase mb-4"
+          className="uppercase mb-4 kvartira-title-mobile"
           style={{
             fontFamily: "'Playfair Display SC', serif",
             fontSize: 'clamp(1.25rem, 1.875vw, 1.875rem)',
@@ -378,6 +391,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           КВАРТИРА КИСЫ
         </p>
         <p
+          className="kvartira-description-mobile"
           style={{
             fontFamily: "'Playfair Display SC', serif",
             fontSize: 'clamp(1.125rem, 1.25vw, 1.25rem)',
@@ -396,7 +410,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
       {/* Изображение computer.png ниже текста "Личное убежище..." */}
       <div 
-        className="absolute z-[5]"
+        className="absolute z-[5] computer-mobile"
         data-animate="vput"
         data-speed="0.5"
         style={{
@@ -420,7 +434,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       {/* Изображение vput3.png ниже объекта vput2.png */}
       <div 
         ref={kisaRef}
-        className="absolute z-[5]"
+        className="absolute z-[5] vput3-mobile"
         style={{
           top: 'clamp(173vh, 206vh, 198vh)',
           left: 'clamp(50rem, 59vw, 66rem)'
@@ -442,7 +456,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       {/* Текст "КВАРТИРА СТАРУХИ ЯРЫГИНОЙ" ниже computer.png */}
       <div 
         ref={finalTextRef}
-        className="absolute z-[5] text-center"
+        className="absolute z-[5] text-center yarygina-text-mobile"
         style={{
           top: 'clamp(325vh, 390vh, 350vh)',
           left: 'clamp(2rem, 5.75vw, 12rem)',
@@ -450,7 +464,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         }}
       >
         <p
-          className="uppercase mb-4"
+          className="uppercase mb-4 yarygina-title-mobile"
           style={{
             fontFamily: "'Playfair Display SC', serif",
             fontSize: 'clamp(1.25rem, 1.875vw, 1.875rem)',
@@ -463,6 +477,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           КВАРТИРА СТАРУХИ ЯРЫГИНОЙ
         </p>
         <p
+          className="yarygina-description-mobile"
           style={{
             fontFamily: "'Playfair Display SC', serif",
             fontSize: 'clamp(1.125rem, 1.25vw, 1.25rem)',
@@ -482,7 +497,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       {/* Изображение vput4.png ниже объекта vput3.png */}
       <div 
         ref={yaryginaRef}
-        className="absolute z-[5]"
+        className="absolute z-[5] vput4-mobile"
         style={{
           top: 'clamp(262vh, 315vh, 288vh)',
           left: 'clamp(43rem, 53vw, 70rem)'

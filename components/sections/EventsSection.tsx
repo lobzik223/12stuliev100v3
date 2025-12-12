@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, forwardRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ScrollReveal from '../ui/ScrollReveal';
 import CounterAnimation from '../ui/CounterAnimation';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
 import { events } from '../../data/events';
 
 interface EventsSectionProps {
@@ -49,6 +51,176 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
     setSelectedEventUrl(null);
   };
 
+  // Функция для рендеринга карточки события
+  const renderEventCard = (event: typeof events[0], withScrollReveal = false) => {
+    const cardContent = (
+      <div className="relative w-full event-card-wrapper" style={{ maxWidth: '100%', overflow: 'visible' }}>
+        <div className="relative w-full h-auto" style={{ overflow: 'visible' }}>
+          <div
+            style={{
+              backgroundImage: 'url(/backgrounds/sections/plitkanovosti.png)',
+              backgroundSize: 'contain',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'center',
+              width: '100%',
+              paddingTop: 'clamp(140%, 160%, 180%)'
+            }}
+          />
+          <div className="absolute inset-0 flex flex-col event-card-content" style={{ paddingTop: 'clamp(12rem, 20vh, 18.5rem)', paddingBottom: 'clamp(1.2rem, 2vh, 2rem)', paddingLeft: 'clamp(1.2rem, 2vw, 2rem)', paddingRight: 'clamp(1.2rem, 2vw, 2rem)', overflow: 'visible' }}>
+          <p 
+            className="text-center event-card-date"
+            style={{ 
+              fontFamily: "'Playfair Display SC', serif",
+              fontSize: 'clamp(0.65rem, 0.9vw, 0.8rem)',
+              color: '#682302',
+              fontWeight: '400',
+              lineHeight: '1.2',
+              marginTop: 'clamp(0.8rem, 1.8vh, 1.5rem)',
+              marginBottom: 'clamp(0.1rem, 0.3vh, 0.3rem)',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
+              wordWrap: 'break-word'
+            }}
+          >
+            <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.75rem, 1vw, 0.95rem)', lineHeight: '1.2' }}>{event.date}</span>
+            {' '}{event.location}
+          </p>
+          <h3 
+            className="text-center event-card-title"
+            style={{ 
+              fontFamily: "'Playfair Display SC', serif",
+              fontSize: 'clamp(1rem, 1.4vw, 1.3rem)',
+              color: '#682302',
+              fontWeight: '700',
+              lineHeight: '1.15',
+              textShadow: '0 0 0.5rem rgba(104, 35, 2, 0.4)',
+              marginBottom: event.ticketsLeft === 0 ? 'clamp(1rem, 1.6vh, 1.6rem)' : 'clamp(0.25rem, 0.5vh, 0.5rem)',
+              position: 'relative',
+              overflow: 'visible',
+              textOverflow: 'ellipsis',
+              maxWidth: '100%',
+              wordWrap: 'break-word'
+            }}
+          >
+            <span style={{ fontSize: 'clamp(1.2rem, 1.8vw, 1.7rem)', lineHeight: '1.15' }}>12</span> СТУЛЬЕВ
+            {event.ticketsLeft === 0 && (
+              <div
+                className="sold-out-badge"
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '50%',
+                  transform: 'translate(-50%, 0) rotate(8deg)',
+                  marginTop: 'clamp(0.6rem, 0.9vh, 0.9rem)',
+                  padding: 'clamp(0.4rem, 0.6vw, 0.5rem) clamp(1.2rem, 1.8vw, 1.5rem)',
+                  border: '2px solid #682302',
+                  borderRadius: 'clamp(0.5rem, 0.7vw, 0.6rem)',
+                  backgroundColor: 'transparent',
+                  boxShadow: '0 2px 8px rgba(104, 35, 2, 0.3)',
+                  zIndex: 10,
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    fontSize: 'clamp(1rem, 1.3vw, 1.2rem)',
+                    fontWeight: '700',
+                    color: '#DC2626',
+                    margin: 0,
+                    lineHeight: '1.1',
+                    whiteSpace: 'nowrap',
+                    textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+                    letterSpacing: '0.05em'
+                  }}
+                >
+                  ПРОДАНО
+                </p>
+              </div>
+            )}
+          </h3>
+          {event.ticketsLeft > 0 && (
+            <>
+              <div 
+                className="rounded w-fit mx-auto"
+                style={{ 
+                  backgroundColor: '#682302',
+                  padding: '0.3rem 1.1rem',
+                  boxShadow: '0 0 0.625rem rgba(251, 198, 50, 0.3)',
+                  marginBottom: 'clamp(0.3rem, 0.5vh, 0.5rem)',
+                  maxWidth: '90%'
+                }}
+              >
+                <p 
+                  className="text-white text-center"
+                  style={{ 
+                    fontFamily: "'Playfair Display SC', serif", 
+                    fontSize: 'clamp(0.65rem, 0.9vw, 0.8rem)',
+                    lineHeight: '1.2',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
+                >
+                  ОСТАЛОСЬ{' '}
+                  <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.75rem, 1vw, 0.95rem)', lineHeight: '1.2' }}>{event.ticketsLeft}</span>
+                  {' '}БИЛЕТОВ
+                </p>
+              </div>
+              <div className="flex gap-2 justify-center flex-wrap" style={{ marginTop: 'clamp(0.1rem, 0.3vh, 0.3rem)' }}>
+                <button
+                  onClick={() => handleBuyTicket(event.buyTicketUrl)}
+                  className="rounded transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    backgroundColor: '#FBC632',
+                    color: '#682302',
+                    fontWeight: '700',
+                    fontSize: 'clamp(0.65rem, 0.9vw, 0.8rem)',
+                    padding: 'clamp(0.25rem, 0.4rem, 0.3rem) clamp(0.5rem, 0.6rem, 0.6rem)',
+                    boxShadow: '0 0 0.5rem rgba(220, 38, 38, 0.4)',
+                    border: 'none',
+                    whiteSpace: 'nowrap'
+                  }}
+                  disabled={!event.buyTicketUrl}
+                >
+                  КУПИТЬ БИЛЕТ
+                </button>
+                <button
+                  onClick={() => router.push(`/details/${event.id}`)}
+                  className="rounded border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    backgroundColor: 'transparent',
+                    borderColor: '#682302',
+                    color: '#682302',
+                    fontWeight: '700',
+                    fontSize: 'clamp(0.65rem, 0.9vw, 0.8rem)',
+                    padding: 'clamp(0.25rem, 0.4rem, 0.3rem) clamp(0.5rem, 0.6rem, 0.6rem)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  ПОДРОБНЕЕ
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        </div>
+      </div>
+    );
+
+    if (withScrollReveal) {
+      return (
+        <ScrollReveal key={event.id} delay={(event.id - 1) * 150}>
+          {cardContent}
+        </ScrollReveal>
+      );
+    }
+
+    return cardContent;
+  };
 
   return (
     <section 
@@ -75,165 +247,49 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         }}
       />
       <div className="w-full max-w-[87.5rem]" style={{ position: 'relative', zIndex: 10 }}>
-        {/* Карточки */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ marginTop: 'clamp(-16rem, -20vh, -15rem)', position: 'relative', zIndex: 10, filter: 'none' }}>
-          {events.map((event) => (
-            <ScrollReveal key={event.id} delay={(event.id - 1) * 150}>
-              <div className="relative w-full event-card-wrapper" style={{ maxWidth: 'clamp(32rem, 42vw, 40rem)', overflow: 'visible' }}>
-                <div className="relative w-full h-auto" style={{ overflow: 'visible' }}>
-                  <div
-                    style={{
-                      backgroundImage: 'url(/backgrounds/sections/plitkanovosti.png)',
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center',
-                      width: '100%',
-                      paddingTop: 'clamp(140%, 160%, 180%)'
-                    }}
-                  />
-                  <div className="absolute inset-0 flex flex-col event-card-content" style={{ paddingTop: 'clamp(15.5rem, 23vh, 19rem)', paddingBottom: 'clamp(1.5rem, 2vh, 2rem)', paddingLeft: 'clamp(1.5rem, 2vw, 2rem)', paddingRight: 'clamp(1.5rem, 2vw, 2rem)', overflow: 'visible' }}>
-                  <p 
-                    className="text-center event-card-date"
-                    style={{ 
-                      fontFamily: "'Playfair Display SC', serif",
-                      fontSize: 'clamp(0.7rem, 0.9vw, 0.8rem)',
-                      color: '#682302',
-                      fontWeight: '400',
-                      marginTop: 'clamp(1.2rem, 2.2vh, 1.8rem)',
-                      marginBottom: 'clamp(0.25rem, 0.5vh, 0.5rem)',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '100%',
-                      wordWrap: 'break-word'
-                    }}
-                  >
-                    <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.85rem, 1vw, 0.95rem)' }}>{event.date}</span>
-                    {' '}{event.location}
-                  </p>
-                  <h3 
-                    className="text-center event-card-title"
-                    style={{ 
-                      fontFamily: "'Playfair Display SC', serif",
-                      fontSize: 'clamp(1.1rem, 1.4vw, 1.3rem)',
-                      color: '#682302',
-                      fontWeight: '700',
-                      textShadow: '0 0 0.5rem rgba(104, 35, 2, 0.4)',
-                      marginBottom: event.ticketsLeft === 0 ? 'clamp(1.5rem, 2vh, 2rem)' : 'clamp(0.5rem, 0.75vh, 0.75rem)',
-                      position: 'relative',
-                      overflow: 'visible',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '100%',
-                      wordWrap: 'break-word'
-                    }}
-                  >
-                    <span style={{ fontSize: 'clamp(1.4rem, 1.8vw, 1.7rem)' }}>12</span> СТУЛЬЕВ
-                    {event.ticketsLeft === 0 && (
-                      <div
-                        className="sold-out-badge"
-                        style={{
-                          position: 'absolute',
-                          top: '100%',
-                          left: '50%',
-                          transform: 'translate(-50%, 0) rotate(8deg)',
-                          marginTop: 'clamp(0.8rem, 1.2vh, 1.2rem)',
-                          padding: 'clamp(0.4rem, 0.6vw, 0.5rem) clamp(1.2rem, 1.8vw, 1.5rem)',
-                          border: '2px solid #682302',
-                          borderRadius: 'clamp(0.5rem, 0.7vw, 0.6rem)',
-                          backgroundColor: 'transparent',
-                          boxShadow: '0 2px 8px rgba(104, 35, 2, 0.3)',
-                          zIndex: 10,
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        <p
-                          style={{
-                            fontFamily: "'Playfair Display SC', serif",
-                            fontSize: 'clamp(1rem, 1.3vw, 1.2rem)',
-                            fontWeight: '700',
-                            color: '#DC2626',
-                            margin: 0,
-                            whiteSpace: 'nowrap',
-                            textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
-                            letterSpacing: '0.05em'
-                          }}
-                        >
-                          ПРОДАНО
-                        </p>
-                      </div>
-                    )}
-                  </h3>
-                  {event.ticketsLeft > 0 && (
-                    <>
-                      <div 
-                        className="rounded w-fit mx-auto"
-                        style={{ 
-                          backgroundColor: '#682302',
-                          padding: '0.375rem 1.25rem',
-                          boxShadow: '0 0 0.625rem rgba(251, 198, 50, 0.3)',
-                          marginBottom: 'clamp(0.5rem, 0.75vh, 0.75rem)',
-                          maxWidth: '90%'
-                        }}
-                      >
-                        <p 
-                          className="text-white text-center"
-                          style={{ 
-                            fontFamily: "'Playfair Display SC', serif", 
-                            fontSize: 'clamp(0.7rem, 0.9vw, 0.8rem)',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}
-                        >
-                          ОСТАЛОСЬ{' '}
-                          <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.85rem, 1vw, 0.95rem)' }}>{event.ticketsLeft}</span>
-                          {' '}БИЛЕТОВ
-                        </p>
-                      </div>
-                      <div className="flex gap-2 justify-center" style={{ marginTop: 'clamp(0.25rem, 0.5vh, 0.5rem)' }}>
-                        <button
-                          onClick={() => handleBuyTicket(event.buyTicketUrl)}
-                          className="rounded transition-all duration-300 hover:scale-105 cursor-pointer"
-                          style={{
-                            fontFamily: "'Playfair Display SC', serif",
-                            backgroundColor: '#FBC632',
-                            color: '#682302',
-                            fontWeight: '700',
-                            fontSize: 'clamp(0.7rem, 0.9vw, 0.8rem)',
-                            padding: '0.3rem 0.6rem',
-                            boxShadow: '0 0 0.5rem rgba(220, 38, 38, 0.4)',
-                            border: 'none'
-                          }}
-                          disabled={!event.buyTicketUrl}
-                        >
-                          КУПИТЬ БИЛЕТ
-                        </button>
-                        <button
-                          onClick={() => router.push(`/details/${event.id}`)}
-                          className="rounded border transition-all duration-300 hover:scale-105 cursor-pointer"
-                          style={{
-                            fontFamily: "'Playfair Display SC', serif",
-                            backgroundColor: 'transparent',
-                            borderColor: '#682302',
-                            color: '#682302',
-                            fontWeight: '700',
-                            fontSize: 'clamp(0.7rem, 0.9vw, 0.8rem)',
-                            padding: '0.3rem 0.6rem'
-                          }}
-                        >
-                          ПОДРОБНЕЕ
-                        </button>
-                      </div>
-                    </>
-                  )}
+        {/* Карточки - Grid для десктопа, Swiper для мобильных */}
+        {/* Десктопная версия - Grid (скрыта на мобильных) */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" style={{ marginTop: 'clamp(-12rem, -18vh, -15rem)', position: 'relative', zIndex: 10, filter: 'none' }}>
+          {events.map((event) => renderEventCard(event, true))}
+        </div>
+
+        {/* Мобильная версия - Swiper карусель (скрыта на десктопе) */}
+        <div className="md:hidden relative w-full" style={{ marginTop: 'clamp(-12rem, -18vh, -15rem)', position: 'relative', zIndex: 10, filter: 'none' }}>
+          <Swiper
+            modules={[Navigation]}
+            speed={800}
+            spaceBetween={20}
+            loop={true}
+            slidesPerView={1}
+            slidesPerGroup={1}
+            centeredSlides={false}
+            grabCursor={true}
+            navigation={{
+              nextEl: '.swiper-button-next-events',
+              prevEl: '.swiper-button-prev-events',
+            }}
+            className="events-carousel"
+          >
+            {events.map((event) => (
+              <SwiperSlide key={event.id}>
+                <div className="flex justify-center items-center w-full">
+                  {renderEventCard(event, false)}
                 </div>
-                </div>
-              </div>
-            </ScrollReveal>
-          ))}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          
+          {/* Кнопки навигации Swiper для мобильных */}
+          <div 
+            className="swiper-button-prev swiper-button-prev-events" 
+          ></div>
+          <div 
+            className="swiper-button-next swiper-button-next-events" 
+          ></div>
         </div>
 
         {/* Кнопка расписания */}
-        <div className="w-full flex justify-center" style={{ marginTop: 'clamp(-8rem, -12vh, -7rem)', position: 'relative', zIndex: 100 }}>
+        <div className="w-full flex justify-center px-4 schedule-button-container" style={{ marginTop: 'clamp(-6rem, -10vh, -7rem)', position: 'relative', zIndex: 100 }}>
           <ScrollReveal delay={450}>
             <button
               type="button"
@@ -250,21 +306,22 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
               onMouseDown={(e) => {
                 e.stopPropagation();
               }}
-              className="rounded-lg border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
+              className="rounded-lg border-2 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               style={{
                 fontFamily: "'Playfair Display SC', serif",
-                fontSize: 'clamp(1.125rem, 1.5vw, 1.25rem)',
+                fontSize: 'clamp(0.875rem, 1.5vw, 1.25rem)',
                 letterSpacing: '0.0625rem',
                 color: 'white',
                 backgroundColor: '#682302',
                 borderColor: '#FBC632',
                 borderWidth: '3px',
-                padding: 'clamp(0.375rem, 0.75vw, 0.625rem) clamp(6rem, 8vw, 7.5rem)',
+                padding: 'clamp(0.5rem, 0.75vw, 0.625rem) clamp(2rem, 8vw, 7.5rem)',
                 boxShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.4)',
                 pointerEvents: 'auto',
                 cursor: 'pointer',
                 zIndex: 100,
-                position: 'relative'
+                position: 'relative',
+                whiteSpace: 'nowrap'
               }}
             >
               ПОСМОТРЕТЬ РАСПИСАНИЕ
@@ -307,19 +364,18 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         </ScrollReveal>
 
         {/* Статистика */}
-        <div className="flex flex-wrap items-center justify-center gap-8" style={{ marginTop: 'clamp(2.5rem, 4vh, 3rem)', gap: 'clamp(5rem, 7vw, 7rem)' }}>
+        <div className="flex items-center justify-center gap-8" style={{ marginTop: 'clamp(2.5rem, 4vh, 3rem)', gap: 'clamp(3rem, 5vw, 5rem)', flexWrap: 'nowrap' }}>
           {[
             { number: 5, label: 'СТРАН' },
             { number: 27, label: 'ГОРОДОВ' },
             { number: 26350, label: 'ЗРИТЕЛЕЙ' }
           ].map((stat, index) => (
-            <ScrollReveal key={index} delay={300 + index * 50}>
-              <div className="flex flex-col items-center justify-center">
+            <div key={index} className="flex flex-col items-center justify-center">
               <div 
                 className="rounded-full flex flex-col items-center justify-center"
                 style={{
-                  width: 'clamp(8rem, 12.5vw, 14rem)',
-                  height: 'clamp(8rem, 12.5vw, 14rem)',
+                  width: 'clamp(6rem, 8vw, 10rem)',
+                  height: 'clamp(6rem, 8vw, 10rem)',
                   border: '2px solid #FBC632',
                   boxShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.6)',
                   backgroundColor: 'transparent'
@@ -331,7 +387,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                   delay={index * 200}
                   style={{
                     fontFamily: "'Noto Serif Malayalam', serif",
-                    fontSize: 'clamp(2rem, 3vw, 3rem)',
+                    fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)',
                     fontWeight: 400,
                     color: 'white'
                   }}
@@ -340,7 +396,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                   className="uppercase mt-1"
                   style={{
                     fontFamily: "'Playfair Display SC', serif",
-                    fontSize: 'clamp(0.875rem, 1.125vw, 1.25rem)',
+                    fontSize: 'clamp(0.75rem, 1vw, 1rem)',
                     color: '#FBC632',
                     fontWeight: 400
                   }}
@@ -349,7 +405,6 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                 </span>
               </div>
               </div>
-            </ScrollReveal>
           ))}
         </div>
 
@@ -385,7 +440,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         {/* Навигационная панель под текстом "ТЕАТРАЛЬНОЕ ПУТЕШЕСТВИЕ" */}
         <div 
           ref={navPanelRef} 
-          className={`w-full flex justify-center mt-8 transition-opacity duration-300 ${
+          className={`hidden md:flex w-full justify-center mt-8 transition-opacity duration-300 ${
             isNavPanelSticky ? 'opacity-0 pointer-events-none' : 'opacity-100'
           }`}
         >

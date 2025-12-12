@@ -36,6 +36,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const defaultDateTime = '24 НОЯБРЯ | 19:00';
   const dateTimeValue = dateTime || defaultDateTime;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   const handleBuyTicket = () => {
     if (buyTicketUrl) {
@@ -87,8 +88,11 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         containerRef.current.style.overflow = 'hidden'; // Убираем скролл с контейнера
         
         // Устанавливаем высоту для псевдоэлемента ::after (черный фон)
-        // Вычисляем высоту черного фона: от 600vh до конца контента
-        const blackBgStart = 600 * window.innerHeight / 100; // 600vh в пикселях
+        // Вычисляем высоту черного фона: от 600vh (десктоп) или ~400vh (мобильный) до конца контента
+        const isMobile = window.innerWidth <= 768;
+        // На мобильных используем среднее значение из clamp(380vh, 400vh, 420vh) = ~400vh
+        const backgroundHeightVh = isMobile ? 400 : 600; // ~400vh для мобильных, 600vh для десктопа
+        const blackBgStart = backgroundHeightVh * window.innerHeight / 100; // Высота фона в пикселях
         const blackBgHeight = Math.max(0, exactHeight - blackBgStart);
         if (blackBgHeight > 0) {
           containerRef.current.style.setProperty('--after-height', `${blackBgHeight}px`);
@@ -187,7 +191,14 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     
     setTimeout(initHeight, 100);
     
+    // Определяем мобильное устройство
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    
     const handleResize = () => {
+      checkMobile();
       maxScrollValue = 0; // Сбрасываем кэш при изменении размера
       calculateMaxScroll();
     };
@@ -223,6 +234,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const quoteTextRef = useRef<HTMLDivElement>(null);
   const longQuoteTextRef = useRef<HTMLDivElement>(null);
   const triangleRef = useRef<HTMLDivElement>(null);
+  const reviewsSectionRef = useRef<HTMLDivElement>(null);
   
   // Фиксируем позицию треугольника сразу после монтирования
   useEffect(() => {
@@ -238,6 +250,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   // Refs для раздела "Наши преимущества"
   const advantagesTitleRef = useRef<HTMLDivElement>(null);
   const starImageRef = useRef<HTMLDivElement>(null);
+  const darkOverlayDuplicateRef = useRef<HTMLDivElement>(null);
   const logoInStarRef = useRef<HTMLDivElement>(null);
   const comedyQualityTextRef = useRef<HTMLDivElement>(null);
   const premiumSegmentTextRef = useRef<HTMLDivElement>(null);
@@ -547,6 +560,271 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     };
   }, []);
 
+  // Позиционирование текста "Наши преимущества", звезды и dark-overlay-duplicate сразу после textmibile.png на мобильных
+  useEffect(() => {
+    if (!isMobile || !longQuoteTextRef.current || !advantagesTitleRef.current || !starImageRef.current || !darkOverlayDuplicateRef.current || !containerRef.current) return;
+
+    const updatePosition = () => {
+      const longQuoteElement = longQuoteTextRef.current;
+      const advantagesElement = advantagesTitleRef.current;
+      const starElement = starImageRef.current;
+      const darkOverlayElement = darkOverlayDuplicateRef.current;
+      const containerElement = containerRef.current;
+      
+      if (!longQuoteElement || !advantagesElement || !starElement || !darkOverlayElement || !containerElement) return;
+
+      // Получаем позицию и размеры textmibile.png относительно viewport
+      const longQuoteRect = longQuoteElement.getBoundingClientRect();
+      const longQuoteHeight = longQuoteRect.height;
+      const longQuoteBottom = longQuoteRect.bottom;
+      
+      // Получаем позицию контейнера dark-overlay-duplicate относительно viewport
+      const advantagesOffsetParent = advantagesElement.offsetParent as HTMLElement;
+      if (!advantagesOffsetParent) return;
+      
+      const offsetParentRect = advantagesOffsetParent.getBoundingClientRect();
+      
+      // Вычисляем позицию текста "Наши преимущества" относительно его offsetParent
+      // Используем нижнюю границу textmibile.png и добавляем отступ (30px) - немного ниже
+      const advantagesTop = longQuoteBottom - offsetParentRect.top + 30;
+      
+      // Убеждаемся, что элемент виден
+      advantagesElement.style.display = 'block';
+      advantagesElement.style.visibility = 'visible';
+      advantagesElement.style.opacity = '1';
+      
+      // Устанавливаем стили напрямую через inline стили и класс
+      // Inline стили имеют приоритет над CSS, но для надежности также добавляем класс
+      advantagesElement.style.position = 'absolute';
+      advantagesElement.style.top = `${advantagesTop}px`;
+      advantagesElement.style.left = '50%';
+      advantagesElement.style.transform = 'translateX(-50%)';
+      advantagesElement.style.zIndex = '10';
+      advantagesElement.classList.add('advantages-title-mobile-positioned');
+      
+      // Также пытаемся использовать setProperty с important для дополнительной надежности
+      try {
+        (advantagesElement.style as any).setProperty('top', `${advantagesTop}px`, 'important');
+        (advantagesElement.style as any).setProperty('display', 'block', 'important');
+        (advantagesElement.style as any).setProperty('visibility', 'visible', 'important');
+      } catch (e) {
+        // Игнорируем ошибку, inline стили уже установлены
+      }
+      
+      // Позиционируем звезду под текстом "Наши преимущества"
+      const advantagesRect = advantagesElement.getBoundingClientRect();
+      const advantagesHeight = advantagesRect.height;
+      const advantagesBottom = advantagesRect.bottom;
+      
+      // Вычисляем позицию звезды относительно того же offsetParent
+      const starTop = advantagesBottom - offsetParentRect.top + 20; // 20px отступ под текстом
+      
+      // Убеждаемся, что звезда видна
+      starElement.style.display = 'block';
+      starElement.style.visibility = 'visible';
+      starElement.style.opacity = '1';
+      
+      // Устанавливаем позицию звезды
+      starElement.style.position = 'absolute';
+      starElement.style.top = `${starTop}px`;
+      starElement.style.left = '50%';
+      starElement.style.transform = 'translateX(-50%)';
+      starElement.style.zIndex = '9';
+      starElement.classList.add('star-image-mobile-positioned');
+      
+      // Также пытаемся использовать setProperty с important
+      try {
+        (starElement.style as any).setProperty('top', `${starTop}px`, 'important');
+        (starElement.style as any).setProperty('display', 'block', 'important');
+        (starElement.style as any).setProperty('visibility', 'visible', 'important');
+      } catch (e) {
+        // Игнорируем ошибку, inline стили уже установлены
+      }
+      
+      // Позиционируем dark-overlay-duplicate под звездой
+      const starRect = starElement.getBoundingClientRect();
+      const starBottom = starRect.bottom;
+      
+      // Получаем позицию контейнера dark-overlay-duplicate относительно его offsetParent
+      const darkOverlayOffsetParent = darkOverlayElement.offsetParent as HTMLElement;
+      if (!darkOverlayOffsetParent) return;
+      
+      const darkOverlayOffsetParentRect = darkOverlayOffsetParent.getBoundingClientRect();
+      
+      // Вычисляем позицию dark-overlay-duplicate относительно его offsetParent
+      const darkOverlayTop = starBottom - darkOverlayOffsetParentRect.top + 20; // 20px отступ под звездой
+      
+      // Убеждаемся, что контейнер виден
+      darkOverlayElement.style.display = 'block';
+      darkOverlayElement.style.visibility = 'visible';
+      darkOverlayElement.style.opacity = '1';
+      
+      // Устанавливаем позицию dark-overlay-duplicate
+      darkOverlayElement.style.position = 'absolute';
+      darkOverlayElement.style.top = `${darkOverlayTop}px`;
+      darkOverlayElement.style.left = '0';
+      darkOverlayElement.style.right = '0';
+      darkOverlayElement.style.width = '100%';
+      darkOverlayElement.style.zIndex = '1';
+      darkOverlayElement.classList.add('dark-overlay-duplicate-mobile-positioned');
+      
+      // Также пытаемся использовать setProperty с important
+      try {
+        (darkOverlayElement.style as any).setProperty('top', `${darkOverlayTop}px`, 'important');
+        (darkOverlayElement.style as any).setProperty('display', 'block', 'important');
+        (darkOverlayElement.style as any).setProperty('visibility', 'visible', 'important');
+      } catch (e) {
+        // Игнорируем ошибку, inline стили уже установлены
+      }
+    };
+
+    // Функция для обновления позиции с проверкой готовности элементов
+    const safeUpdatePosition = () => {
+      requestAnimationFrame(() => {
+        if (longQuoteTextRef.current && advantagesTitleRef.current && starImageRef.current && darkOverlayDuplicateRef.current) {
+          const longQuoteRect = longQuoteTextRef.current.getBoundingClientRect();
+          // Проверяем, что элемент виден и имеет размеры
+          if (longQuoteRect.height > 0 && longQuoteRect.width > 0) {
+            updatePosition();
+            
+            // Проверяем, что элементы действительно видимы после обновления позиции
+            const advantagesRect = advantagesTitleRef.current.getBoundingClientRect();
+            const starRect = starImageRef.current.getBoundingClientRect();
+            const darkOverlayRect = darkOverlayDuplicateRef.current.getBoundingClientRect();
+            if (advantagesRect.height === 0 || advantagesRect.width === 0 || starRect.height === 0 || starRect.width === 0 || darkOverlayRect.height === 0 || darkOverlayRect.width === 0) {
+              // Если элементы не видимы, повторяем попытку через небольшую задержку
+              setTimeout(updatePosition, 100);
+            }
+          }
+        }
+      });
+    };
+
+    // Инициализация - убеждаемся, что элементы видимы сразу
+    if (advantagesTitleRef.current) {
+      advantagesTitleRef.current.style.display = 'block';
+      advantagesTitleRef.current.style.visibility = 'visible';
+      advantagesTitleRef.current.style.opacity = '1';
+    }
+    if (starImageRef.current) {
+      starImageRef.current.style.display = 'block';
+      starImageRef.current.style.visibility = 'visible';
+      starImageRef.current.style.opacity = '1';
+    }
+    if (darkOverlayDuplicateRef.current) {
+      darkOverlayDuplicateRef.current.style.display = 'block';
+      darkOverlayDuplicateRef.current.style.visibility = 'visible';
+      darkOverlayDuplicateRef.current.style.opacity = '1';
+    }
+
+    // Обновляем позицию после загрузки изображения
+    const imageElement = longQuoteTextRef.current?.querySelector('img');
+    if (imageElement) {
+      if (imageElement.complete && imageElement.naturalHeight > 0) {
+        // Изображение уже загружено
+        setTimeout(safeUpdatePosition, 100);
+        setTimeout(safeUpdatePosition, 500); // Дополнительная попытка
+      } else {
+        // Ждем загрузки изображения
+        imageElement.addEventListener('load', safeUpdatePosition, { once: true });
+        imageElement.addEventListener('load', () => setTimeout(safeUpdatePosition, 200), { once: true });
+      }
+    } else {
+      // Если изображение еще не отрендерено, ждем немного
+      setTimeout(safeUpdatePosition, 300);
+      setTimeout(safeUpdatePosition, 600); // Дополнительная попытка
+      setTimeout(safeUpdatePosition, 1000); // Еще одна попытка
+    }
+
+    // Обновляем позицию при изменении размера окна и скролле
+    window.addEventListener('resize', safeUpdatePosition);
+    window.addEventListener('scroll', safeUpdatePosition, { passive: true });
+    
+    // Также обновляем периодически для надежности
+    const intervalId = setInterval(safeUpdatePosition, 1000);
+    
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition);
+      clearInterval(intervalId);
+      const imageElement = longQuoteTextRef.current?.querySelector('img');
+      if (imageElement) {
+        imageElement.removeEventListener('load', updatePosition);
+      }
+    };
+  }, [isMobile]);
+
+  // Позиционирование раздела "Отзывы" сразу после фона в мобильной версии
+  useEffect(() => {
+    if (!isMobile || !reviewsSectionRef.current || !containerRef.current) return;
+
+    const updateReviewsPosition = () => {
+      const reviewsElement = reviewsSectionRef.current;
+      const containerElement = containerRef.current;
+      
+      if (!reviewsElement || !containerElement) return;
+
+      // Вычисляем высоту фона в пикселях
+      // Фон заканчивается на clamp(290vh, 310vh, 330vh) в мобильной версии
+      // Используем среднее значение 310vh для расчета
+      const viewportHeight = window.innerHeight;
+      const backgroundHeightVh = 310; // Среднее значение из clamp(290vh, 310vh, 330vh)
+      const backgroundHeight = (backgroundHeightVh * viewportHeight) / 100; // Высота фона в пикселях
+
+      // Получаем текущую позицию раздела "Отзывы" относительно контейнера
+      const containerRect = containerElement.getBoundingClientRect();
+      const reviewsRect = reviewsElement.getBoundingClientRect();
+      const currentTop = reviewsRect.top - containerRect.top;
+      
+      // Целевая позиция - сразу после фона (максимально плотное прилегание)
+      // Опускаем раздел чуть ниже - уменьшаем отрицательный отступ
+      const targetTop = backgroundHeight - 1100; // Уменьшено с -1200px до -1100px для опускания раздела чуть ниже
+      
+      // Вычисляем отрицательный margin-top для "подтягивания" раздела вверх
+      // Используем очень агрессивный подход - подтягиваем раздел максимально вверх
+      const negativeMargin = currentTop - targetTop;
+
+      // Устанавливаем отрицательный margin-top, чтобы раздел начался сразу после фона
+      reviewsElement.style.position = 'relative';
+      // Всегда применяем отрицательный margin для максимального подтягивания вверх
+      if (negativeMargin > 0) {
+        // Применяем отрицательный margin для максимального подтягивания вверх
+        reviewsElement.style.setProperty('margin-top', `${-negativeMargin}px`, 'important');
+        reviewsElement.style.marginTop = `${-negativeMargin}px`;
+      } else {
+        // Если раздел уже выше целевой позиции, устанавливаем margin-top равным целевой позиции
+        reviewsElement.style.setProperty('margin-top', `${targetTop}px`, 'important');
+        reviewsElement.style.marginTop = `${targetTop}px`;
+      }
+      
+      // Убираем padding-top полностью для максимально плотного прилегания
+      reviewsElement.style.setProperty('padding-top', '0', 'important');
+      reviewsElement.style.paddingTop = '0';
+      reviewsElement.style.zIndex = '20';
+    };
+
+    // Обновляем позицию после загрузки
+    const safeUpdateReviewsPosition = () => {
+      requestAnimationFrame(() => {
+        updateReviewsPosition();
+      });
+    };
+
+    // Обновляем позицию при изменении размера окна и скролле
+    window.addEventListener('resize', safeUpdateReviewsPosition);
+    window.addEventListener('scroll', safeUpdateReviewsPosition, { passive: true });
+    
+    // Обновляем позицию после загрузки
+    setTimeout(safeUpdateReviewsPosition, 100);
+    setTimeout(safeUpdateReviewsPosition, 500);
+    setTimeout(safeUpdateReviewsPosition, 1000);
+    
+    return () => {
+      window.removeEventListener('resize', safeUpdateReviewsPosition);
+      window.removeEventListener('scroll', safeUpdateReviewsPosition);
+    };
+  }, [isMobile]);
+
   return (
     <div ref={containerRef} className="details-container">
       <Header 
@@ -573,6 +851,20 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           router.push('/');
         }}
       />
+      {/* Рамка - сначала на мобильных, потом на десктопе */}
+      <div className={`frame-widget ${isMobile ? 'frame-widget-mobile-first' : ''}`}>
+        <Image 
+          src="/photo/ramka.png" 
+          alt="Декоративная рамка" 
+          width={700}
+          height={800}
+          className="frame-image"
+          priority
+          quality={85}
+          loading="eager"
+          unoptimized
+        />
+      </div>
       <div className="date-time-box">
         <svg 
           className="calendar-icon" 
@@ -656,19 +948,6 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         <div className="venue-text">
           {address || 'Академический театр оперы и балета'}
         </div>
-      </div>
-      <div className="frame-widget">
-        <Image 
-          src="/photo/ramka.png" 
-          alt="Декоративная рамка" 
-          width={700}
-          height={800}
-          className="frame-image"
-          priority
-          quality={85}
-          loading="eager"
-          unoptimized
-        />
       </div>
       <div className="dark-overlay">
         <Image 
@@ -757,19 +1036,33 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           />
         </div>
         <div ref={longQuoteTextRef} className="long-quote-text-overlay">
-          <Image 
-            src="/photo/text55.png" 
-            alt="Длинный текст цитаты" 
-            width={800}
-            height={600}
-            loading="eager"
-            priority
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            unoptimized
-          />
+          {/* На мобильных показываем textmibile.png, на десктопе text55.png */}
+          {isMobile ? (
+            <Image 
+              src="/photo/textmibile.png" 
+              alt="Длинный текст цитаты" 
+              width={800}
+              height={600}
+              loading="eager"
+              priority
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              unoptimized
+            />
+          ) : (
+            <Image 
+              src="/photo/text55.png" 
+              alt="Длинный текст цитаты" 
+              width={800}
+              height={600}
+              loading="eager"
+              priority
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              unoptimized
+            />
+          )}
         </div>
       </div>
-      <div className="dark-overlay-duplicate">
+      <div ref={darkOverlayDuplicateRef} className="dark-overlay-duplicate">
         <Image 
           src="/photo/temno11.png" 
           alt="Затемнение дубликат" 
@@ -857,17 +1150,36 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         <ActorsSection />
       </div>
 
+      {/* Черный блюр-слой под раздел "Отзывы" на границе между фоном и черным экраном */}
+      {isMobile && (
+        <div 
+          style={{
+            position: 'absolute',
+            top: 'clamp(290vh, 310vh, 330vh)',
+            left: 0,
+            right: 0,
+            height: '150px',
+            width: '100%',
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.85) 60%, rgba(0, 0, 0, 1) 100%)',
+            backdropFilter: 'blur(25px)',
+            WebkitBackdropFilter: 'blur(25px)',
+            zIndex: 10, // Ниже раздела отзывы (zIndex: 20), но выше фонов
+            pointerEvents: 'none'
+          }}
+        />
+      )}
+
       {/* Раздел "ОТЗЫВЫ" */}
-      <div className="w-full flex flex-col items-center" style={{ 
+      <div ref={reviewsSectionRef} className="w-full flex flex-col items-center reviews-section-details" style={{ 
         marginTop: 'clamp(8rem, 12vh, 10rem)', 
         width: '100%', 
         position: 'relative',
         zIndex: 20,
-        paddingTop: 'clamp(3rem, 6vh, 5rem)',
+        paddingTop: isMobile ? '1.5rem' : 'clamp(3rem, 6vh, 5rem)', // Уменьшен padding-top на мобильной версии
         paddingBottom: 'clamp(2rem, 4vh, 3rem)'
       }}>
         <p 
-          className="text-2xl md:text-3xl lg:text-4xl uppercase mb-10 md:mb-12"
+          className="text-2xl md:text-3xl lg:text-4xl uppercase"
           style={{
             fontFamily: "'Playfair Display SC', serif",
             color: '#FBC632',
@@ -875,13 +1187,19 @@ const DetailsView: React.FC<DetailsViewProps> = ({
             textShadow: '0 0 15px rgba(231, 200, 132, 0.4), 0 0 30px rgba(231, 200, 132, 0.3)',
             letterSpacing: '0.1em',
             textAlign: 'center',
+            marginBottom: isMobile ? '0.25rem' : '2.5rem', // Минимальный отступ на мобильной версии для близости к карточкам
           }}
         >
           ОТЗЫВЫ
         </p>
 
         {/* Блок отзывов с каруселью Swiper */}
-        <div className="relative w-full mt-10" style={{ padding: '2rem 0', paddingLeft: 'clamp(2.5rem, 4vw, 3.5rem)', paddingRight: 'clamp(2.5rem, 4vw, 3.5rem)' }}>
+        <div className="relative w-full mt-10" style={{ 
+          marginTop: isMobile ? '0.5rem' : undefined, // Еще больше уменьшен отступ на мобильной версии
+          padding: '2rem 0', 
+          paddingLeft: 'clamp(2.5rem, 4vw, 3.5rem)', 
+          paddingRight: 'clamp(2.5rem, 4vw, 3.5rem)' 
+        }}>
           <Swiper
             modules={[Navigation]}
             speed={800}
@@ -1075,23 +1393,68 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       <div 
         style={{
           position: 'absolute',
-          top: '580vh', /* calc(600vh - 20vh) - начинается за 20vh до конца изображения, перекрывает границу между изображением (600vh) и черным фоном (600vh) */
+          top: isMobile ? '380vh' : '580vh', /* calc(400vh - 20vh) для мобильных, calc(600vh - 20vh) для десктопа - начинается за 20vh до конца изображения */
           left: 0,
           height: '20vh',
           width: '100%',
           background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0.8) 70%, rgba(0, 0, 0, 1) 100%)',
-          backdropFilter: 'blur(15px)',
-          WebkitBackdropFilter: 'blur(15px)',
+          backdropFilter: isMobile ? 'none' : 'blur(15px)', /* Убираем блюр в мобильной версии */
+          WebkitBackdropFilter: isMobile ? 'none' : 'blur(15px)', /* Убираем блюр в мобильной версии */
+          display: isMobile ? 'none' : 'block', /* Скрываем элемент в мобильной версии */
           zIndex: 15, /* Выше фонов (::before и ::after имеют z-index: -1), но ниже контента */
           pointerEvents: 'none'
         }}
       />
 
+      {/* Блюр на границе между фоном section-34839282.png и черным экраном, где начинается раздел "Отзывы" */}
+      {isMobile && (
+        <>
+          {/* Дубликат нижней части фона с blur для создания эффекта размытия */}
+          <div 
+            style={{
+              position: 'absolute',
+              top: 'calc(clamp(290vh, 310vh, 330vh) - 250px)',
+              left: 0,
+              right: 0,
+              height: '250px',
+              width: '100%',
+              backgroundImage: 'url(/photo/section-34839282.png)',
+              backgroundSize: '100% 65%',
+              backgroundPosition: 'center calc(100% - 250px)',
+              backgroundRepeat: 'no-repeat',
+              transform: 'scaleX(-1)',
+              filter: 'blur(20px)',
+              WebkitFilter: 'blur(20px)',
+              zIndex: -1,
+              pointerEvents: 'none',
+              opacity: 0.6
+            }}
+          />
+          {/* Overlay с черным градиентом для скрытия стыка */}
+          <div 
+            className="mobile-background-blur-overlay"
+            style={{
+              position: 'absolute',
+              top: 'calc(clamp(290vh, 310vh, 330vh) - 250px)',
+              left: 0,
+              right: 0,
+              height: '300px',
+              width: '100%',
+              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 15%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.75) 55%, rgba(0, 0, 0, 0.9) 75%, rgba(0, 0, 0, 0.98) 90%, rgba(0, 0, 0, 1) 100%)',
+              backdropFilter: 'blur(15px)',
+              WebkitBackdropFilter: 'blur(15px)',
+              zIndex: 0,
+              pointerEvents: 'none'
+            }}
+          />
+        </>
+      )}
+
       {/* Раздел "Данные спектакля" */}
       <div 
         className="w-full flex flex-col items-center justify-center"
         style={{ 
-          marginTop: 'clamp(4rem, 7vh, 6rem)', /* Поднято выше с 6rem до 4rem */
+          marginTop: isMobile ? '0.5rem' : 'clamp(4rem, 7vh, 6rem)', /* Еще больше уменьшен margin-top на мобильной версии */
           paddingTop: 'clamp(1.5rem, 3vh, 2rem)',
           paddingBottom: 'clamp(2rem, 4vh, 3rem)',
           backgroundColor: '#000000',
@@ -1209,7 +1572,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       </div>
 
       {/* Раздел "Контакты и партнёры" - FOOTER */}
-      <div ref={contactsSectionRef} className="w-full flex flex-col items-center" style={{ width: '100%', padding: '0 clamp(1rem, 4vw, 4rem)', marginTop: 'clamp(2rem, 4vh, 3rem)', paddingBottom: 'clamp(2rem, 4vh, 3rem)', marginBottom: '0' }}>
+      <div ref={contactsSectionRef} className="w-full flex flex-col items-center contacts-section-no-overlay" style={{ width: '100%', padding: '0 clamp(1rem, 4vw, 4rem)', marginTop: 'clamp(2rem, 4vh, 3rem)', paddingBottom: 'clamp(2rem, 4vh, 3rem)', marginBottom: '0', position: 'relative', zIndex: 25 }}>
         {/* Заголовок "Контакты и партнёры" */}
         <p
           className="uppercase text-center"
@@ -1228,11 +1591,11 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         
         {/* Блок контактов и партнёров */}
         <div className="mt-8 md:mt-12 w-full mx-auto text-white" style={{ maxWidth: 'clamp(1200px, 90vw, 1600px)' }}>
-          <div className="flex flex-col md:flex-row items-start justify-between gap-6 md:gap-8 lg:gap-12">
+          <div className={`flex flex-col md:flex-row ${isMobile ? 'items-center' : 'items-start'} justify-between gap-6 md:gap-8 lg:gap-12`}>
             {/* Левая колонка — контакты */}
             <div className="flex-1 text-center md:text-left space-y-2" style={{ 
-              marginLeft: 'clamp(-4rem, -6vw, -2rem)', 
-              paddingLeft: 'clamp(1rem, 3vw, 2rem)',
+              marginLeft: isMobile ? '0' : 'clamp(-4rem, -6vw, -2rem)', 
+              paddingLeft: isMobile ? '0' : 'clamp(1rem, 3vw, 2rem)',
               minWidth: 'clamp(200px, 20vw, 300px)'
             }}>
               <p
@@ -1296,8 +1659,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
 
             {/* Правая колонка — соцсети и кнопка */}
             <div className="flex-1 text-center md:text-right space-y-4" style={{ 
-              marginRight: 'clamp(-4rem, -6vw, -2rem)', 
-              paddingRight: 'clamp(1rem, 3vw, 2rem)',
+              marginRight: isMobile ? '0' : 'clamp(-4rem, -6vw, -2rem)', 
+              paddingRight: isMobile ? '0' : 'clamp(1rem, 3vw, 2rem)',
               minWidth: 'clamp(200px, 20vw, 300px)'
             }}>
               <p

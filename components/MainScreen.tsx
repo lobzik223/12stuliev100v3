@@ -216,15 +216,15 @@ export default function MainScreen() {
           />
         </div>
 
-        {/* Переходный элемент с черным блюром между section-4.png и section-3.png */}
+        {/* Небольшой блюр для плавного перехода между section-4.png и section-3.png */}
         <div 
-          className="relative w-full"
+          className="relative w-full transition-gradient-blur"
           style={{
-            height: '20vh',
+            height: '8vh',
             width: '100%',
-            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0.8) 70%, rgba(0, 0, 0, 1) 100%)',
-            backdropFilter: 'blur(15px)',
-            WebkitBackdropFilter: 'blur(15px)',
+            background: 'transparent',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
             zIndex: 10,
             position: 'relative'
           }}
@@ -255,13 +255,13 @@ export default function MainScreen() {
               }}
             />
           </div>
-          {/* Черный блюр над фоном section-3.png для сглаживания перехода */}
+          {/* Небольшой блюр над фоном section-3.png для плавного перехода */}
           <div 
-            className="absolute top-0 left-0 w-full"
+            className="absolute top-0 left-0 w-full section3-blur-gradient"
             style={{
-              height: '25vh',
+              height: '10vh',
               width: '100%',
-              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.9) 30%, rgba(0, 0, 0, 0.6) 60%, rgba(0, 0, 0, 0.3) 85%, rgba(0, 0, 0, 0) 100%)',
+              background: 'transparent',
               backdropFilter: 'blur(15px)',
               WebkitBackdropFilter: 'blur(15px)',
               zIndex: 2,
@@ -271,12 +271,12 @@ export default function MainScreen() {
           {/* Контейнер для контента */}
           <div className="relative w-full" style={{ zIndex: 15 }}>
             {/* Раздел "АКТЕРЫ" */}
-            <div ref={actorsSectionRef} className="relative w-full" style={{ zIndex: 15, marginTop: 'clamp(-10rem, -18vh, -8rem)' }}>
+            <div ref={actorsSectionRef} className="relative w-full actors-section-wrapper-mobile" style={{ zIndex: 15, marginTop: 'clamp(-10rem, -18vh, -8rem)' }}>
               <ActorsSection />
             </div>
             
             {/* Раздел "ТРЕЙЛЕР" */}
-            <div className="relative w-full">
+            <div className="relative w-full trailer-section-wrapper-mobile">
               <TrailerSection 
                 gallerySectionRef={gallerySectionRef}
                 teamSectionRef={teamSectionRef}

@@ -8,7 +8,7 @@ interface SecondaryNavProps {
 export default function SecondaryNav({ isVisible, activeCategory = 0 }: SecondaryNavProps) {
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
+      className={`hidden md:block fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'
       }`}
       style={{ padding: 'clamp(0.5rem, 1vw, 0.75rem) clamp(0.5%, 1vw, 1%)' }}
@@ -56,7 +56,7 @@ export default function SecondaryNav({ isVisible, activeCategory = 0 }: Secondar
         </svg>
 
         <div className="relative h-full flex items-center justify-center" style={{ padding: '0 2%' }}>
-          <div className="flex flex-wrap items-center justify-center" style={{ gap: 'clamp(2rem, 5vw, 3rem)' }}>
+          <div className="flex flex-wrap items-center justify-center" style={{ gap: 'clamp(1rem, 5vw, 3rem)' }}>
             {[
               { name: 'ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»', index: 0 },
               { name: 'ПСИХУШКА', index: 1 },
@@ -67,10 +67,10 @@ export default function SecondaryNav({ isVisible, activeCategory = 0 }: Secondar
               return (
               <div key={item.index} className="flex flex-col items-center">
                 <div 
-                  className="rounded-full mb-2"
+                  className="rounded-full mb-1 md:mb-2"
                   style={{
-                    width: 'clamp(0.5rem, 0.7vw, 0.7rem)',
-                    height: 'clamp(0.5rem, 0.7vw, 0.7rem)',
+                    width: 'clamp(0.4rem, 0.7vw, 0.7rem)',
+                    height: 'clamp(0.4rem, 0.7vw, 0.7rem)',
                     backgroundColor: isActive ? '#FBC632' : 'transparent',
                     border: isActive ? 'none' : '1.5px solid rgba(255, 255, 255, 0.6)',
                     boxShadow: isActive ? '0 0 0.5rem rgba(251, 198, 50, 0.8)' : 'none'
@@ -80,9 +80,10 @@ export default function SecondaryNav({ isVisible, activeCategory = 0 }: Secondar
                   className="text-center uppercase"
                   style={{
                     fontFamily: "'Playfair Display SC', serif",
-                    fontSize: 'clamp(0.75rem, 0.9vw, 0.9rem)',
+                    fontSize: 'clamp(0.6rem, 0.9vw, 0.9rem)',
                     letterSpacing: '0.05rem',
-                    color: 'white'
+                    color: 'white',
+                    lineHeight: '1.2'
                   }}
                 >
                   {item.name}
