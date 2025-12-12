@@ -152,8 +152,30 @@ export default function ActorsSection() {
     // Также фиксируем при скролле и ресайзе
     const handleScroll = () => fixButtonPositions();
     const handleResize = () => fixButtonPositions();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleResize, { passive: true });
+    // Ждем полной загрузки DOM
+    const initHandlers = () => {
+      if (typeof window === 'undefined') return;
+      
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          setTimeout(() => {
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('touchmove', handleScroll, { passive: true });
+            window.addEventListener('resize', handleResize, { passive: true });
+            handleScroll();
+          }, 200);
+        });
+      } else {
+        setTimeout(() => {
+          window.addEventListener('scroll', handleScroll, { passive: true });
+          window.addEventListener('touchmove', handleScroll, { passive: true });
+          window.addEventListener('resize', handleResize, { passive: true });
+          handleScroll();
+        }, 200);
+      }
+    };
+    
+    initHandlers();
 
     return () => {
       clearTimeout(initTimeout);
@@ -162,8 +184,11 @@ export default function ActorsSection() {
         cancelAnimationFrame(animationFrameId.current);
       }
       observer.disconnect();
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('touchmove', handleScroll);
+        window.removeEventListener('resize', handleResize);
+      }
     };
   }, []);
 
