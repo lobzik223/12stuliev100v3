@@ -13,10 +13,6 @@ const nextConfig = {
   },
   compress: true,
   poweredByHeader: false,
-  // Улучшаем производительность на мобильных
-  experimental: {
-    optimizeCss: true,
-  },
   // Улучшаем загрузку на мобильных
   swcMinify: true,
   // Убеждаемся что статические файлы доступны
