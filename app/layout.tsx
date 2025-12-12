@@ -30,11 +30,11 @@ export default function RootLayout({
         <link rel="preconnect" href="https://12stuliev100v4.vercel.app" />
         <link rel="dns-prefetch" href="https://12stuliev100v4.vercel.app" />
         {/* Preload критических фоновых изображений для быстрой загрузки на мобильных */}
-        <link rel="preload" href="/backgrounds/sections/section-1.png" as="image" type="image/png" fetchpriority="high" />
-        <link rel="preload" href="/backgrounds/sections/section-2.png" as="image" type="image/png" fetchpriority="high" />
+        <link rel="preload" href="/backgrounds/sections/section-1.png" as="image" type="image/png" fetchPriority="high" />
+        <link rel="preload" href="/backgrounds/sections/section-2.png" as="image" type="image/png" fetchPriority="high" />
         <link rel="preload" href="/backgrounds/sections/section-3.png" as="image" type="image/png" />
-        <link rel="preload" href="/backgrounds/sections/section-4.png" as="image" type="image/png" fetchpriority="high" />
-        <link rel="preload" href="/backgrounds/sections/logo100let.png" as="image" type="image/png" fetchpriority="high" />
+        <link rel="preload" href="/backgrounds/sections/section-4.png" as="image" type="image/png" fetchPriority="high" />
+        <link rel="preload" href="/backgrounds/sections/logo100let.png" as="image" type="image/png" fetchPriority="high" />
         <link rel="preload" href="/backgrounds/sections/plitkanovosti.png" as="image" type="image/png" />
         {/* Preload критических изображений для JourneySection */}
         <link rel="preload" href="/backgrounds/sections/vput.png" as="image" type="image/png" />
