@@ -31,6 +31,8 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
       if (window.innerWidth >= 768) {
@@ -38,9 +40,23 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
       }
     };
     
-    checkMobile();
+    // Ждем полной загрузки DOM
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkMobile);
+    } else {
+      checkMobile();
+    }
+    
     window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener('orientationchange', checkMobile);
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', checkMobile);
+        window.removeEventListener('orientationchange', checkMobile);
+      }
+      document.removeEventListener('DOMContentLoaded', checkMobile);
+    };
   }, []);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {

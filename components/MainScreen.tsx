@@ -31,6 +31,9 @@ export default function MainScreen() {
   const yaryginaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+      // Проверяем что мы в браузере (не на сервере)
+      if (typeof window === 'undefined') return;
+
       const handleScroll = () => {
       if (!navPanelRef.current) return;
         
@@ -80,11 +83,49 @@ export default function MainScreen() {
       setActiveCategory(activeIndex);
       };
 
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll();
+      // Ждем полной загрузки DOM и всех ресурсов на мобильных
+      const initScrollHandler = () => {
+        if (typeof window === 'undefined' || typeof document === 'undefined') return;
+        
+        // Проверяем что DOM готов
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+              window.addEventListener('scroll', handleScroll, { passive: true });
+              window.addEventListener('touchmove', handleScroll, { passive: true });
+              handleScroll();
+            }, 200);
+          });
+        } else {
+          // DOM уже загружен, но ждем еще немного для гарантии
+          setTimeout(() => {
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('touchmove', handleScroll, { passive: true });
+            handleScroll();
+          }, 200);
+        }
+      };
+
+      // Также слушаем событие app-ready из layout.tsx
+      const handleAppReady = () => {
+        setTimeout(() => {
+          if (typeof window !== 'undefined') {
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('touchmove', handleScroll, { passive: true });
+            handleScroll();
+          }
+        }, 100);
+      };
+
+      window.addEventListener('app-ready', handleAppReady);
+      initScrollHandler();
 
       return () => {
-        window.removeEventListener('scroll', handleScroll);
+        if (typeof window !== 'undefined') {
+          window.removeEventListener('scroll', handleScroll);
+          window.removeEventListener('touchmove', handleScroll);
+          window.removeEventListener('app-ready', handleAppReady);
+        }
       };
   }, []);
 
@@ -113,6 +154,7 @@ export default function MainScreen() {
       <Header 
         isVisible={isMainHeaderVisible}
         onTicketsClick={() => {
+          if (typeof window === 'undefined') return;
           if (eventsSectionRef.current) {
             const element = eventsSectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -125,6 +167,7 @@ export default function MainScreen() {
           }
         }}
         onAboutClick={() => {
+          if (typeof window === 'undefined') return;
           if (journeySectionRef.current) {
             const element = journeySectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -137,6 +180,7 @@ export default function MainScreen() {
           }
         }}
         onGalleryClick={() => {
+          if (typeof window === 'undefined') return;
           if (gallerySectionRef.current) {
             const element = gallerySectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -149,6 +193,7 @@ export default function MainScreen() {
           }
         }}
         onActorsClick={() => {
+          if (typeof window === 'undefined') return;
           if (actorsSectionRef.current) {
             const element = actorsSectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -161,6 +206,7 @@ export default function MainScreen() {
           }
         }}
         onTeamClick={() => {
+          if (typeof window === 'undefined') return;
           if (teamSectionRef.current) {
             const element = teamSectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -173,6 +219,7 @@ export default function MainScreen() {
           }
         }}
         onReviewsClick={() => {
+          if (typeof window === 'undefined') return;
           if (reviewsSectionRef.current) {
             const element = reviewsSectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -185,6 +232,7 @@ export default function MainScreen() {
           }
         }}
         onContactsClick={() => {
+          if (typeof window === 'undefined') return;
           if (contactsSectionRef.current) {
             const element = contactsSectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
@@ -202,6 +250,7 @@ export default function MainScreen() {
       <div className="min-h-screen">
         {/* Раздел 1 - Hero */}
         <HeroSection onStartJourney={() => {
+          if (typeof window === 'undefined') return;
           if (journeySectionRef.current) {
             const element = journeySectionRef.current;
             const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
