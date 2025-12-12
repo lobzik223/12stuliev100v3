@@ -755,7 +755,19 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
 
                           <div className="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6">
                             <button
-                              onClick={() => router.push(`/details/${item.id}`)}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                try {
+                                  router.push(`/details/${item.id}`);
+                                } catch (error) {
+                                  console.error('Navigation error:', error);
+                                  // Fallback на window.location для мобильных
+                                  if (typeof window !== 'undefined') {
+                                    window.location.href = `/details/${item.id}`;
+                                  }
+                                }
+                              }}
                               className="px-10 md:px-12 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105 cursor-pointer schedule-details-button-mobile"
                               style={{
                                 fontFamily: "'Playfair Display SC', serif",

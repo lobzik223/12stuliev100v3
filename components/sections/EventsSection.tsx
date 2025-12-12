@@ -210,7 +210,19 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                   КУПИТЬ БИЛЕТ
                 </button>
                 <button
-                  onClick={() => router.push(`/details/${event.id}`)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                      router.push(`/details/${event.id}`);
+                    } catch (error) {
+                      console.error('Navigation error:', error);
+                      // Fallback на window.location для мобильных
+                      if (typeof window !== 'undefined') {
+                        window.location.href = `/details/${event.id}`;
+                      }
+                    }
+                  }}
                   className="rounded border transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
                   style={{
                     fontFamily: "'Playfair Display SC', serif",
@@ -322,7 +334,15 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                 if (onViewSchedule) {
                   onViewSchedule();
                 } else {
-                  router.push('/schedule');
+                  try {
+                    router.push('/schedule');
+                  } catch (error) {
+                    console.error('Navigation error:', error);
+                    // Fallback на window.location для мобильных
+                    if (typeof window !== 'undefined') {
+                      window.location.href = '/schedule';
+                    }
+                  }
                 }
               }}
               onMouseDown={(e) => {

@@ -105,8 +105,30 @@ const formatDateTime = (date: string, location?: string, time?: string): { __htm
 };
 
 const DetailsPage: React.FC = () => {
+  // Безопасное получение params с проверкой на мобильных устройствах
   const params = useParams();
-  const id = params?.id ? parseInt(params.id as string, 10) : null;
+  const [id, setId] = React.useState<number | null>(null);
+  const [isClient, setIsClient] = React.useState(false);
+
+  // Убеждаемся что мы на клиенте перед использованием params
+  React.useEffect(() => {
+    setIsClient(true);
+    if (params?.id) {
+      const parsedId = parseInt(params.id as string, 10);
+      if (!isNaN(parsedId)) {
+        setId(parsedId);
+      }
+    }
+  }, [params]);
+
+  // Показываем загрузку пока не определили id на клиенте
+  if (!isClient || id === null) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center', color: 'white', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div>Загрузка...</div>
+      </div>
+    );
+  }
 
   // Сначала ищем в scheduleItems (приоритет для расписания спектаклей)
   // Это гарантирует, что при клике "Подробнее" в SchedulePage откроется правильная карточка
@@ -124,8 +146,8 @@ const DetailsPage: React.FC = () => {
 
   if (!event && !scheduleItem) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center', color: 'white' }}>
-        Событие не найдено
+      <div style={{ padding: '2rem', textAlign: 'center', color: 'white', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div>Событие не найдено</div>
       </div>
     );
   }

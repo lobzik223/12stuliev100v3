@@ -268,7 +268,17 @@ export default function MainScreen() {
           <EventsSection 
             navPanelRef={navPanelRef} 
             activeCategory={activeCategory}
-            onViewSchedule={() => router.push('/schedule')}
+            onViewSchedule={() => {
+              try {
+                router.push('/schedule');
+              } catch (error) {
+                console.error('Navigation error:', error);
+                // Fallback на window.location для мобильных
+                if (typeof window !== 'undefined') {
+                  window.location.href = '/schedule';
+                }
+              }
+            }}
           />
         </div>
 
@@ -351,7 +361,17 @@ export default function MainScreen() {
                 teamSectionRef={teamSectionRef}
                 reviewsSectionRef={reviewsSectionRef}
                 contactsSectionRef={contactsSectionRef}
-                onViewSchedule={() => router.push('/schedule')}
+                onViewSchedule={() => {
+              try {
+                router.push('/schedule');
+              } catch (error) {
+                console.error('Navigation error:', error);
+                // Fallback на window.location для мобильных
+                if (typeof window !== 'undefined') {
+                  window.location.href = '/schedule';
+                }
+              }
+            }}
               />
             </div>
           </div>

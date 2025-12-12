@@ -5,6 +5,8 @@ import Image from 'next/image';
 import GalleryView from '@/components/gallery/GalleryView';
 import '@/components/gallery/GalleryView.css';
 
+// Отключаем статическую генерацию для этой страницы
+
 const GalleryPage: React.FC = () => {
   const newImages = [
     '/photo/Fotoset-6 (1).JPG',

@@ -48,9 +48,6 @@ export default function RootLayout({
         <Script 
           src="//s3.intickets.ru/interposed-frame.min.js" 
           strategy="afterInteractive"
-          onError={(e) => {
-            console.warn('Failed to load interposed-frame script:', e);
-          }}
         />
         {/* Инициализация клиентских скриптов после загрузки DOM */}
         <script

@@ -9,6 +9,20 @@
       "maxDuration": 30
     }
   },
+  "rewrites": [
+    {
+      "source": "/schedule",
+      "destination": "/schedule"
+    },
+    {
+      "source": "/gallery",
+      "destination": "/gallery"
+    },
+    {
+      "source": "/details/:id",
+      "destination": "/details/:id"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
