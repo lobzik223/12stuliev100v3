@@ -38,12 +38,6 @@ export default function RootLayout({
         <Script 
           src="//s3.intickets.ru/interposed-frame.min.js" 
           strategy="afterInteractive"
-          onError={(e) => {
-            console.error('Ошибка загрузки скрипта intickets:', e);
-          }}
-          onLoad={() => {
-            console.log('Скрипт intickets загружен');
-          }}
         />
       </body>
     </html>
