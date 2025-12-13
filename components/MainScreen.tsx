@@ -11,10 +11,11 @@ import ActorsSection from "./sections/ActorsSection";
 import TrailerSection from "./sections/TrailerSection";
 import { useRouter } from 'next/navigation';
 
-export default function MainScreen() {
+export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: { initialDebug?: boolean; ssrIsIOS?: boolean } = {}) {
   const router = useRouter();
   const [isMainHeaderVisible, setIsMainHeaderVisible] = useState(true);
   const [activeCategory, setActiveCategory] = useState(0); // 0: ОФИС, 1: ПСИХУШКА, 2: КВАРТИРА КИСЫ, 3: КВАРТИРА СТАРУХИ
+  const [debugEnabled, setDebugEnabled] = useState(initialDebug);
   const journeySectionRef = useRef<HTMLDivElement>(null);
   const eventsSectionRef = useRef<HTMLDivElement>(null);
   const gallerySectionRef = useRef<HTMLDivElement>(null);
