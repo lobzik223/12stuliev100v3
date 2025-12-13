@@ -40,6 +40,32 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
     setSelectedScheduleUrl(null);
   };
 
+  // Блокируем скролл body при открытии модального окна на мобильных
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isModalOpen && isMobile) {
+      // Сохраняем текущую позицию скролла
+      const scrollY = window.scrollY;
+      // Блокируем скролл body
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Восстанавливаем скролл при закрытии
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isModalOpen]);
+
 
   return (
     <section 
@@ -1227,7 +1253,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               height: '85vh',
               maxWidth: '1200px',
               maxHeight: '800px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              overflowY: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-y'
             }}
             onClick={(e) => e.stopPropagation()}
           >

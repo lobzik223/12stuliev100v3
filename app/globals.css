@@ -1501,6 +1501,26 @@ div.swiper-button-next.swiper-button-next-actors {
       pointer-events: auto !important;
       z-index: 5 !important;
     }
+
+    /* Стили для модальных окон на мобильных - правильный скролл */
+    [class*="fixed"][class*="inset-0"][style*="rgba(0, 0, 0"] {
+      -webkit-overflow-scrolling: touch !important;
+      touch-action: pan-y !important;
+    }
+
+    /* Контейнер модального окна с iframe - разрешаем скролл */
+    [class*="bg-white"][class*="rounded-lg"][style*="90vw"] {
+      -webkit-overflow-scrolling: touch !important;
+      touch-action: pan-y !important;
+      overflow-y: auto !important;
+    }
+
+    /* Iframe внутри модального окна - разрешаем скролл */
+    iframe[title="Покупка билетов"] {
+      -webkit-overflow-scrolling: touch !important;
+      touch-action: pan-y !important;
+      overflow-y: auto !important;
+    }
   }
 }
 
