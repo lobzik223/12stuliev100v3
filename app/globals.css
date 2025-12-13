@@ -44,23 +44,28 @@
     contain-intrinsic-size: 100px;
   }
   
-  /* Для hero-section-bg - правильный размер фона на мобильных */
+  /* Для hero-section-bg - правильный размер фона на мобильных (максимальная специфичность для продакшена) */
+  section.hero-section-bg[style*="section-1.png"],
   .hero-section-bg[style*="section-1.png"],
-  section.hero-section-bg[style*="section-1.png"] {
+  section[class*="hero-section-bg"][style*="section-1.png"] {
     background-size: cover !important;
     background-position: 70% center !important;
     background-repeat: no-repeat !important;
+    background-attachment: scroll !important;
   }
   
-  /* Для hero-logo-image - правильный размер логотипа на мобильных */
+  /* Для hero-logo-image - правильный размер логотипа на мобильных (максимальная специфичность для продакшена) */
+  div.hero-logo-image[style*="logo100let.png"],
   .hero-logo-image[style*="logo100let.png"],
-  div.hero-logo-image[style*="logo100let.png"] {
+  div[class*="hero-logo-image"][style*="logo100let.png"] {
     background-size: contain !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     width: clamp(18rem, 55vw, 30rem) !important;
     height: clamp(12.5rem, 45vw, 22rem) !important;
     max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
   }
   
   /* Улучшаем видимость кнопок на мобильных */
@@ -1347,9 +1352,16 @@ div.swiper-button-next.swiper-button-next-actors {
     width: clamp(18rem, 55vw, 30rem) !important;
     height: clamp(12.5rem, 45vw, 22rem) !important;
     max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
     background-size: contain !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
+    background-attachment: scroll !important;
+    /* Принудительное применение размеров на продакшене */
+    box-sizing: border-box !important;
+    /* Переопределяем любые inline стили */
+    flex-shrink: 0 !important;
   }
 
   /* Сдвигаем фон главного экрана немного вправо на мобильных */
@@ -1357,6 +1369,9 @@ div.swiper-button-next.swiper-button-next-actors {
     background-position: 70% center !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
+    background-attachment: scroll !important;
+    /* Принудительное применение размеров на продакшене */
+    box-sizing: border-box !important;
   }
 
   /* Скрываем кнопку "НАЧАТЬ ПУТЬ" когда мобильное меню открыто */
