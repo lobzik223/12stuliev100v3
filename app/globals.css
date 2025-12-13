@@ -1516,6 +1516,20 @@ div.swiper-button-next.swiper-button-next-actors {
       background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
       background-size: cover !important;
       background-position: center !important;
+      background-repeat: no-repeat !important;
+      background-attachment: scroll !important;
+      /* Принудительное применение на продакшене */
+      box-sizing: border-box !important;
+    }
+    
+    /* Дополнительная специфичность для JourneySection фона на продакшене */
+    div.journey-bg-mobile[style*="section-4"],
+    .journey-section-container .journey-bg-mobile[style*="section-4"],
+    div[class*="journey-bg-mobile"][style*="section-4"] {
+      background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
     }
 
     /* Убеждаемся, что все кнопки кликабельны на мобильных */
