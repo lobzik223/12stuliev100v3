@@ -362,6 +362,7 @@ export default function MainScreen() {
                 teamSectionRef={teamSectionRef}
                 reviewsSectionRef={reviewsSectionRef}
                 contactsSectionRef={contactsSectionRef}
+                ssrIsIOS={ssrIsIOS}
                 onViewSchedule={() => {
               try {
                 router.push('/schedule');

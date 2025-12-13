@@ -15,12 +15,18 @@ interface TrailerSectionProps {
   reviewsSectionRef?: React.RefObject<HTMLDivElement>;
   contactsSectionRef?: React.RefObject<HTMLDivElement>;
   onViewSchedule?: () => void;
+  ssrIsIOS?: boolean;
 }
 
-export default function TrailerSection({ gallerySectionRef, teamSectionRef, reviewsSectionRef, contactsSectionRef, onViewSchedule }: TrailerSectionProps) {
+export default function TrailerSection({ gallerySectionRef, teamSectionRef, reviewsSectionRef, contactsSectionRef, onViewSchedule, ssrIsIOS = false }: TrailerSectionProps) {
   const router = useRouter();
   const [selectedScheduleUrl, setSelectedScheduleUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleBuyTicket = (url: string | undefined) => {
     if (url) {
@@ -213,6 +219,49 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
 
           {/* Блок команды с каруселью Swiper - по логике отзывов */}
           <div className="relative w-full mt-2 md:mt-10 team-carousel-mobile-wrapper" style={{ padding: '1rem 0' }}>
+            {ssrIsIOS && !mounted ? (
+              <div className="flex flex-col items-center">
+                <p className="text-center" style={{ fontFamily: "'Playfair Display SC', serif", color: '#FBC632' }}>
+                  Команда
+                </p>
+                <div className="mt-4 grid grid-cols-1 gap-4" style={{ width: '100%', maxWidth: '500px' }}>
+                  {teamMembers.filter(member => member.date).slice(0, 1).map((member) => (
+                    <div key={member.id} className="flex flex-col items-center">
+                      <div className="relative" style={{ width: '100%', maxWidth: 'clamp(350px, 30vw, 500px)' }}>
+                        <Image
+                          src="/backgrounds/sections/command.png"
+                          alt={member.name}
+                          width={2800}
+                          height={1867}
+                          className="h-auto w-full"
+                          style={{ objectFit: 'contain', display: 'block' }}
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center" style={{ 
+                          pointerEvents: 'none',
+                          color: '#8B4513',
+                          fontFamily: 'serif',
+                          paddingTop: 'clamp(2rem, 5vh, 4rem)',
+                          paddingBottom: 'clamp(1.5rem, 4vh, 3.5rem)',
+                          paddingLeft: 'clamp(2.2rem, 5.5vw, 4.5rem)',
+                          paddingRight: 'clamp(2.2rem, 5.5vw, 4.5rem)',
+                        }}>
+                          <p style={{ fontSize: 'clamp(0.7rem, 1.3vw, 1.3rem)', fontWeight: 'bold', marginBottom: 'clamp(0.25rem, 0.6vw, 0.6rem)' }}>
+                            {member.name}
+                          </p>
+                          <p style={{ fontSize: 'clamp(0.55rem, 1vw, 1rem)', marginBottom: 'clamp(0.5rem, 1.2vw, 1.2rem)', color: '#000000' }}>
+                            {member.position}
+                          </p>
+                          <p style={{ fontSize: 'clamp(0.6rem, 1vw, 0.95rem)', fontStyle: 'italic' }}>
+                            &ldquo;{member.quote}&rdquo;
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
             <Swiper
               modules={[Navigation]}
               speed={800}
@@ -356,8 +405,11 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 </SwiperSlide>
               ))}
             </Swiper>
+            )}
             
             {/* Кнопки навигации Swiper - меньшие и тусклые на десктопе, яркие на мобильных */}
+            {(!ssrIsIOS || mounted) && (
+            <>
             <div 
               className="swiper-button-prev swiper-button-prev-team" 
               style={{ 
@@ -380,6 +432,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 right: '-1rem'
               }}
             ></div>
+            </>
+            )}
           </div>
 
           {/* Раздел "ОТЗЫВЫ" */}
@@ -400,6 +454,73 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
 
             {/* Блок отзывов с каруселью Swiper */}
             <div className="relative w-full mt-2 md:mt-10 reviews-carousel-mobile-wrapper" style={{ padding: '1rem 0' }}>
+              {ssrIsIOS && !mounted ? (
+                <div className="grid grid-cols-1 gap-4" style={{ width: '100%' }}>
+                  {reviews.slice(0, 1).map((review) => (
+                    <div key={review.id} className="flex flex-col items-center">
+                      <div className="relative review-card-mobile" style={{ width: '100%', maxWidth: 'clamp(550px, 42vw, 900px)' }}>
+                        <Image
+                          src="/backgrounds/sections/otzivi.png"
+                          alt={`Отзыв от ${review.name}`}
+                          width={900}
+                          height={600}
+                          className="h-auto w-full"
+                          style={{ objectFit: 'contain', display: 'block' }}
+                          unoptimized
+                        />
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center" style={{
+                          padding: 'clamp(1rem, 2vw, 2rem)',
+                          zIndex: 1,
+                          transform: 'translateY(-3%)',
+                        }}>
+                          <p style={{
+                            fontFamily: "'Playfair Display SC', serif",
+                            fontSize: 'clamp(0.875rem, 1.1vw, 1.1rem)',
+                            color: '#682302',
+                            fontWeight: 'bold',
+                            marginBottom: 'clamp(0.25rem, 0.5vw, 0.5rem)',
+                          }}>
+                            {review.name}
+                          </p>
+                          <div className="flex justify-center gap-1" style={{ marginBottom: 'clamp(0.25rem, 0.5vw, 0.5rem)' }}>
+                            {[...Array(5)].map((_, index) => (
+                              <svg
+                                key={index}
+                                viewBox="0 0 24 24"
+                                fill={index < review.rating ? '#682302' : 'none'}
+                                stroke="#682302"
+                                strokeWidth="2"
+                                style={{ width: 'clamp(12px, 1vw, 16px)', height: 'clamp(12px, 1vw, 16px)' }}
+                              >
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                              </svg>
+                            ))}
+                          </div>
+                          <p style={{
+                            fontFamily: "'Playfair Display SC', serif",
+                            fontSize: 'clamp(0.55rem, 0.65vw, 0.7rem)',
+                            color: '#1a1a1a',
+                            lineHeight: '1.3',
+                            maxWidth: 'clamp(140px, 12vw, 220px)',
+                            margin: '0 auto',
+                          }}>
+                            {review.text}
+                          </p>
+                          <p style={{
+                            fontFamily: "'Playfair Display SC', serif",
+                            fontSize: 'clamp(0.65rem, 0.8vw, 0.8rem)',
+                            color: '#8B7355',
+                            fontStyle: 'italic',
+                            marginTop: 'clamp(0.5rem, 0.75vw, 0.75rem)',
+                          }}>
+                            {review.date}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
               <Swiper
                 modules={[Navigation]}
                 speed={800}
@@ -550,8 +671,11 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   </SwiperSlide>
                 ))}
               </Swiper>
+              )}
               
               {/* Кнопки навигации Swiper */}
+              {(!ssrIsIOS || mounted) && (
+              <>
               <div 
                 className="swiper-button-prev swiper-button-prev-reviews" 
                 style={{ 
@@ -578,6 +702,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   height: 'clamp(2rem, 3vw, 3rem)'
                 }}
               ></div>
+              </>
+              )}
             </div>
           </div>
 
@@ -609,6 +735,30 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
 
             {/* Карусель расписания спектаклей */}
             <div className="relative w-full mt-10 schedule-carousel-wrapper" style={{ padding: '2rem clamp(2rem, 4vw, 3rem)', overflow: 'visible' }}>
+              {ssrIsIOS && !mounted ? (
+                <div className="grid grid-cols-1 gap-4" style={{ width: '100%' }}>
+                  {scheduleItems.slice(0, 1).map((item) => (
+                    <div key={item.id} className="flex flex-col items-stretch h-full" style={{ padding: '0 0.5rem' }}>
+                      <div className="flex-1 rounded-xl border-2 border-[#FBC632] bg-[#682302] px-6 py-6" style={{ boxShadow: 'none' }}>
+                        <div className="w-full h-full flex flex-col justify-between text-center space-y-4">
+                          <p className="text-xl uppercase" style={{ fontFamily: "'Playfair Display SC', serif", color: '#FBC632' }}>
+                            <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(24px, 2vw, 32px)' }}>12</span>
+                            <span> стульев – {item.title.replace('12 стульев – ', '')}</span>
+                          </p>
+                          <p className="text-lg uppercase" style={{ fontFamily: "'Playfair Display SC', serif", color: '#FFFFFF' }}>
+                            <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(20px, 1.75vw, 28px)' }}>{item.date.split(' ')[0]}</span>
+                            <span> {item.date.split(' ')[1]} | </span>
+                            <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(20px, 1.75vw, 28px)' }}>{item.time}</span>
+                          </p>
+                          <p className="text-sm uppercase" style={{ fontFamily: "'Playfair Display SC', serif", color: '#FFFFFF' }}>
+                            {item.location}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
               <Swiper
                 modules={[Navigation]}
                 speed={800}
@@ -810,8 +960,11 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   </SwiperSlide>
                 ))}
               </Swiper>
+              )}
               
               {/* Кнопки навигации Swiper */}
+              {(!ssrIsIOS || mounted) && (
+              <>
               <div 
                 className="swiper-button-prev swiper-button-prev-schedule schedule-nav-arrow-mobile" 
                 style={{ 
@@ -836,6 +989,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   height: 'clamp(2rem, 3vw, 3rem)'
                 }}
               ></div>
+              </>
+              )}
             </div>
 
             {/* Кнопка "ПОСМОТРЕТЬ РАСПИСАНИЕ" под карточками расписания */}
