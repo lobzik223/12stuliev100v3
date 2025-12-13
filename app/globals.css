@@ -47,11 +47,13 @@
   /* Для hero-section-bg - правильный размер фона на мобильных (максимальная специфичность для продакшена) */
   section.hero-section-bg[style*="section-1.png"],
   .hero-section-bg[style*="section-1.png"],
-  section[class*="hero-section-bg"][style*="section-1.png"] {
+  section[class*="hero-section-bg"][style*="section-1.png"],
+  .hero-section-bg {
     background-size: cover !important;
     background-position: 70% center !important;
     background-repeat: no-repeat !important;
     background-attachment: scroll !important;
+    background-image: url(/backgrounds/sections/section-1.png) !important;
   }
   
   /* Для hero-logo-image - правильный размер логотипа на мобильных (максимальная специфичность для продакшена) */
@@ -1362,6 +1364,8 @@ div.swiper-button-next.swiper-button-next-actors {
     box-sizing: border-box !important;
     /* Переопределяем любые inline стили */
     flex-shrink: 0 !important;
+    /* Принудительная загрузка фона */
+    background-image: url(/backgrounds/sections/logo100let.png) !important;
   }
 
   /* Сдвигаем фон главного экрана немного вправо на мобильных */
@@ -1372,6 +1376,8 @@ div.swiper-button-next.swiper-button-next-actors {
     background-attachment: scroll !important;
     /* Принудительное применение размеров на продакшене */
     box-sizing: border-box !important;
+    /* Принудительная загрузка фона */
+    background-image: url(/backgrounds/sections/section-1.png) !important;
   }
 
   /* Скрываем кнопку "НАЧАТЬ ПУТЬ" когда мобильное меню открыто */
@@ -1525,11 +1531,13 @@ div.swiper-button-next.swiper-button-next-actors {
     /* Дополнительная специфичность для JourneySection фона на продакшене */
     div.journey-bg-mobile[style*="section-4"],
     .journey-section-container .journey-bg-mobile[style*="section-4"],
-    div[class*="journey-bg-mobile"][style*="section-4"] {
+    div[class*="journey-bg-mobile"][style*="section-4"],
+    .journey-bg-mobile {
       background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
       background-size: cover !important;
       background-position: center !important;
       background-repeat: no-repeat !important;
+      background-attachment: scroll !important;
     }
 
     /* Убеждаемся, что все кнопки кликабельны на мобильных */
