@@ -44,6 +44,25 @@
     contain-intrinsic-size: 100px;
   }
   
+  /* Для hero-section-bg - правильный размер фона на мобильных */
+  .hero-section-bg[style*="section-1.png"],
+  section.hero-section-bg[style*="section-1.png"] {
+    background-size: cover !important;
+    background-position: 70% center !important;
+    background-repeat: no-repeat !important;
+  }
+  
+  /* Для hero-logo-image - правильный размер логотипа на мобильных */
+  .hero-logo-image[style*="logo100let.png"],
+  div.hero-logo-image[style*="logo100let.png"] {
+    background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    width: clamp(18rem, 55vw, 30rem) !important;
+    height: clamp(12.5rem, 45vw, 22rem) !important;
+    max-width: 100% !important;
+  }
+  
   /* Улучшаем видимость кнопок на мобильных */
   button,
   a[role="button"],
@@ -1327,11 +1346,17 @@ div.swiper-button-next.swiper-button-next-actors {
   .hero-logo-image {
     width: clamp(18rem, 55vw, 30rem) !important;
     height: clamp(12.5rem, 45vw, 22rem) !important;
+    max-width: 100% !important;
+    background-size: contain !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
   }
 
   /* Сдвигаем фон главного экрана немного вправо на мобильных */
   .hero-section-bg {
     background-position: 70% center !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
   }
 
   /* Скрываем кнопку "НАЧАТЬ ПУТЬ" когда мобильное меню открыто */
