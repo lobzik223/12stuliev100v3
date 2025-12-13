@@ -125,7 +125,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       }}
     >
       {/* Фон раздела */}
-      <div className="relative w-full z-0" style={{ minHeight: '400vh', width: '100%' }}>
+      <div className="relative w-full z-0" style={{ minHeight: '400vh', height: '400vh', width: '100%' }}>
         <div
           className="journey-bg-mobile"
           style={{
@@ -134,10 +134,11 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             width: '100%',
-            height: '100%',
             position: 'absolute',
-            top: '0',
+            top: 0,
             left: 0,
+            right: 0,
+            bottom: 0,
             minHeight: '400vh',
             willChange: 'auto' // Оптимизация для браузера
           }}

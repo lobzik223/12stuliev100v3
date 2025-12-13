@@ -16,6 +16,14 @@ export default function ScrollReveal({ children, delay = 0, className = '' }: Sc
   useEffect(() => {
     if (!ref) return;
 
+    // Mobile-only: не прячем контент (на iOS/Android IntersectionObserver иногда не срабатывает на реальных устройствах).
+    // Важно: это выполняется только после гидрации (useEffect), поэтому hydration mismatch не возникает.
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+      setIsVisible(true);
+      setHasBeenVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -54,6 +62,7 @@ export default function ScrollReveal({ children, delay = 0, className = '' }: Sc
     <div
       ref={setRef}
       className={className}
+      data-scroll-reveal="true"
       style={{
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(9.375rem) scale(0.9)',

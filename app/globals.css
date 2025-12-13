@@ -523,6 +523,15 @@ div.swiper-button-next.swiper-button-next-actors {
 
 /* Мобильные стили */
 @media (max-width: 768px) {
+  /* Mobile-only страховка: если гидрация/IntersectionObserver на iOS ломается,
+     ScrollReveal не должен оставлять контент невидимым. Дизайн/раскладку не меняем — только убираем скрытие. */
+  [data-scroll-reveal="true"] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
   /* Улучшаем читаемость текста на мобильных */
   body {
     font-size: 14px;
@@ -571,16 +580,16 @@ div.swiper-button-next.swiper-button-next-actors {
     /* Предотвращаем проблемы с загрузкой */
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    /* Улучшаем производительность */
-    content-visibility: auto;
+    /* На iOS/Safari content-visibility + большие absolute слои часто “прячут” контент */
+    content-visibility: visible;
   }
 
   /* Улучшаем работу с контейнерами */
   section, main, div[class*="container"] {
     /* Предотвращаем проблемы с overflow */
     overflow-x: hidden;
-    /* Улучшаем производительность */
-    contain: layout style paint;
+    /* iOS/Safari: contain: paint/layout может обрезать absolute элементы и целые секции */
+    contain: none;
   }
 
   /* Карточки событий на мобильных - сохраняем пропорции как на десктопе */
@@ -642,196 +651,6 @@ div.swiper-button-next.swiper-button-next-actors {
   /* Кнопка расписания на мобильных - поднимаем выше */
   .schedule-button-container {
     margin-top: clamp(-10rem, -14vh, -11rem) !important;
-  }
-
-  /* Фон раздела "В ПУТЬ" на мобильных - растягиваем на всю ширину экрана, убираем обрезку */
-  .journey-section-container {
-    width: 100vw !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    margin-bottom: clamp(-220vh, -210vh, -200vh) !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    padding-top: clamp(8vh, 10vh, 12vh) !important;
-    padding-bottom: 0 !important;
-    overflow-x: hidden !important;
-    overflow-y: hidden !important;
-    position: relative !important;
-    height: clamp(180vh, 190vh, 200vh) !important;
-    max-height: clamp(180vh, 190vh, 200vh) !important;
-  }
-
-  .journey-section-container > div:first-child {
-    width: 100vw !important;
-    left: 0 !important;
-    right: 0 !important;
-    overflow: hidden !important;
-    height: clamp(180vh, 190vh, 200vh) !important;
-    max-height: clamp(180vh, 190vh, 200vh) !important;
-  }
-
-  .journey-bg-mobile {
-    background-size: 100% 50% !important;
-    background-position: center top !important;
-    top: clamp(-12rem, -18vh, -10rem) !important;
-    position: absolute !important;
-    width: 100vw !important;
-    left: 0 !important;
-    right: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    height: clamp(180vh, 190vh, 200vh) !important;
-    max-height: clamp(180vh, 190vh, 200vh) !important;
-  }
-
-  /* Элемент vput.png на мобильных - поднимаем выше, убираем обрезку */
-  .vput-element-mobile {
-    top: clamp(-4vh, -2vh, 0vh) !important;
-    left: clamp(1rem, 2.5vw, 3rem) !important;
-    transform: translateX(0) !important;
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  .vput-inner-mobile {
-    width: clamp(18rem, 32vw, 22rem) !important;
-    height: clamp(13.5rem, 24vw, 16.5rem) !important;
-    overflow: visible !important;
-    clip-path: none !important;
-  }
-
-  /* Элемент tiraj.png на мобильных - позиционируем справа от vput.png, сдвигаем влево и опускаем */
-  .tiraj-element-mobile {
-    top: clamp(-2vh, 1vh, 2vh) !important;
-    left: clamp(15.5rem, 32vw, 21rem) !important;
-    right: auto !important;
-    transform: translateX(0) !important;
-  }
-
-  .tiraj-element-mobile > div {
-    width: clamp(12rem, 22vw, 16rem) !important;
-    height: clamp(9rem, 16.5vw, 12rem) !important;
-  }
-
-  /* Текст "ОФИС ЛОТЕРЕИ" на мобильных - поднимаем выше и уменьшаем */
-  .office-text-mobile {
-    top: clamp(10vh, 20vh, 30vh) !important;
-    right: clamp(1rem, 2.5vw, 3rem) !important;
-  }
-
-  .office-title-mobile {
-    font-size: clamp(0.85rem, 1.3vw, 1.3rem) !important;
-  }
-
-  .office-description-mobile {
-    font-size: clamp(0.75rem, 1.1vw, 1rem) !important;
-  }
-
-  /* Текст "КВАРТИРА КИСЫ" на мобильных - такие же размеры как "ОФИС ЛОТЕРЕИ" */
-  .kvartira-title-mobile {
-    font-size: clamp(0.85rem, 1.3vw, 1.3rem) !important;
-  }
-
-  .kvartira-description-mobile {
-    font-size: clamp(0.75rem, 1.1vw, 1rem) !important;
-  }
-
-  /* Скрываем элемент flash.png на мобильных */
-  .flash-mobile {
-    display: none !important;
-  }
-
-  /* Элемент vput2.png на мобильных - позиционируем ниже и делаем видимым */
-  .vput2-mobile {
-    top: clamp(38vh, 48vh, 58vh) !important;
-    left: clamp(1rem, 2.5vw, 3rem) !important;
-  }
-
-  .vput2-mobile > div {
-    width: clamp(18rem, 32vw, 22rem) !important;
-    height: clamp(13.5rem, 24vw, 16.5rem) !important;
-  }
-
-  /* Текст "ПСИХУШКА" на мобильных - позиционируем под vput2.png, растягиваем */
-  .psychushka-text-mobile {
-    top: clamp(58vh, 68vh, 78vh) !important;
-    left: clamp(10rem, 15vw, 16rem) !important;
-    right: auto !important;
-    max-width: clamp(18rem, 32vw, 22rem) !important;
-  }
-
-  .psychushka-text-mobile p:first-child {
-    font-size: clamp(0.85rem, 1.3vw, 1.3rem) !important;
-  }
-
-  .psychushka-text-mobile p:last-child {
-    font-size: clamp(0.75rem, 1.1vw, 1rem) !important;
-  }
-
-  /* Элемент vput3.png на мобильных - позиционируем после текста "ПСИХУШКА" */
-  .vput3-mobile {
-    top: clamp(84vh, 94vh, 104vh) !important;
-    left: clamp(8rem, 12vw, 13rem) !important;
-  }
-
-  .vput3-mobile > div {
-    width: clamp(18rem, 32vw, 22rem) !important;
-    height: clamp(13.5rem, 24vw, 16.5rem) !important;
-  }
-
-  /* Элемент pamat15.png на мобильных - делаем меньше и позиционируем напротив vput3.png */
-  .pamat15-mobile {
-    top: clamp(92vh, 102vh, 112vh) !important;
-    left: clamp(-1rem, 0.5vw, 1.5rem) !important;
-  }
-
-  .pamat15-mobile > div {
-    width: clamp(8.5rem, 15vw, 12rem) !important;
-    height: clamp(6.4rem, 11.25vw, 9rem) !important;
-  }
-
-  /* Текст "КВАРТИРА КИСЫ" ниже pamat15.png на мобильных */
-  .kvartira-kisy-mobile {
-    top: clamp(105vh, 115vh, 125vh) !important;
-    left: clamp(1rem, 5vw, 3rem) !important;
-    maxWidth: clamp(18rem, 85vw, 25rem) !important;
-  }
-
-  /* Элемент vput4.png на мобильных - ниже текста "КВАРТИРА КИСЫ" */
-  .vput4-mobile {
-    top: clamp(128vh, 138vh, 148vh) !important;
-    left: clamp(8rem, 20vw, 16rem) !important;
-  }
-
-  .vput4-mobile > div {
-    width: clamp(18rem, 32vw, 22rem) !important;
-    height: clamp(13.5rem, 24vw, 16.5rem) !important;
-  }
-
-  /* Элемент computer.png на мобильных - слева от vput4.png */
-  .computer-mobile {
-    top: clamp(130vh, 140vh, 150vh) !important;
-    left: clamp(-0.5rem, -2vw, 2.5rem) !important;
-  }
-
-  .computer-mobile > div {
-    width: clamp(9rem, 16vw, 12rem) !important;
-    height: clamp(6.75rem, 12vw, 9rem) !important;
-  }
-
-  /* Текст "КВАРТИРА СТАРУХИ ЯРЫГИНОЙ" на мобильных - после computer.png */
-  .yarygina-text-mobile {
-    top: clamp(155vh, 165vh, 175vh) !important;
-    left: clamp(1rem, 5vw, 3rem) !important;
-    maxWidth: clamp(18rem, 85vw, 25rem) !important;
-  }
-
-  .yarygina-title-mobile {
-    font-size: clamp(0.85rem, 1.3vw, 1.3rem) !important;
-  }
-
-  .yarygina-description-mobile {
-    font-size: clamp(0.75rem, 1.1vw, 1rem) !important;
   }
 
   /* Небольшой блюр для плавного перехода между section-4.png и section-3.png на мобильных */
@@ -1616,6 +1435,72 @@ div.swiper-button-next.swiper-button-next-actors {
     max-width: 100%;
     word-wrap: break-word;
     overflow-wrap: break-word;
+  }
+}
+
+/* iOS-only: Safari отличается трактовкой vh из-за адресной строки.
+   Здесь НЕ меняем композицию, а только переводим vh→svh для координат Journey и убираем клиппинг. */
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 768px) {
+    .journey-section-container {
+      margin-bottom: 0 !important;
+      overflow-y: visible !important;
+    }
+
+    /* iOS: координаты элементов Journey через svh (ближе к DevTools mobile preview) */
+    .vput-element-mobile { top: clamp(-4svh, -2svh, 0svh) !important; }
+    .tiraj-element-mobile { top: clamp(-2svh, 1svh, 2svh) !important; }
+    .office-text-mobile { top: clamp(10svh, 20svh, 30svh) !important; }
+    .vput2-mobile { top: clamp(38svh, 48svh, 58svh) !important; }
+    .psychushka-text-mobile { top: clamp(58svh, 68svh, 78svh) !important; }
+    .vput3-mobile { top: clamp(84svh, 94svh, 104svh) !important; }
+    .pamat15-mobile { top: clamp(92svh, 102svh, 112svh) !important; }
+    .kvartira-kisy-mobile { top: clamp(105svh, 115svh, 125svh) !important; }
+    .vput4-mobile { top: clamp(128svh, 138svh, 148svh) !important; }
+    .computer-mobile { top: clamp(130svh, 140svh, 150svh) !important; }
+    .yarygina-text-mobile { top: clamp(155svh, 165svh, 175svh) !important; }
+
+    /* iOS: фон не должен перехватывать клики */
+    .journey-bg-mobile { 
+      pointer-events: none !important;
+      /* Используем мобильную версию фона и правильное масштабирование */
+      background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
+      background-size: cover !important;
+      background-position: center !important;
+    }
+  }
+
+  /* Для мобильных устройств: используем section-4-mobile.png и cover вместо 100% 100% */
+  @media (max-width: 768px) {
+    .journey-bg-mobile {
+      background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
+      background-size: cover !important;
+      background-position: center !important;
+    }
+
+    /* Убеждаемся, что все кнопки кликабельны на мобильных */
+    button {
+      pointer-events: auto !important;
+      z-index: 100 !important;
+      position: relative !important;
+      cursor: pointer !important;
+      -webkit-tap-highlight-color: rgba(251, 198, 50, 0.3) !important;
+    }
+
+    /* Контейнеры кнопок также должны быть кликабельны */
+    .hero-start-button,
+    .schedule-button-container,
+    .gallery-button-mobile {
+      pointer-events: auto !important;
+      z-index: 100 !important;
+      position: relative !important;
+    }
+
+    /* Элементы JourneySection должны быть поверх фона */
+    .journey-section-container > [class*="absolute"] {
+      pointer-events: auto !important;
+      z-index: 5 !important;
+    }
   }
 }
 

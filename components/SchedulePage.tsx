@@ -250,7 +250,7 @@ export default function SchedulePage() {
         }}
       >
         {/* Фон раздела - растянут в длину как в разделе "В ПУТЬ", обрезается на тексте с ИНН/ОГРНИП */}
-        <div ref={bgWrapperRef} className="absolute inset-0 z-0" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+        <div ref={bgWrapperRef} className="absolute inset-0 z-0" style={{ width: '100%', overflow: 'hidden' }}>
           <div
             style={{
               backgroundImage: 'url(/backgrounds/sections/section-4.png)',
@@ -258,10 +258,11 @@ export default function SchedulePage() {
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
               width: '100%',
-              height: '100%',
               position: 'absolute',
-              top: '0',
+              top: 0,
               left: 0,
+              right: 0,
+              bottom: 0,
               overflow: 'hidden',
               willChange: 'auto' // Оптимизация для браузера
             }}

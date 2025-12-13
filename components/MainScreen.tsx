@@ -317,7 +317,7 @@ export default function MainScreen() {
           }}
         >
           {/* Фон раздела - покрывает ActorsSection и TrailerSection до конца раздела "Контакты и партнёры" */}
-          <div className="absolute inset-0 z-0" style={{ width: '100%', height: '100%' }}>
+          <div className="absolute inset-0 z-0" style={{ width: '100%', pointerEvents: 'none' }}>
             <div
               style={{
                 backgroundImage: 'url(/backgrounds/sections/section-3.png)',
@@ -325,12 +325,13 @@ export default function MainScreen() {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 width: '100%',
-                height: '100%',
                 position: 'absolute',
-                top: '0',
+                top: 0,
                 left: 0,
+                right: 0,
                 bottom: 0,
-                willChange: 'auto' // Оптимизация для браузера
+                willChange: 'auto', // Оптимизация для браузера
+                pointerEvents: 'none'
               }}
             />
           </div>

@@ -18,6 +18,14 @@ export default function CounterAnimation({ end, duration = 2000, delay = 0, clas
   useEffect(() => {
     if (!ref) return;
 
+    // Mobile-only: показываем финальное число сразу, без IntersectionObserver/анимации
+    // (на iOS IntersectionObserver иногда не срабатывает и остаётся 0).
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+      setCount(end);
+      setIsVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -43,6 +51,11 @@ export default function CounterAnimation({ end, duration = 2000, delay = 0, clas
 
   useEffect(() => {
     if (!isVisible) return;
+
+    // Mobile-only: финальное число уже установлено выше.
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+      return;
+    }
 
     let startTime: number | null = null;
     const startValue = 0;
@@ -70,7 +83,7 @@ export default function CounterAnimation({ end, duration = 2000, delay = 0, clas
   }, [isVisible, end, duration]);
 
   return (
-    <span ref={setRef} className={className} style={style}>
+    <span ref={setRef} className={className} style={style} suppressHydrationWarning>
       {count.toLocaleString('ru-RU')}
     </span>
   );
