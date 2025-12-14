@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -9,6 +9,7 @@ import { reviews } from '../../data/reviews';
 import { scheduleItems } from '../../data/schedule';
 import { teamMembers } from '../../data/team';
 import { isProbablyMobile } from '../utils/device';
+import EmployeeTicketsModal from '../ui/EmployeeTicketsModal';
 
 interface TrailerSectionProps {
   gallerySectionRef?: React.RefObject<HTMLDivElement>;
@@ -23,11 +24,28 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
   const router = useRouter();
   const [selectedScheduleUrl, setSelectedScheduleUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEmployeeTicketsModalOpen, setIsEmployeeTicketsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const isMobile = typeof window !== 'undefined' ? isProbablyMobile() : false;
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Устанавливаем атрибуты для iOS и других браузеров
+  useEffect(() => {
+    if (videoRef.current && mounted) {
+      // Для iOS Safari
+      videoRef.current.setAttribute('webkit-playsinline', 'true');
+      videoRef.current.setAttribute('playsinline', 'true');
+      // Для Android/Chrome
+      videoRef.current.setAttribute('x5-playsinline', 'true');
+      videoRef.current.setAttribute('x5-video-player-type', 'h5');
+      videoRef.current.setAttribute('x5-video-player-fullscreen', 'true');
+    }
+  }, [mounted]);
 
   const handleBuyTicket = (url: string | undefined) => {
     if (url) {
@@ -111,39 +129,131 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
 
         {/* Видео блок под текстом */}
         <div className="flex justify-center mb-6 md:mb-8 mt-6 md:mt-8 px-2">
-          <Image
-            src="/backgrounds/sections/video.png"
-            alt="Видео"
-            width={1200}
-            height={675}
-            style={{ 
-              width: 'clamp(20rem, 70vw, 75rem)', 
-              maxWidth: '100%',
-              height: 'auto'
-            }}
-            unoptimized
-          />
-        </div>
-
-        {/* Кнопка "СМОТРЕТЬ ТРЕЙЛЕР" */}
-        <div className="flex justify-center mb-16 md:mb-20">
-          <button
-            className="rounded-lg border-2 transition-all duration-300 hover:scale-105"
+          <div
+            className="relative"
             style={{
-              fontFamily: "'Playfair Display SC', serif",
-              fontSize: 'clamp(1.125rem, 1.5vw, 1.25rem)',
-              letterSpacing: '0.0625rem',
-              color: 'white',
-              backgroundColor: '#682302',
-              borderColor: '#FBC632',
-              borderWidth: '3px',
-              padding: 'clamp(0.5rem, 0.75vw, 0.625rem) clamp(5rem, 8vw, 6.25rem)',
-              boxShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.4)',
-              whiteSpace: 'nowrap'
+              width: isMobile ? 'clamp(18rem, 90vw, 100%)' : 'clamp(50rem, 70vw, 75rem)',
+              maxWidth: '100%',
+              aspectRatio: '16 / 9',
+              cursor: isVideoPlaying ? 'default' : 'pointer',
             }}
           >
-            СМОТРЕТЬ ТРЕЙЛЕР
-          </button>
+            <video
+              ref={videoRef}
+              className="w-full h-full"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '8px',
+                backgroundColor: '#000',
+              }}
+              controls={isVideoPlaying}
+              preload="metadata"
+              playsInline
+              onPlay={() => {
+                setIsVideoPlaying(true);
+              }}
+              onPause={() => {
+                setIsVideoPlaying(false);
+              }}
+              onEnded={() => {
+                setIsVideoPlaying(false);
+              }}
+            >
+              <source src="/backgrounds/sections/treiler.mp4" type="video/mp4" />
+              Ваш браузер не поддерживает воспроизведение видео.
+            </video>
+            
+            {/* Кнопка воспроизведения (показывается когда видео не играет) */}
+            {!isVideoPlaying && (
+              <div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s ease',
+                  pointerEvents: 'auto',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isMobile) {
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isMobile) {
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                  }
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (videoRef.current) {
+                    videoRef.current.play().catch((error) => {
+                      console.error('Ошибка воспроизведения видео:', error);
+                    });
+                    setIsVideoPlaying(true);
+                  }
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  if (videoRef.current && !isVideoPlaying) {
+                    videoRef.current.play().catch((error) => {
+                      console.error('Ошибка воспроизведения видео:', error);
+                    });
+                    setIsVideoPlaying(true);
+                  }
+                }}
+              >
+                <div
+                  className="flex items-center justify-center rounded-full"
+                  style={{
+                    width: isMobile ? 'clamp(3rem, 12vw, 4rem)' : 'clamp(5rem, 8vw, 7rem)',
+                    height: isMobile ? 'clamp(3rem, 12vw, 4rem)' : 'clamp(5rem, 8vw, 7rem)',
+                    backgroundColor: 'rgba(251, 198, 50, 0.9)',
+                    border: '3px solid #FBC632',
+                    boxShadow: '0 0 2rem rgba(251, 198, 50, 0.8)',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isMobile) {
+                      e.currentTarget.style.transform = 'scale(1.1)';
+                      e.currentTarget.style.boxShadow = '0 0 3rem rgba(251, 198, 50, 1)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isMobile) {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = '0 0 2rem rgba(251, 198, 50, 0.8)';
+                    }
+                  }}
+                >
+                  <svg
+                    width={isMobile ? '40%' : '35%'}
+                    height={isMobile ? '40%' : '35%'}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    style={{
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      marginLeft: '0',
+                    }}
+                  >
+                    <path
+                      d="M8 5v14l11-7z"
+                      fill="#682302"
+                      stroke="#682302"
+                      strokeWidth="1"
+                    />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Раздел "ГАЛЕРЕЯ" */}
@@ -203,27 +313,75 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         </div>
 
         {/* Кинолента 1 */}
-        <div className="w-full flex justify-start overflow-x-visible kinolenta-container-mobile" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-4rem' }}>
+        <div 
+          className="w-full flex justify-start overflow-x-visible kinolenta-container-mobile" 
+          style={{ 
+            width: '100vw', 
+            marginLeft: 'calc(50% - 50vw)', 
+            marginRight: 'calc(50% - 50vw)', 
+            marginTop: '-4rem',
+            perspective: isMobile ? '1000px' : 'none',
+            perspectiveOrigin: isMobile ? 'center center' : 'center',
+            transformStyle: isMobile ? 'preserve-3d' : 'flat',
+            overflow: isMobile ? 'visible' : 'visible',
+            overflowX: isMobile ? 'visible' : 'visible',
+            overflowY: isMobile ? 'visible' : 'visible',
+            position: isMobile ? 'relative' : 'relative',
+            zIndex: isMobile ? 10 : 'auto',
+            isolation: isMobile ? 'isolate' : 'auto',
+          }}
+        >
           <Image
             src="/backgrounds/sections/kinolenta.png"
             alt="Кинолента"
             width={3840}
             height={200}
             className="max-w-none h-auto kinolenta-animation"
-            style={{ width: '200vw', minWidth: '200vw' }}
+            style={{ 
+              width: isMobile ? '280vw' : '200vw', 
+              minWidth: isMobile ? '280vw' : '200vw',
+              height: isMobile ? 'auto' : 'auto',
+              transformStyle: isMobile ? 'preserve-3d' : 'flat',
+              position: isMobile ? 'relative' : 'relative',
+              zIndex: isMobile ? 10 : 'auto',
+            }}
             unoptimized
           />
         </div>
 
         {/* Кинолента 2 */}
-        <div className="w-full flex justify-start overflow-x-visible kinolenta2-container-mobile" style={{ width: '100vw', marginLeft: 'calc(50% - 50vw)', marginRight: 'calc(50% - 50vw)', marginTop: '-12rem' }}>
+        <div 
+          className="w-full flex justify-start overflow-x-visible kinolenta2-container-mobile" 
+          style={{ 
+            width: '100vw', 
+            marginLeft: 'calc(50% - 50vw)', 
+            marginRight: 'calc(50% - 50vw)', 
+            marginTop: '-12rem',
+            perspective: isMobile ? '1000px' : 'none',
+            perspectiveOrigin: isMobile ? 'center center' : 'center',
+            transformStyle: isMobile ? 'preserve-3d' : 'flat',
+            overflow: isMobile ? 'visible' : 'visible',
+            overflowX: isMobile ? 'visible' : 'visible',
+            overflowY: isMobile ? 'visible' : 'visible',
+            position: isMobile ? 'relative' : 'relative',
+            zIndex: isMobile ? 10 : 'auto',
+            isolation: isMobile ? 'isolate' : 'auto',
+          }}
+        >
           <Image
             src="/backgrounds/sections/kinolenta2.png"
             alt="Кинолента 2"
             width={3840}
             height={200}
             className="max-w-none h-auto kinolenta2-animation"
-            style={{ width: '200vw', minWidth: '200vw' }}
+            style={{ 
+              width: isMobile ? '280vw' : '200vw', 
+              minWidth: isMobile ? '280vw' : '200vw',
+              height: isMobile ? 'auto' : 'auto',
+              transformStyle: isMobile ? 'preserve-3d' : 'flat',
+              position: isMobile ? 'relative' : 'relative',
+              zIndex: isMobile ? 10 : 'auto',
+            }}
             unoptimized
           />
         </div>
@@ -761,7 +919,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             </p>
 
             {/* Карусель расписания спектаклей */}
-            <div className="relative w-full mt-10 schedule-carousel-wrapper" style={{ padding: '2rem clamp(2rem, 4vw, 3rem)', overflow: 'visible' }}>
+            <div className="relative w-full mt-10 schedule-carousel-wrapper" style={{ padding: isMobile ? '2rem clamp(2rem, 4vw, 3rem)' : '2rem clamp(4rem, 6vw, 5rem)', overflow: 'visible' }}>
               {ssrIsIOS && !mounted ? (
                 <div className="grid grid-cols-1 gap-4" style={{ width: '100%' }}>
                   {scheduleItems.slice(0, 1).map((item) => (
@@ -790,11 +948,12 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 modules={[Navigation]}
                 speed={800}
                 spaceBetween={0}
-                loop={true}
+                loop={false}
                 slidesPerView={2}
-                slidesPerGroup={1}
+                slidesPerGroup={2}
                 centeredSlides={false}
                 grabCursor={true}
+                watchOverflow={true}
                 navigation={{
                   nextEl: '.swiper-button-next-schedule',
                   prevEl: '.swiper-button-prev-schedule',
@@ -803,14 +962,17 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   320: {
                     slidesPerView: 1,
                     spaceBetween: 0,
+                    slidesPerGroup: 1,
                   },
                   768: {
-                    slidesPerView: 2,
+                    slidesPerView: 1,
                     spaceBetween: 0,
+                    slidesPerGroup: 1,
                   },
                   1024: {
                     slidesPerView: 2,
                     spaceBetween: 0,
+                    slidesPerGroup: 2,
                   },
                 }}
                 className="schedule-carousel"
@@ -957,13 +1119,15 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                                 whiteSpace: 'nowrap',
                                 paddingTop: '10px',
                                 paddingBottom: '10px',
+                                width: isMobile ? '100%' : 'auto',
+                                maxWidth: isMobile ? '100%' : 'none',
                               }}
                             >
                               Подробнее
                             </button>
                             <button
                               onClick={() => handleBuyTicket(item.buyTicketUrl)}
-                              className="px-16 md:px-20 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105"
+                              className="px-16 md:px-20 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105 schedule-buy-button-mobile"
                               style={{
                                 fontFamily: "'Playfair Display SC', serif",
                                 fontSize: 'clamp(14px, 1vw, 16px)',
@@ -975,6 +1139,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                                 whiteSpace: 'nowrap',
                                 paddingTop: '10px',
                                 paddingBottom: '10px',
+                                paddingLeft: isMobile ? '2.5rem' : '4rem',
+                                paddingRight: isMobile ? '2.5rem' : '5rem',
+                                width: isMobile ? '100%' : 'auto',
+                                maxWidth: isMobile ? '100%' : 'none',
                               }}
                               disabled={!item.buyTicketUrl}
                             >
@@ -1088,10 +1256,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   >
                     Email:{' '}
                     <a
-                      href="mailto:info@12stulyev-theater.ru"
+                      href="mailto:BELGORODKONCERT@YANDEX.RU"
                       style={{ color: '#FBC632', textDecoration: 'underline' }}
                     >
-                      info@12stulyev-theater.ru
+                      BELGORODKONCERT@YANDEX.RU
                     </a>
                   </p>
                   <p
@@ -1102,10 +1270,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   >
                     Телефон:{' '}
                     <a
-                      href="tel:+74951234567"
+                      href="tel:+79045329444"
                       style={{ color: '#FBC632', textDecoration: 'underline' }}
                     >
-                      +7 (495) 123-45-67
+                      +7-904-532-94-44
                     </a>
                   </p>
                 </div>
@@ -1189,7 +1357,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   </div>
                   <div className="flex justify-center md:justify-end">
                     <button
-                      className="mt-2 rounded-lg border-2 transition-all duration-300 hover:scale-105"
+                      onClick={() => setIsEmployeeTicketsModalOpen(true)}
+                      className="mt-2 rounded-lg border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
                       style={{
                         fontFamily: "'Playfair Display SC', serif",
                         fontSize: 'clamp(12px, 1vw, 16px)',
@@ -1208,6 +1377,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   </div>
                 </div>
               </div>
+              
+              <EmployeeTicketsModal isOpen={isEmployeeTicketsModalOpen} onClose={() => setIsEmployeeTicketsModalOpen(false)} />
 
               {/* Нижняя строка с юридической информацией */}
               <div className="mt-10 text-center space-y-1 pb-4 md:pb-6" style={{ width: '100%' }}>

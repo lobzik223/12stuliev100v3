@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Header from './Header';
 import { scheduleItems } from '../data/schedule';
+import EmployeeTicketsModal from './ui/EmployeeTicketsModal';
 
 export default function SchedulePage() {
   const router = useRouter();
   const [selectedScheduleUrl, setSelectedScheduleUrl] = useState<string | null>(null);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [isEmployeeTicketsModalOpen, setIsEmployeeTicketsModalOpen] = useState(false);
   const legalInfoRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const bgWrapperRef = useRef<HTMLDivElement>(null);
@@ -547,7 +549,7 @@ export default function SchedulePage() {
                     >
                       Email:{' '}
                       <a
-                        href="mailto:info@12stulyev-theater.ru"
+                        href="mailto:BELGORODKONCERT@YANDEX.RU"
                         className="transition-all duration-300 hover:opacity-80"
                         style={{ 
                           color: '#FBC632', 
@@ -555,7 +557,7 @@ export default function SchedulePage() {
                           textUnderlineOffset: '3px'
                         }}
                       >
-                        info@12stulyev-theater.ru
+                        BELGORODKONCERT@YANDEX.RU
                       </a>
                     </p>
                     <p
@@ -568,7 +570,7 @@ export default function SchedulePage() {
                     >
                       Телефон:{' '}
                       <a
-                        href="tel:+74951234567"
+                        href="tel:+79045329444"
                         className="transition-all duration-300 hover:opacity-80"
                         style={{ 
                           color: '#FBC632', 
@@ -576,7 +578,7 @@ export default function SchedulePage() {
                           textUnderlineOffset: '3px'
                         }}
                       >
-                        +7 (495) 123-45-67
+                        +7-904-532-94-44
                       </a>
                     </p>
                   </div>
@@ -783,6 +785,8 @@ export default function SchedulePage() {
           </div>
         </div>
       )}
+      
+      <EmployeeTicketsModal isOpen={isEmployeeTicketsModalOpen} onClose={() => setIsEmployeeTicketsModalOpen(false)} />
     </div>
   );
 }

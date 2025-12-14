@@ -29,6 +29,7 @@ interface HeaderProps {
 export default function Header({ isVisible = true, onTicketsClick, onAboutClick, onGalleryClick, onActorsClick, onTeamClick, onReviewsClick, onContactsClick }: HeaderProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>('');
   // Не полагаемся на isMobile для рендера (на iOS при проблемах с гидрацией иначе остаётся “десктопная” шапка).
   // isMobile используем только для поведения (overlay/body class).
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? isProbablyMobile() : true));
@@ -64,46 +65,70 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
   }, []);
 
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Устанавливаем активный раздел
+    setActiveSection(href);
+    
     // Если это "БИЛЕТЫ" и есть функция скролла - используем её
     if (href === '/tickets' && onTicketsClick) {
       e.preventDefault();
       onTicketsClick();
+      if (isMobile) {
+        closeMobileMenu();
+      }
       return;
     }
     // Если это "О СПЕКТАКЛЕ" и есть функция скролла - используем её
     if (href === '/about' && onAboutClick) {
       e.preventDefault();
       onAboutClick();
+      if (isMobile) {
+        closeMobileMenu();
+      }
       return;
     }
     // Если это "ГАЛЕРЕЯ" и есть функция скролла - используем её
     if (href === '/gallery' && onGalleryClick) {
       e.preventDefault();
       onGalleryClick();
+      if (isMobile) {
+        closeMobileMenu();
+      }
       return;
     }
     // Если это "АКТЕРЫ" и есть функция скролла - используем её
     if (href === '/actors' && onActorsClick) {
       e.preventDefault();
       onActorsClick();
+      if (isMobile) {
+        closeMobileMenu();
+      }
       return;
     }
     // Если это "КОМАНДА" и есть функция скролла - используем её
     if (href === '/team' && onTeamClick) {
       e.preventDefault();
       onTeamClick();
+      if (isMobile) {
+        closeMobileMenu();
+      }
       return;
     }
     // Если это "ОТЗЫВЫ" и есть функция скролла - используем её
     if (href === '/reviews' && onReviewsClick) {
       e.preventDefault();
       onReviewsClick();
+      if (isMobile) {
+        closeMobileMenu();
+      }
       return;
     }
     // Если это "КОНТАКТЫ" и есть функция скролла - используем её
     if (href === '/contacts' && onContactsClick) {
       e.preventDefault();
       onContactsClick();
+      if (isMobile) {
+        closeMobileMenu();
+      }
       return;
     }
   };
@@ -138,66 +163,99 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
       {/* Mobile hamburger (всегда в DOM; видимость контролируется CSS + force-mobile) */}
       <button
         onClick={toggleMobileMenu}
-        className="md:hidden fixed top-4 left-4 z-[10000] flex flex-col justify-center items-center w-11 h-11 cursor-pointer bg-[#682302] rounded-lg shadow-lg"
+        className="mobile-hamburger-button md:hidden fixed top-4 left-4 z-[10000] flex flex-col justify-center items-center w-14 h-14 cursor-pointer bg-[#682302] rounded-xl shadow-lg hover:bg-[#7a2a03] active:bg-[#5a1f01] transition-all duration-300"
         style={{ 
-          gap: '0.35rem',
-          padding: '0.65rem',
-          boxShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.4)',
+          padding: '0.875rem',
+          boxShadow: isMobileMenuOpen 
+            ? '0 0 1.5rem rgba(251, 198, 50, 0.7), inset 0 0 0.5rem rgba(251, 198, 50, 0.2)' 
+            : '0 0 1rem rgba(251, 198, 50, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           pointerEvents: 'auto',
+          border: '2px solid rgba(251, 198, 50, 0.4)',
+          outline: 'none',
         }}
+        aria-label="Меню"
+        aria-expanded={isMobileMenuOpen}
       >
         {isMobileMenuOpen ? (
           /* Красивый симметричный крестик */
-          <div className="relative w-5 h-5">
+          <div className="relative w-6 h-6 flex items-center justify-center">
             <span 
-              className="absolute top-1/2 left-1/2 bg-white"
+              className="absolute bg-white rounded-full"
               style={{
-                width: '1.25rem',
-                height: '2px',
-                transform: 'translate(-50%, -50%) rotate(45deg)',
+                width: '1.5rem',
+                height: '3px',
+                transform: 'rotate(45deg)',
                 transformOrigin: 'center',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                boxShadow: '0 0 4px rgba(255, 255, 255, 0.5)'
               }}
             />
             <span 
-              className="absolute top-1/2 left-1/2 bg-white"
+              className="absolute bg-white rounded-full"
               style={{
-                width: '1.25rem',
-                height: '2px',
-                transform: 'translate(-50%, -50%) rotate(-45deg)',
+                width: '1.5rem',
+                height: '3px',
+                transform: 'rotate(-45deg)',
                 transformOrigin: 'center',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+                boxShadow: '0 0 4px rgba(255, 255, 255, 0.5)'
               }}
             />
           </div>
         ) : (
-          /* Гамбургер */
-          <>
+          /* Красивый гамбургер с тремя полосками - ВСЕГДА ВИДИМЫ */
+          <div 
+            className="hamburger-icon"
+            style={{ 
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '1.5rem',
+              height: '1.125rem',
+              gap: '0.375rem',
+            }}
+          >
             <span 
-              className="block bg-white transition-all duration-300"
+              className="hamburger-line"
               style={{
-                width: '1.5rem',
-                height: '2px'
+                display: 'block',
+                width: '100%',
+                height: '3px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '2px',
+                boxShadow: '0 0 4px rgba(255, 255, 255, 0.5)',
+                transition: 'all 0.3s ease',
               }}
             />
             <span 
-              className="block bg-white transition-all duration-300"
+              className="hamburger-line"
               style={{
-                width: '1.5rem',
-                height: '2px'
+                display: 'block',
+                width: '100%',
+                height: '3px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '2px',
+                boxShadow: '0 0 4px rgba(255, 255, 255, 0.5)',
+                transition: 'all 0.3s ease',
               }}
             />
             <span 
-              className="block bg-white transition-all duration-300"
+              className="hamburger-line"
               style={{
-                width: '1.5rem',
-                height: '2px'
+                display: 'block',
+                width: '100%',
+                height: '3px',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '2px',
+                boxShadow: '0 0 4px rgba(255, 255, 255, 0.5)',
+                transition: 'all 0.3s ease',
               }}
             />
-          </>
+          </div>
         )}
       </button>
 
@@ -296,9 +354,10 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
           overflowY: 'auto'
         }}
       >
-        <div className="flex flex-col items-center gap-4 px-4">
+        <div className="flex flex-col items-center gap-3 px-4">
           {navItems.map((item) => {
             const isActive =
+              activeSection === item.href ||
               pathname === item.href ||
               (item.href === '/tickets' && pathname === '/');
             return (
@@ -307,19 +366,45 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
                 href={item.href}
                 onClick={(e) => {
                   handleLinkClick(e, item.href);
-                  closeMobileMenu();
                 }}
-                className="w-full text-center py-3 rounded transition-all duration-200"
+                className="w-full text-center py-4 rounded-lg transition-all duration-300 relative overflow-hidden group"
                 style={{ 
                   fontFamily: "'Playfair Display SC', serif",
                   fontSize: '1.25rem',
                   letterSpacing: '0.0625rem',
                   color: isActive ? '#FBC632' : 'white',
-                  backgroundColor: isActive ? 'rgba(251, 198, 50, 0.1)' : 'transparent',
-                  border: isActive ? '1px solid #FBC632' : '1px solid transparent'
+                  backgroundColor: isActive ? 'rgba(251, 198, 50, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+                  border: isActive ? '2px solid #FBC632' : '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: isActive 
+                    ? '0 0 1.25rem rgba(251, 198, 50, 0.4), inset 0 0 1.25rem rgba(251, 198, 50, 0.1)' 
+                    : '0 2px 8px rgba(0, 0, 0, 0.2)',
+                  transform: isActive ? 'scale(1.02)' : 'scale(1)',
+                  fontWeight: isActive ? '700' : '400',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.transform = 'scale(1.01)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }
                 }}
               >
-                {item.name}
+                {/* Декоративный эффект для активного элемента */}
+                {isActive && (
+                  <span
+                    className="absolute inset-0 opacity-20"
+                    style={{
+                      background: 'linear-gradient(90deg, transparent, rgba(251, 198, 50, 0.3), transparent)',
+                      animation: 'shimmer 2s infinite',
+                    }}
+                  />
+                )}
+                <span className="relative z-10">{item.name}</span>
               </Link>
             );
           })}

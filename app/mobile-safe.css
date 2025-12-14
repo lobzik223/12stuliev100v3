@@ -5,6 +5,71 @@
    These rules disable heavy effects on mobile
    ======================================== */
 
+/* Анимация для активного состояния мобильного меню */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* КРИТИЧНО: Гарантируем видимость гамбургер-кнопки на мобильных */
+@media (max-width: 768px), (pointer: coarse) {
+  .mobile-hamburger-button,
+  button.mobile-hamburger-button {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .hamburger-icon {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  .hamburger-line {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Кнопки в карточках расписания - одинаковый размер на мобильной версии */
+@media (max-width: 768px), (pointer: coarse) {
+  .schedule-details-button-mobile,
+  .schedule-buy-button-mobile {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 2.5rem !important;
+    padding-right: 2.5rem !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+}
+
+/* Force-mobile класс также должен показывать кнопку */
+.force-mobile .mobile-hamburger-button,
+.force-mobile button.mobile-hamburger-button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.force-mobile .hamburger-icon {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.force-mobile .hamburger-line {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 /* Disable backdrop-filter ONLY on large containers - causes black screens */
 @media (max-width: 768px), (pointer: coarse) {
   /* Only disable on transition/blur divs, not everywhere */
@@ -153,9 +218,97 @@
     opacity: 1 !important;
     min-height: auto !important;
     height: auto !important;
+    /* Background composition refined via ::before (see below) */
+    background-image: none !important;
+    background-color: #000 !important;
     background-attachment: scroll !important;
     overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
     padding-bottom: clamp(4rem, 8vh, 6rem) !important;
+    padding-left: clamp(0.5rem, 1vw, 1rem) !important;
+    padding-right: clamp(2rem, 4vw, 3rem) !important; /* Увеличиваем padding справа для первой сцены */
+    /* Переопределяем inline padding из компонента (4%) чтобы элемент не обрезался */
+    padding-left: clamp(0.5rem, 1vw, 1rem) !important;
+    padding-right: clamp(2rem, 4vw, 3rem) !important;
+  }
+  
+  /* Убираем обрезку у контейнера сцен */
+  .mobile-journey-section > div {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+
+  /* MOBILE BACKGROUND COMPOSITION REFINEMENT (section "В ПУТЬ")
+     Use a pseudo-element so we can control where the PNG starts/ends
+     without touching content layout or desktop styles. */
+  .mobile-journey-section::before {
+    content: '';
+    position: absolute;
+    /* Full-bleed edge-to-edge on mobile (ignore 4% padding in the container)
+       Use small extra pixels to eliminate iOS subpixel black lines. */
+    left: calc(50% - 50vw - 2px);
+    right: calc(50% - 50vw - 2px);
+    width: auto;
+    transform: none;
+    /* Start after "театральное путешествие" text, slightly below (mobile only) */
+    top: clamp(-2.5rem, -3.5vh, -1.2rem);
+    /* Shorter length on mobile (as requested) - чуть-чуть короче */
+    bottom: clamp(-10rem, -14vh, -7rem);
+    background-image: url(/backgrounds/sections/mobile/section-4-mobile.png);
+    background-repeat: no-repeat;
+    /* Move background image higher (mobile only) - start after "театральное путешествие" */
+    background-position: center -18%;
+    /* Keep width as-is; shorter height (length) */
+    background-size: 100% 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ensure journey content stays above the background - КРИТИЧНО для предотвращения обрезки */
+  .mobile-journey-section > * {
+    position: relative;
+    z-index: 2 !important; /* Увеличиваем z-index чтобы контент был выше фона */
+  }
+  
+  /* Убеждаемся что первая сцена (vput.png) выше фона и не обрезается */
+  .mobile-scene-card:first-child {
+    z-index: 3 !important;
+    position: relative !important;
+  }
+  
+  .mobile-scene-card:first-child .mobile-scene-image {
+    z-index: 4 !important;
+    position: relative !important;
+  }
+
+  /* КРИТИЧНО: Переопределяем overflow-x: hidden из globals.css для journey section
+     globals.css имеет правило: section, main, div[class*="container"] { overflow-x: hidden; }
+     Это правило обрезает элементы справа, поэтому мы должны его переопределить с максимальной специфичностью */
+  section.journey-section-container,
+  section[class*="journey-section-container"],
+  div.journey-section-container,
+  .journey-section-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    overflow-x: visible !important;
+    overflow: visible !important;
+  }
+  
+  /* Переопределяем overflow-x: hidden для всех родительских контейнеров journey section */
+  main:has(.journey-section-container),
+  body:has(.journey-section-container) {
+    overflow-x: visible !important;
+  }
+  
+  /* КРИТИЧНО: Переопределяем overflow для всех контейнеров внутри mobile-journey-section */
+  .mobile-journey-section,
+  .mobile-journey-section > div,
+  .mobile-journey-section .w-full {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
   }
   
   /* Make sure ALL scene cards are visible (4 scenes total) */
@@ -166,6 +319,110 @@
     flex-direction: column !important;
     margin-bottom: clamp(3rem, 6vh, 4rem) !important;
     padding-bottom: clamp(2rem, 4vh, 3rem) !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Убираем обрезку у первой сцены - увеличиваем padding справа и слева для полноценного отображения */
+  .mobile-scene-card:first-child {
+    padding-left: clamp(0.5rem, 1vw, 1rem) !important;
+    padding-right: clamp(0.5rem, 1vw, 1rem) !important; /* Минимальный padding для карточки */
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    width: 100% !important;
+    max-width: 100vw !important; /* Разрешаем выходить за пределы если нужно */
+    box-sizing: border-box !important;
+  }
+  
+  /* Поднимаем первую сцену (vput.png) чуть выше на мобильных */
+  .mobile-scene-card:first-child {
+    margin-top: clamp(-2.5rem, -4vh, -1.5rem) !important;
+  }
+  
+  /* КРИТИЧНО: vput.png - УБИРАЕМ ВСЕ ОГРАНИЧЕНИЯ ШИРИНЫ для первой сцены */
+  /* Это правило должно переопределить все предыдущие ограничения */
+  .mobile-journey-section .mobile-scene-card:first-child .mobile-scene-image,
+  .mobile-scene-card:first-child .mobile-scene-image {
+    margin-bottom: clamp(2rem, 4vh, 2.5rem) !important;
+    transform: translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(2rem, 5vw, 3rem)) !important;
+    /* КРИТИЧНО: Убираем ВСЕ ограничения ширины - элемент должен быть полностью виден */
+    height: 0 !important;
+    padding-top: clamp(22%, 26%, 30%) !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: clamp(280px, 80vw, 400px) !important;
+    flex: 0 1 auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 1 !important;
+    flex-basis: auto !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    background-size: contain !important;
+    background-position: center center !important;
+    /* Гарантируем что элемент полностью виден */
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  
+  /* Убираем обрезку у flex-контейнера для всех сцен - КРИТИЧНО: увеличиваем padding справа и слева */
+  .mobile-scene-card > div:first-child {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    padding-left: clamp(1.5rem, 4vw, 3rem) !important;
+    padding-right: clamp(1.5rem, 4vw, 3rem) !important; /* Увеличиваем padding справа и слева чтобы элемент не обрезался */
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    /* КРИТИЧНО: Убираем flex-ограничения */
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Убираем ограничение maxWidth для всех карточек сцен - КРИТИЧНО для всех PNG */
+  .mobile-scene-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Применяем правильные размеры к vput2.png, vput3.png, vput4.png (сцены 2, 3, 4) - без обрезки */
+  .mobile-scene-card:nth-child(2) .mobile-scene-image {
+    height: clamp(200px, 35vh, 300px) !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: clamp(200px, 70vw, 350px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: none !important;
+    background-size: contain !important;
+    background-position: center center !important;
+  }
+  
+  /* vput3.png и vput4.png - сдвигаем вправо */
+  .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image,
+  .mobile-journey-section .mobile-scene-card:nth-child(4) .mobile-scene-image,
+  .mobile-scene-card:nth-child(3) .mobile-scene-image,
+  .mobile-scene-card:nth-child(4) .mobile-scene-image {
+    height: clamp(200px, 35vh, 300px) !important;
+    width: auto !important;
+    max-width: 100% !important;
+    min-width: clamp(200px, 70vw, 350px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translateX(clamp(4rem, 9vw, 6rem)) !important;
+    background-size: contain !important;
+    background-position: center center !important;
   }
   
   /* Force each scene to be visible */
@@ -178,15 +435,148 @@
     opacity: 1 !important;
   }
   
+  /* Все тексты в разделе "В ПУТЬ" одного размера (как у первой сцены) */
+  .mobile-journey-section .mobile-scene-card p {
+    font-size: clamp(0.75rem, 3vw, 0.95rem) !important;
+    letter-spacing: 0.12em !important;
+  }
+  
+  .mobile-journey-section .mobile-scene-card p.uppercase {
+    font-size: clamp(0.9rem, 3.5vw, 1.15rem) !important;
+    letter-spacing: 0.15em !important;
+  }
+  
+  /* Первая сцена (ОФИС ЛОТЕРЕИ) - текст вправо и поднимаем выше */
+  .mobile-journey-section .mobile-scene-card:first-child > div:last-child {
+    padding-left: clamp(5rem, 12vw, 7rem) !important;
+    padding-right: 1rem !important;
+    margin-top: clamp(-1.2rem, -2vh, -0.8rem) !important;
+    text-align: right !important;
+  }
+  
+  /* Вторая сцена (ПСИХУШКА) - flex layout с изображением слева и текстом справа */
+  .mobile-journey-section .mobile-scene-card:nth-child(2) > div:last-child,
+  .mobile-scene-card:nth-child(2) > div:last-child {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: clamp(1rem, 3vw, 2rem) !important;
+    margin-top: clamp(-1.2rem, -2vh, -0.8rem) !important;
+    padding-left: clamp(1rem, 3vw, 2rem) !important;
+    padding-right: clamp(1rem, 3vw, 2rem) !important;
+  }
+  
+  /* Изображение stul100let.png в ПСИХУШКА - уменьшаем размер и поднимаем выше */
+  .mobile-journey-section .mobile-scene-card:nth-child(2) > div:last-child > div:first-child,
+  .mobile-scene-card:nth-child(2) > div:last-child > div:first-child {
+    width: clamp(100px, 25vw, 140px) !important;
+    height: clamp(100px, 25vw, 140px) !important;
+    margin-left: clamp(-2.5rem, -6vw, -2rem) !important;
+    margin-top: clamp(-1.5rem, -3vh, -1rem) !important;
+  }
+  
+  /* Изображение computer.png в КВАРТИРА СТАРУХИ ЯРЫГИНОЙ - увеличиваем размер */
+  .mobile-journey-section .mobile-scene-card:nth-child(4) > div:last-child > div:first-child,
+  .mobile-scene-card:nth-child(4) > div:last-child > div:first-child {
+    width: clamp(120px, 30vw, 170px) !important;
+    height: clamp(120px, 30vw, 170px) !important;
+  }
+  
+  /* Изображение pamat15.png - уменьшаем размер */
+  .mobile-journey-section .mobile-scene-card:nth-child(3) > div:first-child > div:last-child,
+  .mobile-scene-card:nth-child(3) > div:first-child > div:last-child {
+    width: clamp(90px, 22vw, 130px) !important;
+    height: clamp(90px, 22vw, 130px) !important;
+  }
+  
+  /* Текст внутри flex контейнера для ПСИХУШКА - сдвигаем вправо */
+  .mobile-journey-section .mobile-scene-card:nth-child(2) > div:last-child > div:last-child,
+  .mobile-scene-card:nth-child(2) > div:last-child > div:last-child {
+    text-align: right !important;
+    padding-left: clamp(2rem, 5vw, 3rem) !important;
+    padding-right: 0 !important;
+    margin-left: clamp(1rem, 3vw, 2rem) !important;
+  }
+  
+  /* Третья сцена (КВАРТИРА КИСЫ) - текст вправо, поднимаем выше и сдвигаем влево */
+  .mobile-journey-section .mobile-scene-card:nth-child(3) > div:last-child {
+    padding-left: clamp(2rem, 6vw, 4rem) !important;
+    padding-right: 1rem !important;
+    margin-top: clamp(-2rem, -3.5vh, -1.5rem) !important;
+    text-align: right !important;
+  }
+  
+  /* Четвертая сцена (КВАРТИРА СТАРУХИ ЯРЫГИНОЙ) - flex layout с изображением слева и текстом справа */
+  .mobile-journey-section .mobile-scene-card:nth-child(4) > div:last-child,
+  .mobile-scene-card:nth-child(4) > div:last-child {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: clamp(1rem, 3vw, 2rem) !important;
+    margin-top: clamp(-1.2rem, -2vh, -0.8rem) !important;
+    padding-left: clamp(1rem, 3vw, 2rem) !important;
+    padding-right: clamp(1rem, 3vw, 2rem) !important;
+  }
+  
+  /* Текст внутри flex контейнера для КВАРТИРА СТАРУХИ ЯРЫГИНОЙ */
+  .mobile-journey-section .mobile-scene-card:nth-child(4) > div:last-child > div:last-child,
+  .mobile-scene-card:nth-child(4) > div:last-child > div:last-child {
+    text-align: right !important;
+    padding-left: clamp(1rem, 3vw, 2rem) !important;
+    padding-right: 0 !important;
+  }
+  
+  /* vput4.png - опускаем ниже */
+  .mobile-journey-section .mobile-scene-card:nth-child(4),
+  .mobile-scene-card:nth-child(4) {
+    margin-top: clamp(5rem, 10vh, 7rem) !important;
+    margin-bottom: clamp(6rem, 12vh, 8rem) !important;
+  }
+  
+  /* vput4.png изображение - опускаем ниже */
+  .mobile-journey-section .mobile-scene-card:nth-child(4) .mobile-scene-image,
+  .mobile-scene-card:nth-child(4) .mobile-scene-image {
+    margin-top: clamp(4rem, 8vh, 6rem) !important;
+    transform: translateX(clamp(4rem, 9vw, 6rem)) translateY(clamp(3rem, 6vh, 4.5rem)) !important;
+  }
+  
+  /* Элемент tiraj.png - перемещаем чуть правее */
+  .mobile-journey-section .mobile-journey-tiraj,
+  .mobile-journey-tiraj {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: min(30vw, 120px) !important;
+    height: clamp(90px, 18vh, 130px) !important;
+    transform: translateY(clamp(-0.5rem, -1vh, -0.3rem)) translateX(clamp(-2rem, -5vw, -1rem)) !important;
+    margin-left: clamp(1.5rem, 4vw, 2.5rem) !important;
+    flex-shrink: 0 !important;
+  }
+  
   /* Ensure scene images load and display */
   .mobile-scene-image {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    width: 100% !important;
-    max-width: 100% !important;
     min-height: 200px !important;
     background-attachment: scroll !important;
+    overflow: visible !important;
+  }
+  
+  /* КРИТИЧНО: Для первой сцены убираем ВСЕ ограничения ширины - МАКСИМАЛЬНАЯ СПЕЦИФИЧНОСТЬ */
+  /* Это правило должно переопределить ВСЕ предыдущие ограничения */
+  .mobile-journey-section .mobile-scene-card:first-child > div:first-child .mobile-scene-image,
+  .mobile-journey-section .mobile-scene-card:first-child .mobile-scene-image,
+  .mobile-scene-card:first-child > div:first-child .mobile-scene-image,
+  .mobile-scene-card:first-child .mobile-scene-image {
+    width: auto !important;
+    max-width: none !important;
+    min-width: clamp(280px, 75vw, 400px) !important;
+    flex: 0 1 auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 1 !important;
+    flex-basis: auto !important;
+    transform: translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(2rem, 5vw, 3rem)) !important;
   }
   
   /* Fix journey section container - CRITICAL for mobile */
@@ -274,11 +664,132 @@
 
 /* Fix specific problem areas */
 @media (max-width: 768px), (pointer: coarse) {
-  /* Hero section fixes */
-  .hero-section-bg {
+  /* Hero section fixes - ПОЛНОСТЬЮ убираем zoom/scale анимацию при скролле и внутренний скролл */
+  section.hero-section-bg,
+  .hero-section-bg,
+  section[class*="hero-section-bg"] {
+    /* Убираем внутренний скролл */
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    /* Запрещаем ВСЕ transform анимации (переопределяем globals.css) */
+    transform: none !important;
+    -webkit-transform: none !important;
+    /* Запрещаем transitions и animations */
+    transition: none !important;
+    -webkit-transition: none !important;
+    animation: none !important;
+    -webkit-animation: none !important;
+    /* Фиксируем высоту элемента на основе initial viewport, чтобы cover не пересчитывался */
+    min-height: 100vh !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    /* Фиксируем background-size - используем cover, но зафиксируем через JS */
+    background-size: cover !important;
+    /* Фиксируем background-position - НИКОГДА не меняется */
+    background-position: 70% center !important;
     background-attachment: scroll !important;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+    background-repeat: no-repeat !important;
+    /* Используем мобильную версию фона */
+    background-image: url(/backgrounds/sections/mobile/section-1-mobile.png) !important;
+    /* Отключаем will-change и другие оптимизации, которые могут вызывать анимации */
+    will-change: auto !important;
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+    /* Запрещаем любые изменения через inline styles */
+    pointer-events: auto !important;
+  }
+  
+  /* Убираем внутренний скролл у контейнера hero section */
+  .hero-section-bg > div {
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
+  }
+  
+  /* Запрещаем движение элементов hero section при скролле - блокируем все GSAP анимации */
+  .hero-logo-container,
+  .hero-logo-image,
+  .hero-text-container,
+  .hero-text-subtitle,
+  .hero-text-cta,
+  .hero-section-bg * {
+    transform: none !important;
+    -webkit-transform: none !important;
+    transition: none !important;
+    -webkit-transition: none !important;
+    animation: none !important;
+    -webkit-animation: none !important;
+    will-change: auto !important;
+    position: static !important;
+  }
+  
+  /* Кнопка "НАЧАТЬ ПУТЬ" скрыта на мобильных */
+  .hero-start-button {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  .hero-start-button button {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  /* Блокируем любые inline стили transform для элементов hero section */
+  .hero-logo-container[style*="transform"],
+  .hero-logo-image[style*="transform"],
+  .hero-text-container[style*="transform"],
+  .hero-text-subtitle[style*="transform"],
+  .hero-text-cta[style*="transform"],
+  .hero-start-button[style*="transform"],
+  .hero-logo-container[style*="opacity"],
+  .hero-text-container[style*="opacity"],
+  .hero-start-button[style*="opacity"] {
+    transform: none !important;
+    -webkit-transform: none !important;
+    opacity: 1 !important;
+  }
+  
+  /* Запрещаем любые GSAP/ScrollTrigger transform анимации для hero-section-bg */
+  .hero-section-bg[style*="transform"],
+  .hero-section-bg[style*="scale"],
+  section.hero-section-bg[style*="transform"],
+  section.hero-section-bg[style*="scale"] {
+    transform: none !important;
+    -webkit-transform: none !important;
+    scale: 1 !important;
+  }
+  
+  /* Запрещаем изменения background-size через JS */
+  .hero-section-bg[style*="background-size"],
+  section.hero-section-bg[style*="background-size"] {
+    background-size: cover !important;
+  }
+  
+  /* Убираем внутренний скролл у контейнера min-h-screen, который оборачивает hero section */
+  .min-h-screen {
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Блокируем все GSAP ScrollTrigger анимации для hero section на мобильных */
+  .hero-section-bg [data-gsap],
+  .hero-section-bg [class*="gsap"],
+  .hero-logo-container[data-gsap],
+  .hero-text-container[data-gsap],
+  .hero-start-button[data-gsap] {
+    transform: none !important;
+    -webkit-transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+    animation: none !important;
   }
   
   /* Events section fixes */
@@ -287,9 +798,23 @@
     filter: none !important;
   }
   
-  /* Journey section fixes */
+  /* Journey section fixes - КРИТИЧНО: переопределяем overflow-x: hidden из globals.css */
+  section.journey-section-container,
+  section[class*="journey-section-container"],
+  div.journey-section-container,
   .journey-section-container {
     overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Переопределяем overflow-x: hidden для всех контейнеров внутри journey section */
+  .journey-section-container *,
+  .journey-section-container > *,
+  .mobile-journey-section,
+  .mobile-journey-section *,
+  .mobile-journey-section > * {
+    overflow-x: visible !important;
   }
   
   /* Actors section fixes */

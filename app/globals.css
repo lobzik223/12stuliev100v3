@@ -70,6 +70,30 @@
 .force-mobile .md\:flex { display: none !important; }
 .force-mobile .md\:grid { display: none !important; }
 
+/* КРИТИЧНО: Гарантируем видимость гамбургер-кнопки на мобильных */
+.force-mobile .mobile-hamburger-button,
+.force-mobile button.mobile-hamburger-button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.force-mobile .hamburger-icon {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.force-mobile .hamburger-line {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 3px !important;
+  background-color: #FFFFFF !important;
+}
+
 /* Стрелки Swiper для событий: на iOS viewport иногда не попадает в (max-width:768),
    поэтому дублируем мобильные стили под force-mobile. */
 .force-mobile .swiper-button-prev-events,
@@ -162,9 +186,8 @@
   }
   
   /* Принудительная загрузка критических фонов */
-  .hero-section-bg,
+  /* ИСКЛЮЧАЕМ hero-section-bg - для него отдельные правила без transform */
   .journey-bg-mobile,
-  [style*="section-1.png"],
   [style*="section-2.png"],
   [style*="section-3.png"],
   [style*="section-4.png"],
@@ -173,6 +196,16 @@
     will-change: auto !important;
     transform: translateZ(0) !important;
     -webkit-transform: translateZ(0) !important;
+    /* Принудительная загрузка */
+    content-visibility: auto;
+    contain-intrinsic-size: 100px;
+  }
+  
+  /* hero-section-bg - БЕЗ transform на мобилке (чтобы не было zoom анимации) */
+  .hero-section-bg,
+  [style*="section-1.png"] {
+    will-change: auto !important;
+    /* НЕ применяем translateZ(0) - это может вызывать проблемы с анимациями */
     /* Принудительная загрузка */
     content-visibility: auto;
     contain-intrinsic-size: 100px;
@@ -333,6 +366,35 @@ html {
   }
 }
 
+/* 3D анимация для kinolenta на мобильной версии - эффект ухода за дисплей */
+@keyframes kinolentaMove3D {
+  0% {
+    transform: translateX(0%) translateZ(0px) rotateY(0deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  25% {
+    transform: translateX(-15%) translateZ(-80px) rotateY(8deg) scale(0.95);
+    opacity: 0.85;
+    filter: brightness(0.9);
+  }
+  50% {
+    transform: translateX(-30%) translateZ(-150px) rotateY(15deg) scale(0.9);
+    opacity: 0.6;
+    filter: brightness(0.7);
+  }
+  75% {
+    transform: translateX(-15%) translateZ(-80px) rotateY(8deg) scale(0.95);
+    opacity: 0.85;
+    filter: brightness(0.9);
+  }
+  100% {
+    transform: translateX(0%) translateZ(0px) rotateY(0deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
 .kinolenta-animation {
   animation: kinolentaMove 20s ease-in-out infinite;
 }
@@ -347,6 +409,35 @@ html {
   }
   100% {
     transform: translateX(-50%);
+  }
+}
+
+/* 3D анимация для kinolenta2 на мобильной версии - эффект ухода за дисплей */
+@keyframes kinolenta2Move3D {
+  0% {
+    transform: translateX(-50%) translateZ(0px) rotateY(0deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  25% {
+    transform: translateX(-35%) translateZ(-80px) rotateY(-8deg) scale(0.95);
+    opacity: 0.85;
+    filter: brightness(0.9);
+  }
+  50% {
+    transform: translateX(-20%) translateZ(-150px) rotateY(-15deg) scale(0.9);
+    opacity: 0.6;
+    filter: brightness(0.7);
+  }
+  75% {
+    transform: translateX(-35%) translateZ(-80px) rotateY(-8deg) scale(0.95);
+    opacity: 0.85;
+    filter: brightness(0.9);
+  }
+  100% {
+    transform: translateX(-50%) translateZ(0px) rotateY(0deg) scale(1);
+    opacity: 1;
+    filter: brightness(1);
   }
 }
 
@@ -581,8 +672,25 @@ div.swiper-button-next.swiper-button-next-actors {
 /* Стили для карусели расписания Swiper */
 .schedule-carousel {
   width: 100%;
-  overflow: visible;
+  overflow: hidden;
   padding: 2rem 0;
+}
+
+/* На PC версии скрываем только частично видимые карточки через overflow */
+@media (min-width: 1024px) {
+  .schedule-carousel {
+    overflow: hidden !important;
+  }
+  
+  .schedule-carousel .swiper-wrapper {
+    overflow: visible !important;
+  }
+  
+  /* Все слайды видимы, но контейнер обрезает частично видимые */
+  .schedule-carousel.swiper-initialized .swiper-slide {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
 }
 
 .schedule-carousel .swiper-slide {
@@ -617,6 +725,23 @@ div.swiper-button-next.swiper-button-next-actors {
 .swiper-button-next-schedule {
   right: clamp(-1rem, -2vw, -0.5rem) !important;
   left: auto !important;
+}
+
+/* На PC версии стрелочки должны быть полностью видны */
+@media (min-width: 1024px) {
+  .schedule-carousel-wrapper {
+    padding-left: clamp(4rem, 6vw, 5rem) !important;
+    padding-right: clamp(4rem, 6vw, 5rem) !important;
+    overflow: visible !important;
+  }
+  
+  .swiper-button-prev-schedule {
+    left: clamp(0.5rem, 1vw, 1rem) !important;
+  }
+  
+  .swiper-button-next-schedule {
+    right: clamp(0.5rem, 1vw, 1rem) !important;
+  }
 }
 
 .schedule-carousel .swiper-button-prev-schedule::after,
@@ -939,11 +1064,15 @@ div.swiper-button-next.swiper-button-next-actors {
 
   .actors-section-mobile {
     margin-top: clamp(-3rem, -5vh, -1rem) !important;
+    /* Добавляем padding-top чтобы заголовок и подзаголовок были полностью видны */
+    padding-top: clamp(3.5rem, 6vh, 5rem) !important;
   }
 
   /* Уменьшаем размер текста "АКТЕРЫ" на мобильных */
   .actors-section-mobile .text-center > p:first-child {
     font-size: clamp(1.1rem, 1.5vw, 1.3rem) !important;
+    /* Дополнительный отступ сверху для полной видимости */
+    margin-top: clamp(0.5rem, 1vh, 1rem) !important;
   }
 
   /* Уменьшаем размер подзаголовка "ТАЛАНТЛИВЫЕ АКТЁРЫ..." на мобильных */
@@ -951,9 +1080,22 @@ div.swiper-button-next.swiper-button-next-actors {
     font-size: clamp(0.75rem, 1vw, 0.9rem) !important;
   }
 
-  /* Поднимаем раздел "ТРЕЙЛЕР" выше на мобильных - ближе к разделу "Актеры" */
+  /* Раздел "ТРЕЙЛЕР" на мобильных - поднимаем выше и убираем overflow */
   .trailer-section-wrapper-mobile {
-    margin-top: clamp(-20rem, -25vh, -18rem) !important;
+    margin-top: clamp(-8rem, -12vh, -5rem) !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    position: relative !important;
+  }
+  
+  /* Убираем overflow у всех вложенных контейнеров */
+  .trailer-section-wrapper-mobile section,
+  .trailer-section-wrapper-mobile > div,
+  .trailer-section-wrapper-mobile section > div {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
   }
 
   /* Уменьшаем размер текста "ТРЕЙЛЕР" на мобильных - такой же как "АКТЕРЫ" */
@@ -982,6 +1124,11 @@ div.swiper-button-next.swiper-button-next-actors {
   /* Поднимаем раздел "ГАЛЕРЕЯ" выше на мобильных - ближе к кнопке "Посмотреть трейлер" */
   .gallery-section-mobile {
     margin-top: clamp(-5rem, -7vh, -3rem) !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    position: relative !important;
+    z-index: 5 !important;
   }
 
   .gallery-section-mobile p[style*="marginTop"]:first-child {
@@ -1001,10 +1148,89 @@ div.swiper-button-next.swiper-button-next-actors {
   .kinolenta-container-mobile {
     margin-top: clamp(2rem, 4vh, 3rem) !important;
   }
+  
+  /* Увеличиваем размер kinolenta.png на мобильных */
+  .kinolenta-container-mobile .kinolenta-animation,
+  .kinolenta-animation {
+    width: 280vw !important;
+    min-width: 280vw !important;
+  }
+  
+  /* Убираем overflow у всех родительских контейнеров для kinolenta на мобильных */
+  .trailer-section-wrapper-mobile,
+  .trailer-section-wrapper-mobile section,
+  .trailer-section-wrapper-mobile > div,
+  section .kinolenta-container-mobile,
+  section .kinolenta2-container-mobile,
+  main .trailer-section-wrapper-mobile,
+  main .trailer-section-wrapper-mobile section,
+  main .trailer-section-wrapper-mobile > div {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Убираем обрезку у контейнера с z-index: 15 */
+  div[style*="zIndex: 15"],
+  div[style*="z-index: 15"] {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+  
+  /* 3D анимация для kinolenta на мобильных - эффект ухода за дисплей */
+  .kinolenta-container-mobile {
+    perspective: 1000px !important;
+    perspective-origin: center center !important;
+    transform-style: preserve-3d !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    position: relative !important;
+    z-index: 10 !important;
+    isolation: isolate !important;
+  }
+  
+  .kinolenta-container-mobile .kinolenta-animation {
+    animation: kinolentaMove3D 20s ease-in-out infinite !important;
+    transform-style: preserve-3d !important;
+    will-change: transform, opacity, filter !important;
+    position: relative !important;
+    z-index: 10 !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
 
   /* Поднимаем kinolenta2.png выше, ближе к kinolenta.png на мобильных */
   .kinolenta2-container-mobile {
     margin-top: clamp(-3rem, -5vh, -2rem) !important;
+    perspective: 1000px !important;
+    perspective-origin: center center !important;
+    transform-style: preserve-3d !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    position: relative !important;
+    z-index: 10 !important;
+    isolation: isolate !important;
+  }
+  
+  /* Увеличиваем размер kinolenta2.png на мобильных */
+  .kinolenta2-container-mobile .kinolenta2-animation,
+  .kinolenta2-animation {
+    width: 280vw !important;
+    min-width: 280vw !important;
+  }
+  
+  /* 3D анимация для kinolenta2 на мобильных - эффект ухода за дисплей */
+  .kinolenta2-container-mobile .kinolenta2-animation {
+    animation: kinolenta2Move3D 20s ease-in-out infinite !important;
+    transform-style: preserve-3d !important;
+    will-change: transform, opacity, filter !important;
+    position: relative !important;
+    z-index: 10 !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
   }
 
   /* Уменьшаем размер кнопки "ФОТО СО СПЕКТАКЛЯ" на мобильных */
@@ -1497,6 +1723,7 @@ div.swiper-button-next.swiper-button-next-actors {
     opacity: 0 !important;
   }
 
+  /* На мобильной версии скрываем неактивные слайды */
   .schedule-carousel.swiper-initialized .swiper-slide {
     opacity: 0 !important;
     transform: translateX(100%) scale(1) !important;
@@ -1517,6 +1744,15 @@ div.swiper-button-next.swiper-button-next-actors {
   .schedule-carousel.swiper-initialized .swiper-slide-next {
     transform: translateX(100%) scale(1) !important;
     opacity: 0 !important;
+  }
+  
+  /* На PC версии все слайды видимы */
+  @media (min-width: 1024px) {
+    .schedule-carousel.swiper-initialized .swiper-slide {
+      opacity: 1 !important;
+      transform: translateX(0) scale(1) !important;
+      transition: transform 0.8s ease, opacity 0.8s ease !important;
+    }
   }
 
   .actors-carousel.swiper-initialized .swiper-slide {
@@ -1966,6 +2202,55 @@ div.swiper-button-next.swiper-button-next-actors {
       touch-action: pan-y !important;
       overflow-y: auto !important;
     }
+  }
+}
+
+/* Анимация для активного состояния мобильного меню */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Скрытие header когда открыто модальное окно "БИЛЕТЫ ДЛЯ СОТРУДНИКОВ" */
+body.employee-tickets-modal-open header,
+body.employee-tickets-modal-open .mobile-hamburger-button,
+body.employee-tickets-modal-open .secondary-nav {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+/* Исправление обрезки фона в модальном окне "БИЛЕТЫ ДЛЯ СОТРУДНИКОВ" */
+@media (max-width: 768px), (pointer: coarse) {
+  /* На мобильной версии - используем contain для полного отображения фона */
+  .employee-tickets-modal-bg {
+    background-size: contain !important;
+    background-position: center center !important;
+    min-height: clamp(600px, 90vh, 800px) !important;
+    padding-top: clamp(3rem, 5vh, 4rem) !important;
+    padding-bottom: clamp(3rem, 5vh, 4rem) !important;
+  }
+}
+
+/* На PC версии - увеличиваем padding для полного отображения фона */
+@media (min-width: 769px) {
+  .employee-tickets-modal-bg {
+    background-size: cover !important;
+    background-position: center center !important;
+    min-height: clamp(700px, 85vh, 900px) !important;
+    padding-top: clamp(4rem, 6vh, 5rem) !important;
+    padding-bottom: clamp(4rem, 6vh, 5rem) !important;
+  }
+  
+  /* Увеличиваем maxHeight контейнера модального окна на PC */
+  div[style*="slideUp"] {
+    max-height: clamp(700px, 90vh, 950px) !important;
   }
 }
 

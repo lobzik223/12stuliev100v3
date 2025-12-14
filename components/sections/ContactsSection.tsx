@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import BackgroundImage from '../ui/BackgroundImage';
+import EmployeeTicketsModal from '../ui/EmployeeTicketsModal';
 
 export default function ContactsSection() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <section 
       className="relative w-full"
@@ -52,10 +55,10 @@ export default function ContactsSection() {
             >
               Email:{' '}
               <a
-                href="mailto:info@12stulyev-theater.ru"
+                href="mailto:BELGORODKONCERT@YANDEX.RU"
                 style={{ color: '#FBC632', textDecoration: 'underline' }}
               >
-                info@12stulyev-theater.ru
+                BELGORODKONCERT@YANDEX.RU
               </a>
             </p>
             <p
@@ -66,10 +69,10 @@ export default function ContactsSection() {
             >
               Телефон:{' '}
               <a
-                href="tel:+74951234567"
+                href="tel:+79045329444"
                 style={{ color: '#FBC632', textDecoration: 'underline' }}
               >
-                +7 (495) 123-45-67
+                +7-904-532-94-44
               </a>
             </p>
           </div>
@@ -118,6 +121,7 @@ export default function ContactsSection() {
             </div>
             <div className="flex justify-center md:justify-end">
               <button
+                onClick={() => setIsModalOpen(true)}
                 className="mt-2 rounded-lg border-2 transition-all duration-300 hover:scale-105"
                 style={{
                   fontFamily: "'Playfair Display SC', serif",
@@ -128,7 +132,8 @@ export default function ContactsSection() {
                   borderColor: '#FBC632',
                   borderWidth: '2px',
                   padding: 'clamp(0.5rem, 0.75vw, 0.625rem) clamp(2.5rem, 3.5vw, 3.75rem)',
-                  boxShadow: '0 0 0.625rem rgba(251, 198, 50, 0.35), 0 0 1.25rem rgba(251, 198, 50, 0.2)'
+                  boxShadow: '0 0 0.625rem rgba(251, 198, 50, 0.35), 0 0 1.25rem rgba(251, 198, 50, 0.2)',
+                  cursor: 'pointer'
                 }}
               >
                 билеты для сотрудников
@@ -161,6 +166,8 @@ export default function ContactsSection() {
           </p>
         </div>
       </div>
+      
+      <EmployeeTicketsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </section>
   );
 }

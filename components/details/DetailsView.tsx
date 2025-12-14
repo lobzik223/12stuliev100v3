@@ -13,6 +13,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Header from '../Header';
 import { useRouter } from 'next/navigation';
+import EmployeeTicketsModal from '../ui/EmployeeTicketsModal';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -36,6 +37,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const defaultDateTime = '24 НОЯБРЯ | 19:00';
   const dateTimeValue = dateTime || defaultDateTime;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [isEmployeeTicketsModalOpen, setIsEmployeeTicketsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   const handleBuyTicket = () => {
@@ -1642,10 +1644,10 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               >
                 Email:{' '}
                 <a
-                  href="mailto:info@12stulyev-theater.ru"
+                  href="mailto:BELGORODKONCERT@YANDEX.RU"
                   style={{ color: '#FBC632', textDecoration: 'underline' }}
                 >
-                  info@12stulyev-theater.ru
+                  BELGORODKONCERT@YANDEX.RU
                 </a>
               </p>
               <p
@@ -1656,10 +1658,10 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               >
                 Телефон:{' '}
                 <a
-                  href="tel:+74951234567"
+                  href="tel:+79045329444"
                   style={{ color: '#FBC632', textDecoration: 'underline' }}
                 >
-                  +7 (495) 123-45-67
+                  +7-904-532-94-44
                 </a>
               </p>
             </div>
@@ -1743,7 +1745,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               </div>
               <div className="flex justify-center md:justify-end">
                 <button
-                  className="mt-2 rounded-lg border-2 transition-all duration-300 hover:scale-105"
+                  onClick={() => setIsEmployeeTicketsModalOpen(true)}
+                  className="mt-2 rounded-lg border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
                   style={{
                     fontFamily: "'Playfair Display SC', serif",
                     fontSize: 'clamp(12px, 1vw, 16px)',
@@ -1850,6 +1853,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           </div>
         </div>
       )}
+      
+      <EmployeeTicketsModal isOpen={isEmployeeTicketsModalOpen} onClose={() => setIsEmployeeTicketsModalOpen(false)} />
     </div>
   );
 };

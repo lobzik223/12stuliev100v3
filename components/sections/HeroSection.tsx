@@ -51,19 +51,78 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
     // На мобильных (особенно iOS) GSAP/ScrollTrigger часто даёт “пропадающий контент”.
     // Для мобилки оставляем статичный рендер без анимаций.
     if (isProbablyMobile()) {
+      // Убиваем все существующие ScrollTrigger анимации для hero section
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars && trigger.vars.trigger) {
+          const triggerEl = trigger.vars.trigger;
+          if (triggerEl === logoRef.current || 
+              triggerEl === textRef.current || 
+              triggerEl === buttonContainerRef.current ||
+              (triggerEl instanceof Element && triggerEl.closest('.hero-section-bg'))) {
+            trigger.kill();
+          }
+        }
+      });
+      
+      // Фиксируем элементы без анимаций и без движения
       if (logoRef.current) {
         logoRef.current.style.opacity = '1';
         logoRef.current.style.transform = 'none';
+        logoRef.current.style.transition = 'none';
+        logoRef.current.style.animation = 'none';
       }
       if (textRef.current) {
         textRef.current.style.opacity = '1';
         textRef.current.style.transform = 'none';
+        textRef.current.style.transition = 'none';
+        textRef.current.style.animation = 'none';
       }
       if (buttonContainerRef.current) {
         buttonContainerRef.current.style.opacity = '1';
         buttonContainerRef.current.style.transform = 'none';
+        buttonContainerRef.current.style.transition = 'none';
+        buttonContainerRef.current.style.animation = 'none';
+        buttonContainerRef.current.style.position = 'fixed';
+        buttonContainerRef.current.style.willChange = 'auto';
+        buttonContainerRef.current.style.top = 'auto';
+        buttonContainerRef.current.style.bottom = 'clamp(4rem, 12vh, 15rem)';
       }
-      return;
+      if (buttonRef.current) {
+        buttonRef.current.style.transform = 'none';
+        buttonRef.current.style.transition = 'none';
+        buttonRef.current.style.animation = 'none';
+        buttonRef.current.style.willChange = 'auto';
+      }
+      
+      // Блокируем любые будущие изменения через MutationObserver
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+            const el = mutation.target as HTMLElement;
+            if (el === logoRef.current || el === textRef.current || el === buttonContainerRef.current || el === buttonRef.current) {
+              if (el.style.transform && el.style.transform !== 'none') {
+                el.style.transform = 'none';
+              }
+              if (el.style.opacity && el.style.opacity !== '1') {
+                el.style.opacity = '1';
+              }
+              if (el === buttonContainerRef.current && el.style.position !== 'fixed') {
+                el.style.position = 'fixed';
+              }
+            }
+          }
+        });
+      });
+      
+      [logoRef.current, textRef.current, buttonContainerRef.current, buttonRef.current].forEach(ref => {
+        if (ref) {
+          observer.observe(ref, { attributes: true, attributeFilter: ['style'] });
+        }
+      });
+      
+      return () => {
+        observer.disconnect();
+      };
     }
 
     // Анимация для логотипа
@@ -151,7 +210,7 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
     <section 
       className="relative w-full min-h-screen flex flex-col items-center justify-center hero-section-bg"
       style={{
-        backgroundImage: 'url(/backgrounds/sections/section-1.png)',
+        backgroundImage: isMobile ? 'url(/backgrounds/sections/mobile/section-1-mobile.png)' : 'url(/backgrounds/sections/section-1.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -245,6 +304,7 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
       </div>
       
       {/* Кнопка снизу слева - вынесена за пределы контейнера для гарантии кликабельности */}
+      {!isMobile && (
       <div 
         ref={buttonContainerRef}
         className="flex w-full hero-start-button"
@@ -254,6 +314,9 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
           left: '0',
           paddingLeft: 'clamp(1rem, 5vw, 5rem)',
           paddingRight: 'clamp(1rem, 4vw, 4rem)',
+          width: '100%',
+          maxWidth: 'none',
+          display: 'flex',
           justifyContent: 'flex-start',
           zIndex: 9999,
           pointerEvents: 'auto',
@@ -311,12 +374,15 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
             userSelect: 'none',
             WebkitUserSelect: 'none',
             touchAction: 'manipulation',
-            WebkitTapHighlightColor: 'transparent'
+            WebkitTapHighlightColor: 'transparent',
+            width: 'auto',
+            maxWidth: 'none'
           }}
         >
           НАЧАТЬ ПУТЬ
         </button>
       </div>
+      )}
       
       {/* Затемнение внизу HeroSection для плавного перехода к section-2.png */}
       <div 

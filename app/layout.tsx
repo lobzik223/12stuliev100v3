@@ -143,6 +143,73 @@ export default function RootLayout({
                     const img = new Image();
                     img.src = src;
                   });
+                  
+                  // MOBILE FIX: Блокируем изменения стилей hero-section-bg при скролле
+                  // (убираем zoom анимацию фона на главном экране)
+                  try {
+                    var isMobile = window.innerWidth < 768 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+                    if (isMobile) {
+                      // Ждем появления hero-section-bg в DOM
+                      var checkHeroBg = function() {
+                        var heroBg = document.querySelector('.hero-section-bg');
+                        if (!heroBg) {
+                          setTimeout(checkHeroBg, 100);
+                          return;
+                        }
+                        
+                        // Сохраняем начальный размер viewport для фиксации background-size
+                        var initialVw = window.innerWidth;
+                        var initialVh = window.innerHeight || (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+                        
+                        // Фиксируем background-size на основе начального viewport
+                        var fixedBgSize = initialVw + 'px ' + initialVh + 'px';
+                        heroBg.style.backgroundSize = fixedBgSize;
+                        heroBg.style.backgroundPosition = '70% center';
+                        heroBg.style.transform = 'none';
+                        heroBg.style.webkitTransform = 'none';
+                        
+                        // Блокируем изменения через MutationObserver
+                        var observer = new MutationObserver(function(mutations) {
+                          mutations.forEach(function(mutation) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                              var el = mutation.target;
+                              if (el.classList && el.classList.contains('hero-section-bg')) {
+                                // Восстанавливаем фиксированные значения
+                                el.style.backgroundSize = fixedBgSize;
+                                el.style.backgroundPosition = '70% center';
+                                el.style.transform = 'none';
+                                el.style.webkitTransform = 'none';
+                              }
+                            }
+                          });
+                        });
+                        
+                        observer.observe(heroBg, { attributes: true, attributeFilter: ['style'] });
+                        
+                        // Также блокируем изменения при каждом скролле/resize
+                        var lockStyles = function() {
+                          if (heroBg) {
+                            heroBg.style.backgroundSize = fixedBgSize;
+                            heroBg.style.backgroundPosition = '70% center';
+                            heroBg.style.transform = 'none';
+                            heroBg.style.webkitTransform = 'none';
+                          }
+                        };
+                        
+                        window.addEventListener('scroll', lockStyles, { passive: true });
+                        window.addEventListener('resize', lockStyles, { passive: true });
+                        if (window.visualViewport) {
+                          window.visualViewport.addEventListener('resize', lockStyles, { passive: true });
+                          window.visualViewport.addEventListener('scroll', lockStyles, { passive: true });
+                        }
+                      };
+                      
+                      // Запускаем проверку после небольшой задержки
+                      setTimeout(checkHeroBg, 300);
+                    }
+                  } catch (e) {
+                    console.warn('Hero background lock failed:', e);
+                  }
                 }
                 
                 // Гарантируем что DOM полностью загружен
