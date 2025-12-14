@@ -1,0 +1,316 @@
+/* ========================================
+   MOBILE-SAFE CSS OVERRIDES
+   
+   iOS Safari GPU crash prevention
+   These rules disable heavy effects on mobile
+   ======================================== */
+
+/* Disable backdrop-filter ONLY on large containers - causes black screens */
+@media (max-width: 768px), (pointer: coarse) {
+  /* Only disable on transition/blur divs, not everywhere */
+  .transition-gradient-blur,
+  .section3-blur-gradient,
+  [class*="blur"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Simplify heavy drop-shadows on mobile - but keep text readable */
+@media (max-width: 768px), (pointer: coarse) {
+  /* Remove filters only from large containers, not from content */
+  section > div[style*="backdrop-filter"],
+  section > [style*="backdrop-filter"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Keep filters on images and small elements */
+  img[style*="filter"],
+  div[style*="backgroundImage"][style*="filter"] {
+    /* Keep the filter for visibility */
+  }
+}
+
+/* Disable background-attachment: fixed on mobile (performance killer) */
+@media (max-width: 768px), (pointer: coarse) {
+  * {
+    background-attachment: scroll !important;
+  }
+}
+
+/* Reduce text-shadow complexity on mobile - but keep readability */
+@media (max-width: 768px), (pointer: coarse) {
+  /* Only simplify very complex shadows (3+ layers) on large containers */
+  section > div[style*="text-shadow"] {
+    /* Keep basic shadow for readability */
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8) !important;
+  }
+  
+  /* Keep shadows on actual text elements for readability */
+  p[style*="text-shadow"],
+  h1[style*="text-shadow"],
+  h2[style*="text-shadow"],
+  h3[style*="text-shadow"] {
+    /* Don't remove - needed for contrast against backgrounds */
+  }
+}
+
+/* Prevent excessive will-change on mobile */
+@media (max-width: 768px), (pointer: coarse) {
+  * {
+    will-change: auto !important;
+  }
+  
+  /* Only allow on actively animating elements */
+  .animating {
+    will-change: transform !important;
+  }
+}
+
+/* Fix 100vh issues on iOS Safari */
+@supports (-webkit-touch-callout: none) {
+  .min-h-screen,
+  [style*="height: 100vh"],
+  [style*="minHeight: '100vh'"] {
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Use dvh where supported */
+  @supports (height: 100dvh) {
+    .min-h-screen,
+    [style*="height: 100vh"],
+    [style*="minHeight: '100vh'"] {
+      min-height: 100dvh;
+    }
+  }
+}
+
+/* Prevent translate3d hacks from causing issues */
+@media (max-width: 768px), (pointer: coarse) {
+  [style*="translateZ"] {
+    transform: none !important;
+  }
+}
+
+/* Mobile scroll/viewport normalization (REAL devices, not emulation)
+   - Disable smooth scrolling (can cause jumps when viewport height changes)
+   - Disable scroll anchoring (prevents Safari from \"helpfully\" jumping when layout shifts)
+   - Use --vvh (set in <head>) instead of 100vh for full-height sections */
+.force-mobile {
+  --vvh: 1vh;
+}
+
+.force-mobile html {
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+}
+
+.force-mobile body {
+  overflow-anchor: none !important;
+}
+
+.force-mobile .min-h-screen {
+  min-height: calc(var(--vvh, 1vh) * 100) !important;
+}
+
+/* Some sections use inline minHeight: '100vh' (cannot target reliably).
+   At least ensure common full-screen wrappers obey --vvh. */
+.force-mobile .hero-section-bg {
+  min-height: calc(var(--vvh, 1vh) * 100) !important;
+}
+
+.force-mobile main {
+  min-height: calc(var(--vvh, 1vh) * 100) !important;
+}
+
+/* Disable GSAP-related transforms on mobile if not properly initialized */
+@media (max-width: 768px), (pointer: coarse) {
+  [data-animate] {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Fix iOS Safari black screen on large containers */
+@media (max-width: 768px), (pointer: coarse) {
+  /* Limit container heights */
+  .journey-bg-wrapper,
+  [style*="400vh"] {
+    min-height: auto !important;
+    height: auto !important;
+  }
+  
+  /* Force desktop journey to not render on mobile */
+  .desktop-journey {
+    display: none !important;
+  }
+  
+  /* Ensure mobile journey is always visible and properly sized */
+  .mobile-journey-section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: auto !important;
+    height: auto !important;
+    background-attachment: scroll !important;
+    overflow: visible !important;
+    padding-bottom: clamp(4rem, 8vh, 6rem) !important;
+  }
+  
+  /* Make sure ALL scene cards are visible (4 scenes total) */
+  .mobile-scene-card {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-direction: column !important;
+    margin-bottom: clamp(3rem, 6vh, 4rem) !important;
+    padding-bottom: clamp(2rem, 4vh, 3rem) !important;
+  }
+  
+  /* Force each scene to be visible */
+  .mobile-scene-card:nth-child(1),
+  .mobile-scene-card:nth-child(2),
+  .mobile-scene-card:nth-child(3),
+  .mobile-scene-card:nth-child(4) {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* Ensure scene images load and display */
+  .mobile-scene-image {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 200px !important;
+    background-attachment: scroll !important;
+  }
+  
+  /* Fix journey section container - CRITICAL for mobile */
+  .journey-section-container {
+    display: block !important;
+    visibility: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+  
+  /* Ensure inner content wrapper doesn't clip */
+  .journey-section-container > * {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
+
+/* Ensure Swiper carousels are visible */
+@media (max-width: 768px), (pointer: coarse) {
+  .swiper,
+  .swiper-wrapper,
+  .swiper-slide {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* Show first slide by default before Swiper inits */
+  .swiper-slide:first-child {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+  }
+  
+  /* Ensure carousel images load */
+  .swiper-slide img,
+  .swiper-slide [style*="backgroundImage"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+  }
+  
+  /* Fix reviews carousel specifically */
+  .reviews-carousel,
+  .reviews-carousel .swiper-wrapper,
+  .reviews-carousel .swiper-slide {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* Fix team carousel */
+  .team-carousel,
+  .team-carousel .swiper-wrapper,
+  .team-carousel .swiper-slide {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* Fix actors carousel */
+  .actors-carousel,
+  .actors-carousel .swiper-wrapper,
+  .actors-carousel .swiper-slide {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Prevent isolation issues */
+@media (max-width: 768px), (pointer: coarse) {
+  [style*="isolation"] {
+    isolation: auto !important;
+  }
+}
+
+/* Reduce box-shadow complexity */
+@media (max-width: 768px), (pointer: coarse) {
+  [style*="box-shadow"],
+  [style*="boxShadow"] {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  }
+}
+
+/* Fix specific problem areas */
+@media (max-width: 768px), (pointer: coarse) {
+  /* Hero section fixes */
+  .hero-section-bg {
+    background-attachment: scroll !important;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Events section fixes */
+  .event-card-wrapper {
+    transform: none !important;
+    filter: none !important;
+  }
+  
+  /* Journey section fixes */
+  .journey-section-container {
+    overflow: visible !important;
+  }
+  
+  /* Actors section fixes */
+  .actors-carousel {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Trailer section fixes */
+  .trailer-section-wrapper-mobile {
+    background-attachment: scroll !important;
+  }
+}
+
+/* Debug: Add colored borders to sections in debug mode */
+body[data-debug="true"] section {
+  border: 2px solid red !important;
+}
+
+body[data-debug="true"] section:nth-child(1) { border-color: red !important; }
+body[data-debug="true"] section:nth-child(2) { border-color: orange !important; }
+body[data-debug="true"] section:nth-child(3) { border-color: yellow !important; }
+body[data-debug="true"] section:nth-child(4) { border-color: green !important; }
+body[data-debug="true"] section:nth-child(5) { border-color: blue !important; }
+body[data-debug="true"] section:nth-child(6) { border-color: purple !important; }

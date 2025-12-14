@@ -8,6 +8,7 @@ import { Navigation } from 'swiper/modules';
 import { reviews } from '../../data/reviews';
 import { scheduleItems } from '../../data/schedule';
 import { teamMembers } from '../../data/team';
+import { isProbablyMobile } from '../utils/device';
 
 interface TrailerSectionProps {
   gallerySectionRef?: React.RefObject<HTMLDivElement>;
@@ -44,7 +45,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = isProbablyMobile();
     
     if (isModalOpen && isMobile) {
       // Сохраняем текущую позицию скролла

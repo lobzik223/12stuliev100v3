@@ -7,6 +7,7 @@ import CounterAnimation from '../ui/CounterAnimation';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { events } from '../../data/events';
+import { isProbablyMobile } from '../utils/device';
 
 interface EventsSectionProps {
   navPanelRef?: React.RefObject<HTMLDivElement>;
@@ -19,6 +20,257 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
   const [selectedEventUrl, setSelectedEventUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNavPanelSticky, setIsNavPanelSticky] = useState(false);
+  const isMobileUi = typeof window !== 'undefined' ? isProbablyMobile() : false;
+
+  // Mobile-only: render card with fixed PNG aspect ratio (prevents real-device vh/viewport stretching)
+  const renderEventCardMobile = (event: typeof events[0]) => {
+    // plitkanovosti.png actual size: 1016x706
+    const aspectRatio = 1016 / 706;
+
+    return (
+      <div
+        className="event-card-mobile"
+        style={{
+          width: 'min(86vw, 360px)',
+          maxWidth: '100%',
+          aspectRatio: String(aspectRatio),
+          position: 'relative',
+          overflow: 'visible',
+          zIndex: 25,
+        }}
+      >
+        {/* Background card image - scales by width, keeps proportions */}
+        <img
+          src="/backgrounds/sections/plitkanovosti.png"
+          alt=""
+          className="event-card-mobile__bg"
+          loading="eager"
+          style={{
+            width: '100%',
+            height: '100%',
+            display: 'block',
+            objectFit: 'contain',
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        />
+
+        {/* Content overlay */}
+        <div
+          className="event-card-mobile__content"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            // Percent-based padding (NOT vh) => stable on real mobile when address bar changes.
+            // Move content a bit UP (as requested) so it sits centered inside the PNG frame
+            paddingTop: '14%',
+            paddingBottom: '12%',
+            paddingLeft: '10%',
+            paddingRight: '10%',
+            overflow: 'visible',
+            boxSizing: 'border-box',
+          }}
+        >
+          <p
+            className="text-center"
+            style={{
+              fontFamily: "'Playfair Display SC', serif",
+              fontSize: 'clamp(0.7rem, 2.8vw, 0.9rem)',
+              color: '#682302',
+              fontWeight: 400,
+              lineHeight: 1.15,
+              margin: 0,
+              // IMPORTANT: no ellipsis / no hidden overflow => city like “КУРСК” must remain visible.
+              whiteSpace: 'normal',
+              overflow: 'visible',
+              textOverflow: 'clip',
+              width: '100%',
+            }}
+          >
+            <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.85rem, 3vw, 1rem)' }}>
+              {event.date}
+            </span>{' '}
+            {event.location}
+          </p>
+
+          {/* Move ONLY title + tickets + buttons higher (mobile only) */}
+          <div
+            className="event-card-mobile__lower"
+            style={{
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              // Pull this block slightly upward without affecting date/city line
+              transform: 'translateY(-6%)',
+            }}
+          >
+            <h3
+              className="text-center"
+              style={{
+                fontFamily: "'Playfair Display SC', serif",
+                fontSize: 'clamp(1.02rem, 4vw, 1.28rem)',
+                color: '#682302',
+                fontWeight: 700,
+                lineHeight: 1.05,
+                marginTop: '4%',
+                marginBottom: event.ticketsLeft === 0 ? '8%' : '3.5%',
+                position: 'relative',
+                width: '100%',
+              }}
+            >
+              <span style={{ fontSize: 'clamp(1.2rem, 4.5vw, 1.5rem)', lineHeight: '1.05' }}>12</span> СТУЛЬЕВ
+
+              {event.ticketsLeft === 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translate(-50%, 0) rotate(6deg)',
+                    marginTop: '5%',
+                    padding: '0.42rem 1.1rem',
+                    border: '2px solid #682302',
+                    borderRadius: '0.6rem',
+                    backgroundColor: 'transparent',
+                    boxShadow: '0 2px 8px rgba(104, 35, 2, 0.3)',
+                    zIndex: 2,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily: "'Playfair Display SC', serif",
+                      fontSize: 'clamp(0.95rem, 3.8vw, 1.1rem)',
+                      fontWeight: 700,
+                      color: '#DC2626',
+                      margin: 0,
+                      lineHeight: 1.05,
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    ПРОДАНО
+                  </p>
+                </div>
+              )}
+            </h3>
+
+          {event.ticketsLeft > 0 && (
+            <>
+              <div
+                style={{
+                  backgroundColor: '#682302',
+                  /* Mobile: keep pill compact like desktop (no stretching) */
+                  padding: '0.3rem 1.05rem',
+                  borderRadius: '0.4rem',
+                  boxShadow: '0 0 0.625rem rgba(251, 198, 50, 0.3)',
+                  // Move tickets label + buttons a bit UP (mobile only)
+                  marginBottom: '3%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 'fit-content',
+                  maxWidth: '92%',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                }}
+              >
+                <p
+                  className="text-white text-center"
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    fontSize: 'clamp(0.66rem, 2.6vw, 0.84rem)',
+                    lineHeight: 1.1,
+                    margin: 0,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  ОСТАЛОСЬ{' '}
+                  <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(0.85rem, 3vw, 1rem)' }}>
+                    {event.ticketsLeft}
+                  </span>{' '}
+                  БИЛЕТОВ
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.6rem',
+                  justifyContent: 'center',
+                  flexWrap: 'nowrap',
+                  width: '100%',
+                }}
+              >
+                <button
+                  onClick={() => handleBuyTicket(event.buyTicketUrl)}
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    backgroundColor: '#FBC632',
+                    color: '#682302',
+                    fontWeight: 700,
+                    /* Mobile: make the BUTTON smaller (not by stretching) */
+                    fontSize: 'clamp(0.68rem, 2.7vw, 0.84rem)',
+                    padding: '0.24rem 0.52rem',
+                    borderRadius: '0.5rem',
+                    border: 'none',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: '0 0 auto',
+                  }}
+                  disabled={!event.buyTicketUrl}
+                >
+                  КУПИТЬ БИЛЕТ
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                      router.push(`/details/${event.id}`);
+                    } catch (error) {
+                      console.error('Navigation error:', error);
+                      if (typeof window !== 'undefined') {
+                        window.location.href = `/details/${event.id}`;
+                      }
+                    }
+                  }}
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    backgroundColor: 'transparent',
+                    borderColor: '#682302',
+                    borderWidth: '2px',
+                    borderStyle: 'solid',
+                    color: '#682302',
+                    fontWeight: 700,
+                    /* Mobile: make the BUTTON smaller (not by stretching) */
+                    fontSize: 'clamp(0.68rem, 2.7vw, 0.84rem)',
+                    padding: '0.24rem 0.52rem',
+                    borderRadius: '0.5rem',
+                    whiteSpace: 'nowrap',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flex: '0 0 auto',
+                  }}
+                >
+                  ПОДРОБНЕЕ
+                </button>
+              </div>
+            </>
+          )}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Отслеживаем позицию навигационной панели для скрытия когда она "подхватывается"
   useEffect(() => {
@@ -77,7 +329,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    const isMobile = window.innerWidth <= 768;
+    const isMobile = isProbablyMobile();
     
     if (isModalOpen && isMobile) {
       // Сохраняем текущую позицию скролла
@@ -101,20 +353,45 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
 
   // Функция для рендеринга карточки события
   const renderEventCard = (event: typeof events[0], withScrollReveal = false) => {
+    // Mobile-only: use safe aspect-ratio card. No vh-based layout.
+    if (isMobileUi) {
+      return renderEventCardMobile(event);
+    }
+
     const cardContent = (
-      <div className="relative w-full event-card-wrapper" style={{ maxWidth: '100%', overflow: 'visible' }}>
+      <div
+        className="relative w-full event-card-wrapper"
+        style={{
+          // Финальные размеры для мобилки задаём в globals.css через .event-card-wrapper (force-mobile / max-device-width)
+          // чтобы iOS/Safari не ломал логику по innerWidth.
+          maxWidth: '100%',
+          overflow: 'visible',
+        }}
+      >
         <div className="relative w-full h-auto" style={{ overflow: 'visible' }}>
           <div
+            className="event-card-bg"
             style={{
               backgroundImage: 'url(/backgrounds/sections/plitkanovosti.png)',
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'center',
               width: '100%',
-              paddingTop: 'clamp(140%, 160%, 180%)'
+              // Мобильный размер правим в CSS через .event-card-bg (force-mobile / max-device-width)
+              paddingTop: 'clamp(140%, 160%, 180%)',
             }}
           />
-          <div className="absolute inset-0 flex flex-col event-card-content" style={{ paddingTop: 'clamp(12rem, 20vh, 18.5rem)', paddingBottom: 'clamp(1.2rem, 2vh, 2rem)', paddingLeft: 'clamp(1.2rem, 2vw, 2rem)', paddingRight: 'clamp(1.2rem, 2vw, 2rem)', overflow: 'visible' }}>
+          <div
+            className="absolute inset-0 flex flex-col event-card-content"
+            style={{
+              // Мобильный padding-top правим в CSS через .event-card-content (force-mobile / max-device-width)
+              paddingTop: 'clamp(12rem, 20vh, 18.5rem)',
+              paddingBottom: 'clamp(1.2rem, 2vh, 2rem)',
+              paddingLeft: 'clamp(1.2rem, 2vw, 2rem)',
+              paddingRight: 'clamp(1.2rem, 2vw, 2rem)',
+              overflow: 'visible',
+            }}
+          >
           <p 
             className="text-center event-card-date"
             style={{ 
@@ -314,7 +591,17 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         </div>
 
         {/* Мобильная версия - Swiper карусель (скрыта на десктопе) */}
-        <div className="md:hidden relative w-full" style={{ marginTop: 'clamp(-12rem, -18vh, -15rem)', position: 'relative', zIndex: 10, filter: 'none' }}>
+        <div
+          className="md:hidden relative w-full"
+          style={{
+            // Mobile real devices: avoid vh-based negative offsets (address bar changes => jumps/clipping)
+            marginTop: isMobileUi ? '0' : 'clamp(-12rem, -18vh, -15rem)',
+            position: 'relative',
+            zIndex: 20,
+            filter: 'none',
+            overflow: 'visible',
+          }}
+        >
           <Swiper
             modules={[Navigation]}
             speed={800}
@@ -342,14 +629,44 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
           {/* Кнопки навигации Swiper для мобильных */}
           <div 
             className="swiper-button-prev swiper-button-prev-events" 
+            style={{
+              position: 'absolute',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              left: '0.5rem',
+              right: 'auto',
+              zIndex: 200,
+              width: '44px',
+              height: '44px',
+              pointerEvents: 'auto',
+            }}
           ></div>
           <div 
             className="swiper-button-next swiper-button-next-events" 
+            style={{
+              position: 'absolute',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              right: '0.5rem',
+              left: 'auto',
+              zIndex: 200,
+              width: '44px',
+              height: '44px',
+              pointerEvents: 'auto',
+            }}
           ></div>
         </div>
 
         {/* Кнопка расписания */}
-        <div className="w-full flex justify-center px-4 schedule-button-container" style={{ marginTop: 'clamp(-6rem, -10vh, -7rem)', position: 'relative', zIndex: 100 }}>
+        <div
+          className="w-full flex justify-center px-4 schedule-button-container"
+          style={{
+            // Mobile: button must be BELOW the card (no overlap)
+            marginTop: isMobileUi ? 'clamp(1.5rem, 3vh, 2.5rem)' : 'clamp(-6rem, -10vh, -7rem)',
+            position: 'relative',
+            zIndex: 30,
+          }}
+        >
           <ScrollReveal delay={450}>
             <button
               type="button"
@@ -400,22 +717,38 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         {/* Логотип и статистика */}
         <ScrollReveal delay={200}>
           <div className="mt-16 flex justify-center">
-            <div
-              style={{
-                backgroundImage: 'url(/backgrounds/sections/logo100let.png)',
-                backgroundSize: 'contain',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center',
-                width: 'clamp(20rem, 31.25vw, 25rem)',
-                height: 'clamp(13rem, 20vw, 16rem)',
-                filter: 'drop-shadow(0 0 1.25rem rgba(255,255,255,0.3))'
-              }}
-            />
+            {isMobileUi ? (
+              <img
+                className="events-logo100let-img"
+                src="/backgrounds/sections/logo100let.png"
+                alt=""
+                loading="eager"
+                style={{
+                  display: 'block',
+                  height: 'auto',
+                  maxWidth: '100%',
+                  filter: 'drop-shadow(0 0 1.25rem rgba(255,255,255,0.3))',
+                }}
+              />
+            ) : (
+              <div
+                className="events-logo100let"
+                style={{
+                  backgroundImage: 'url(/backgrounds/sections/logo100let.png)',
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  width: 'clamp(20rem, 31.25vw, 25rem)',
+                  height: 'clamp(13rem, 20vw, 16rem)',
+                  filter: 'drop-shadow(0 0 1.25rem rgba(255,255,255,0.3))'
+                }}
+              />
+            )}
           </div>
         </ScrollReveal>
 
         <ScrollReveal delay={250}>
-          <div className="text-center text-white" style={{ marginTop: 'clamp(-4rem, -5vh, -3.5rem)' }}>
+          <div className="text-center text-white events-subtitle-block" style={{ marginTop: 'clamp(-4rem, -5vh, -3.5rem)' }}>
             <p 
               className="uppercase"
               style={{ 

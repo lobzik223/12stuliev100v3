@@ -3,10 +3,9 @@ const nextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [],
-    unoptimized: false, // Оптимизация включена, но можно отключить через unoptimized={true} в компоненте
+    unoptimized: true, // ВРЕМЕННО: Отключаем оптимизацию для исправления загрузки на мобильных
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-    // Улучшаем загрузку изображений на мобильных
     minimumCacheTTL: 60,
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -25,6 +24,23 @@ const nextConfig = {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
           },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
+      {
+        source: '/actors/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
         ],
       },
       {
@@ -33,6 +49,10 @@ const nextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
           },
         ],
       },

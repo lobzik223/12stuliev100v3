@@ -1,196 +1,179 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { actors } from '../../data/actors';
 
+function isIOSUserAgent(ua: string) {
+  return /iPad|iPhone|iPod/i.test(ua);
+}
+
+function pickFallbackPhoto(actorId: number) {
+  // Берём существующие ассеты из public/photo/, чтобы убрать 404 и пустые блоки.
+  // Если в будущем в public/actors появятся реальные фото — они подхватятся, fallback не сработает.
+  const pool = ['/photo/actor-22.png', '/photo/actor-333.png', '/photo/actor-4.png', '/photo/actor-5.png', '/photo/artisti.png'];
+  return pool[(actorId - 1) % pool.length];
+}
+
 export default function ActorsSection() {
   const prevButtonRef = useRef<HTMLDivElement>(null);
   const nextButtonRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const animationFrameId = useRef<number | null>(null);
-  const fixedTopPxRef = useRef<number | null>(null);
-
-  // Вычисляем фиксированную позицию один раз при инициализации
-  const calculateFixedPosition = () => {
-    if (!containerRef.current) return;
-    const containerRect = containerRef.current.getBoundingClientRect();
-    // Вычисляем позицию выше центра (примерно на 8% выше центра)
-    fixedTopPxRef.current = containerRect.height / 2 - containerRect.height * 0.08;
-  };
+  const [mounted, setMounted] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Image fallback state - MUST be before any conditional returns
+  const [imgSrcById, setImgSrcById] = useState<Record<number, string>>(() => {
+    const m: Record<number, string> = {};
+    actors.forEach((a) => (m[a.id] = a.image));
+    return m;
+  });
 
   useEffect(() => {
+    setMounted(true);
+    if (typeof navigator !== 'undefined') {
+      setIsIOS(isIOSUserAgent(navigator.userAgent ?? ''));
+    }
+    if (typeof window !== 'undefined') {
+      const update = () => setIsMobile(window.innerWidth < 768);
+      update();
+      window.addEventListener('resize', update, { passive: true } as any);
+      window.addEventListener('orientationchange', update, { passive: true } as any);
+      return () => {
+        window.removeEventListener('resize', update as any);
+        window.removeEventListener('orientationchange', update as any);
+      };
+    }
+  }, []);
 
-    // Блокируем изменение стилей через переопределение setProperty и прямое присваивание
-    const lockButtonStyles = (button: HTMLElement, isPrev: boolean) => {
-      const lockedProperties = ['top', 'bottom', 'margin', 'marginTop', 'marginBottom', 'position'];
-      
-      // Блокируем setProperty
-      const originalSetProperty = button.style.setProperty.bind(button.style);
-      button.style.setProperty = function(property: string, value: string, priority?: string) {
-        const propLower = property.toLowerCase();
-        if (lockedProperties.includes(propLower)) {
-          // Игнорируем попытки изменить заблокированные свойства
-          return;
-        }
-        return originalSetProperty(property, value, priority);
-      };
-      
-      // Блокируем removeProperty
-      const originalRemoveProperty = button.style.removeProperty.bind(button.style);
-      button.style.removeProperty = function(property: string): string {
-        if (lockedProperties.includes(property.toLowerCase())) {
-          return ''; // Игнорируем попытки удалить заблокированные свойства
-        }
-        return originalRemoveProperty(property) || '';
-      };
-    };
+  // На iOS Safari агрессивные фиксаторы (raf + interval + MutationObserver) могут “убивать” страницу.
+  // Здесь оставляем лёгкую фиксацию только для десктопа; на мобилке позиционирование стрелок решает CSS.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.innerWidth < 768) return;
 
     const fixButtonPositions = () => {
-      // Если позиция еще не вычислена, вычисляем её
-      if (fixedTopPxRef.current === null) {
-        calculateFixedPosition();
-      }
-      
-      // Используем фиксированную позицию в пикселях, если она вычислена
-      const topValue = fixedTopPxRef.current !== null ? `${fixedTopPxRef.current}px` : '50%';
+      const topValue = '50%';
 
       if (prevButtonRef.current) {
         const button = prevButtonRef.current;
-        // Принудительно устанавливаем все свойства через прямое присваивание
         button.style.setProperty('position', 'absolute', 'important');
         button.style.setProperty('top', topValue, 'important');
         button.style.setProperty('left', '-1rem', 'important');
         button.style.setProperty('right', 'auto', 'important');
         button.style.setProperty('bottom', 'auto', 'important');
-        button.style.setProperty('margin', '0', 'important');
-        button.style.setProperty('margin-top', '0', 'important');
-        button.style.setProperty('margin-bottom', '0', 'important');
-        button.style.setProperty('margin-left', '0', 'important');
-        button.style.setProperty('margin-right', '0', 'important');
         button.style.setProperty('transform', 'translateY(-50%)', 'important');
         button.style.zIndex = '30';
-        button.style.width = 'clamp(2rem, 3vw, 3rem)';
-        button.style.height = 'clamp(2rem, 3vw, 3rem)';
         button.style.color = '#FBC632';
         button.style.cursor = 'pointer';
       }
 
       if (nextButtonRef.current) {
         const button = nextButtonRef.current;
-        // Принудительно устанавливаем все свойства через прямое присваивание
         button.style.setProperty('position', 'absolute', 'important');
         button.style.setProperty('top', topValue, 'important');
         button.style.setProperty('right', '-1rem', 'important');
         button.style.setProperty('left', 'auto', 'important');
         button.style.setProperty('bottom', 'auto', 'important');
-        button.style.setProperty('margin', '0', 'important');
-        button.style.setProperty('margin-top', '0', 'important');
-        button.style.setProperty('margin-bottom', '0', 'important');
-        button.style.setProperty('margin-left', '0', 'important');
-        button.style.setProperty('margin-right', '0', 'important');
         button.style.setProperty('transform', 'translateY(-50%)', 'important');
         button.style.zIndex = '30';
-        button.style.width = 'clamp(2rem, 3vw, 3rem)';
-        button.style.height = 'clamp(2rem, 3vw, 3rem)';
         button.style.color = '#FBC632';
         button.style.cursor = 'pointer';
       }
     };
 
-    // Вычисляем фиксированную позицию после небольшой задержки (когда контейнер полностью отрендерен)
-    const initTimeout = setTimeout(() => {
-      calculateFixedPosition();
-      fixButtonPositions();
-      
-      // Блокируем стили после вычисления позиции
-      if (prevButtonRef.current) {
-        lockButtonStyles(prevButtonRef.current, true);
-      }
-      if (nextButtonRef.current) {
-        lockButtonStyles(nextButtonRef.current, false);
-      }
-    }, 300);
-
-    // Фиксируем позиции сразу
-    fixButtonPositions();
-
-    // Используем requestAnimationFrame для постоянной фиксации (каждый кадр)
-    const animate = () => {
-      fixButtonPositions();
-      animationFrameId.current = requestAnimationFrame(animate);
-    };
-    animationFrameId.current = requestAnimationFrame(animate);
-    
-    // Дополнительно фиксируем каждые 10мс через setInterval (более агрессивно)
-    const intervalId = setInterval(() => {
-      fixButtonPositions();
-    }, 10);
-
-    // Следим за изменениями и фиксируем позиции
-    const observer = new MutationObserver(() => {
-      fixButtonPositions();
-    });
-
-    if (prevButtonRef.current) {
-      observer.observe(prevButtonRef.current, {
-        attributes: true,
-        attributeFilter: ['style', 'class'],
-        subtree: false
-      });
-    }
-    if (nextButtonRef.current) {
-      observer.observe(nextButtonRef.current, {
-        attributes: true,
-        attributeFilter: ['style', 'class'],
-        subtree: false
-      });
-    }
-
-    // Также фиксируем при скролле и ресайзе
-    const handleScroll = () => fixButtonPositions();
-    const handleResize = () => fixButtonPositions();
-    // Ждем полной загрузки DOM
-    const initHandlers = () => {
-      if (typeof window === 'undefined') return;
-      
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-          setTimeout(() => {
-            window.addEventListener('scroll', handleScroll, { passive: true });
-            window.addEventListener('touchmove', handleScroll, { passive: true });
-            window.addEventListener('resize', handleResize, { passive: true });
-            handleScroll();
-          }, 200);
-        });
-      } else {
-        setTimeout(() => {
-          window.addEventListener('scroll', handleScroll, { passive: true });
-          window.addEventListener('touchmove', handleScroll, { passive: true });
-          window.addEventListener('resize', handleResize, { passive: true });
-          handleScroll();
-        }, 200);
-      }
-    };
-    
-    initHandlers();
+    const initTimeout = window.setTimeout(() => fixButtonPositions(), 200);
+    const onResize = () => fixButtonPositions();
+    window.addEventListener('resize', onResize, { passive: true });
 
     return () => {
-      clearTimeout(initTimeout);
-      clearInterval(intervalId);
-      if (animationFrameId.current) {
-        cancelAnimationFrame(animationFrameId.current);
-      }
-      observer.disconnect();
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('scroll', handleScroll);
-        window.removeEventListener('touchmove', handleScroll);
-        window.removeEventListener('resize', handleResize);
-      }
+      window.clearTimeout(initTimeout);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
+
+  const iOSFallbackActor = useMemo(() => actors[0], []);
+
+  // iOS: безопасный SSR/первый рендер без Swiper (как в TrailerSection), чтобы не ломалась гидрация.
+  if (isIOS && !mounted) {
+    const fallback = iOSFallbackActor;
+    return (
+      <section
+        className="relative w-full actors-section-mobile"
+        style={{
+          minHeight: '100vh',
+          padding: '0 4% clamp(4rem, 8vh, 6rem) 4%',
+          marginTop: 'clamp(-7rem, -12vh, -6rem)',
+          zIndex: 20,
+          position: 'relative',
+        }}
+      >
+        <div className="w-full max-w-[120rem] mx-auto">
+          <div className="text-center mb-12">
+            <p
+              className="uppercase mb-4"
+              style={{
+                fontFamily: "'Playfair Display SC', serif",
+                fontSize: 'clamp(1.5rem, 2.25vw, 2.25rem)',
+                color: '#FBC632',
+                filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
+                textShadow:
+                  '0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 12px rgba(0, 0, 0, 0.7), 0 9px 18px rgba(0, 0, 0, 0.5), 0 0 2rem rgba(231, 200, 132, 0.6), 0 0 3.5rem rgba(231, 200, 132, 0.5), 0 0 5rem rgba(231, 200, 132, 0.4), 0 0 6.5rem rgba(231, 200, 132, 0.3)',
+                letterSpacing: '0.1em',
+              }}
+            >
+              АКТЕРЫ
+            </p>
+            <p
+              className="uppercase"
+              style={{
+                fontFamily: "'Playfair Display SC', serif",
+                fontSize: 'clamp(1rem, 1.25vw, 1.25rem)',
+                color: '#FFFFFF',
+                filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
+                textShadow:
+                  '0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 12px rgba(0, 0, 0, 0.7), 0 9px 18px rgba(0, 0, 0, 0.5), 0 0 1.8rem rgba(231, 200, 132, 0.6), 0 0 3rem rgba(231, 200, 132, 0.5), 0 0 4.5rem rgba(231, 200, 132, 0.4), 0 0 6rem rgba(231, 200, 132, 0.3)',
+                letterSpacing: '0.05em',
+                lineHeight: '1.3',
+              }}
+            >
+              ТАЛАНТЛИВЫЕ АКТЁРЫ, КОТОРЫЕ ВОПЛОЩАЮТ НА СЦЕНЕ
+              <br />
+              КЛАССИЧЕСКИХ ПЕРСОНАЖЕЙ
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center w-full" style={{ minHeight: '600px', padding: '2rem 0' }}>
+            <div
+              className="relative w-full rounded-lg overflow-hidden actor-card-image"
+              style={{
+                maxWidth: 'clamp(15.625rem, 20vw, 18.75rem)',
+                aspectRatio: '3/5',
+                border: '3px solid #D9D9D9',
+                boxShadow: '0 0 1.5625rem rgba(217, 217, 217, 0.6), inset 0 0 0.625rem rgba(217, 217, 217, 0.2)',
+              }}
+            >
+              <div className="w-full h-full bg-gray-900 relative">
+                <Image
+                  src={pickFallbackPhoto(fallback.id)}
+                  alt={fallback.name}
+                  width={400}
+                  height={600}
+                  className="w-full h-full object-cover"
+                  unoptimized
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Для реального рендера: на мобилке (и на iOS) оставляем Swiper, но делаем “мягкий” fallback для битых картинок.
 
   return (
     <section 
@@ -252,88 +235,12 @@ export default function ActorsSection() {
               prevEl: '.swiper-button-prev-actors',
             }}
             onSlideChange={() => {
-              // Фиксируем позиции после каждого перехода слайда
-              if (prevButtonRef.current && nextButtonRef.current && fixedTopPxRef.current !== null) {
-                const topValue = `${fixedTopPxRef.current}px`;
-                const prevButton = prevButtonRef.current;
-                prevButton.style.setProperty('position', 'absolute', 'important');
-                prevButton.style.setProperty('top', topValue, 'important');
-                prevButton.style.setProperty('left', '-1rem', 'important');
-                prevButton.style.setProperty('right', 'auto', 'important');
-                prevButton.style.setProperty('bottom', 'auto', 'important');
-                prevButton.style.setProperty('margin', '0', 'important');
-                prevButton.style.setProperty('transform', 'translateY(-50%)', 'important');
-                prevButton.style.zIndex = '30';
-                
-                const nextButton = nextButtonRef.current;
-                nextButton.style.setProperty('position', 'absolute', 'important');
-                nextButton.style.setProperty('top', topValue, 'important');
-                nextButton.style.setProperty('right', '-1rem', 'important');
-                nextButton.style.setProperty('left', 'auto', 'important');
-                nextButton.style.setProperty('bottom', 'auto', 'important');
-                nextButton.style.setProperty('margin', '0', 'important');
-                nextButton.style.setProperty('transform', 'translateY(-50%)', 'important');
-                nextButton.style.zIndex = '30';
-              }
-            }}
-            onSlideChangeTransitionStart={() => {
-              // Фиксируем позиции в начале перехода
-              if (prevButtonRef.current && nextButtonRef.current && fixedTopPxRef.current !== null) {
-                const topValue = `${fixedTopPxRef.current}px`;
-                prevButtonRef.current.style.setProperty('top', topValue, 'important');
-                nextButtonRef.current.style.setProperty('top', topValue, 'important');
-              }
-            }}
-            onSlideChangeTransitionEnd={() => {
-              // Фиксируем позиции в конце перехода
-              if (prevButtonRef.current && nextButtonRef.current && fixedTopPxRef.current !== null) {
-                const topValue = `${fixedTopPxRef.current}px`;
-                prevButtonRef.current.style.setProperty('top', topValue, 'important');
-                nextButtonRef.current.style.setProperty('top', topValue, 'important');
-              }
-            }}
-            onTransitionStart={() => {
-              // Фиксируем позиции в начале любой анимации
-              if (prevButtonRef.current && nextButtonRef.current && fixedTopPxRef.current !== null) {
-                const topValue = `${fixedTopPxRef.current}px`;
-                prevButtonRef.current.style.setProperty('top', topValue, 'important');
-                nextButtonRef.current.style.setProperty('top', topValue, 'important');
-              }
-            }}
-            onTransitionEnd={() => {
-              // Фиксируем позиции в конце любой анимации
-              if (prevButtonRef.current && nextButtonRef.current && fixedTopPxRef.current !== null) {
-                const topValue = `${fixedTopPxRef.current}px`;
-                prevButtonRef.current.style.setProperty('top', topValue, 'important');
-                nextButtonRef.current.style.setProperty('top', topValue, 'important');
-              }
+              // На мобилке позиционирование стрелок отдано CSS; на десктопе фиксируем “мягко” (см. useEffect выше).
             }}
             onSwiper={() => {
-              // Вычисляем и фиксируем позиции после инициализации Swiper
+              // После инициализации Swiper — небольшая задержка, чтобы CSS/DOM устаканились (особенно на мобилке).
               setTimeout(() => {
-                calculateFixedPosition();
-                if (prevButtonRef.current && nextButtonRef.current && fixedTopPxRef.current !== null) {
-                  const topValue = `${fixedTopPxRef.current}px`;
-                  const prevButton = prevButtonRef.current;
-                  prevButton.style.setProperty('position', 'absolute', 'important');
-                  prevButton.style.setProperty('top', topValue, 'important');
-                  prevButton.style.setProperty('left', '-1rem', 'important');
-                  prevButton.style.setProperty('right', 'auto', 'important');
-                  prevButton.style.setProperty('bottom', 'auto', 'important');
-                  prevButton.style.setProperty('margin', '0', 'important');
-                  prevButton.style.setProperty('transform', 'translateY(-50%)', 'important');
-                  prevButton.style.zIndex = '30';
-                  
-                  const nextButton = nextButtonRef.current;
-                  nextButton.style.setProperty('position', 'absolute', 'important');
-                  nextButton.style.setProperty('top', topValue, 'important');
-                  nextButton.style.setProperty('right', '-1rem', 'important');
-                  nextButton.style.setProperty('left', 'auto', 'important');
-                  nextButton.style.setProperty('bottom', 'auto', 'important');
-                  nextButton.style.setProperty('margin', '0', 'important');
-                  nextButton.style.setProperty('transform', 'translateY(-50%)', 'important');
-                  nextButton.style.zIndex = '30';
-                }
+                // noop: позиции стрелок — CSS (моб), лёгкий фикс — useEffect (десктоп).
               }, 200);
             }}
             breakpoints={{
@@ -368,18 +275,20 @@ export default function ActorsSection() {
                 }}
               >
                         <div className="w-full h-full bg-gray-900 relative">
-                          {actor.image ? (
+                          {imgSrcById[actor.id] ? (
                             <Image 
-                              src={actor.image} 
+                              src={imgSrcById[actor.id]} 
                               alt={actor.name}
                               width={400}
                               height={600}
                               className="w-full h-full object-cover"
                               unoptimized
-                              onError={(e) => {
-                                // Скрываем изображение при ошибке загрузки
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
+                              onError={() => {
+                                // Если /actors/*.jpg отсутствует — подставляем существующий placeholder, чтобы не было пустого блока.
+                                setImgSrcById((prev) => ({
+                                  ...prev,
+                                  [actor.id]: pickFallbackPhoto(actor.id),
+                                }));
                               }}
                             />
                           ) : (
@@ -448,7 +357,7 @@ export default function ActorsSection() {
             className="swiper-button-prev swiper-button-prev-actors" 
                   style={{
               position: 'absolute',
-              top: '42%',
+              top: isMobile ? '30%' : '50%',
               left: '-1rem',
               right: 'auto',
               bottom: 'auto',
@@ -466,7 +375,7 @@ export default function ActorsSection() {
             className="swiper-button-next swiper-button-next-actors" 
                   style={{
               position: 'absolute',
-              top: '42%',
+              top: isMobile ? '30%' : '50%',
               right: '-1rem',
               left: 'auto',
               bottom: 'auto',

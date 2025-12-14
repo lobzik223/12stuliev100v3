@@ -6,16 +6,18 @@ import Header from "./Header";
 import SecondaryNav from "./sections/SecondaryNav";
 import HeroSection from "./sections/HeroSection";
 import EventsSection from "./sections/EventsSection";
-import JourneySection from "./sections/JourneySection";
+import JourneySection from "./sections/JourneySectionFixed";
 import ActorsSection from "./sections/ActorsSection";
 import TrailerSection from "./sections/TrailerSection";
 import { useRouter } from 'next/navigation';
+import { isProbablyMobile } from "./utils/device";
 
 export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: { initialDebug?: boolean; ssrIsIOS?: boolean } = {}) {
   const router = useRouter();
   const [isMainHeaderVisible, setIsMainHeaderVisible] = useState(true);
   const [activeCategory, setActiveCategory] = useState(0); // 0: ОФИС, 1: ПСИХУШКА, 2: КВАРТИРА КИСЫ, 3: КВАРТИРА СТАРУХИ
   const [debugEnabled, setDebugEnabled] = useState(initialDebug);
+  const [debugInfo, setDebugInfo] = useState<string>('');
   const journeySectionRef = useRef<HTMLDivElement>(null);
   const eventsSectionRef = useRef<HTMLDivElement>(null);
   const gallerySectionRef = useRef<HTMLDivElement>(null);
@@ -32,8 +34,53 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
   const yaryginaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!debugEnabled) return;
+    if (typeof window === 'undefined') return;
+
+    const fmtRect = (el: HTMLElement | null) => {
+      if (!el) return 'null';
+      const r = el.getBoundingClientRect();
+      return `t:${Math.round(r.top)} b:${Math.round(r.bottom)} h:${Math.round(r.height)}`;
+    };
+
+    const tick = () => {
+      try {
+        const docEl = document.documentElement;
+        const vv = window.visualViewport?.width ?? 0;
+        const info = [
+          `ua:${navigator.userAgent}`,
+          `forceMobile:${docEl.classList.contains('force-mobile')}`,
+          `inner:${window.innerWidth}x${window.innerHeight}`,
+          `screen:${window.screen?.width}x${window.screen?.height}`,
+          `vv:${Math.round(vv)}`,
+          `scrollY:${Math.round(window.scrollY)}`,
+          `mainH:${document.querySelector('main')?.scrollHeight ?? 0}`,
+          `events:${fmtRect(eventsSectionRef.current)}`,
+          `journey:${fmtRect(journeySectionRef.current)}`,
+          `actors:${fmtRect(actorsSectionRef.current)}`,
+          `team:${fmtRect(teamSectionRef.current)}`,
+          `reviews:${fmtRect(reviewsSectionRef.current)}`,
+          `contacts:${fmtRect(contactsSectionRef.current)}`,
+        ].join('\n');
+        setDebugInfo(info);
+      } catch (e) {
+        setDebugInfo(String(e));
+      }
+    };
+
+    tick();
+    const id = window.setInterval(tick, 600);
+    return () => window.clearInterval(id);
+  }, [debugEnabled]);
+
+  useEffect(() => {
       // Проверяем что мы в браузере (не на сервере)
       if (typeof window === 'undefined') return;
+      // CRITICAL MOBILE FIX:
+      // На реальных мобильных браузерах (iOS Safari / Android Chrome) viewport height меняется во время скролла
+      // (адресная строка), что ломает любые \"секционные\" расчёты на базе innerHeight/getBoundingClientRect.
+      // На мобильных отключаем этот scroll-handler полностью и оставляем нативный скролл.
+      if (isProbablyMobile()) return;
 
       const handleScroll = () => {
       if (!navPanelRef.current) return;
@@ -44,7 +91,8 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       // Когда навигационная панель из EventsSection достигает верха экрана - "подхватываем" её
       if (navPanelRect.top <= 100) {
         // Проверяем, прошли ли мы текст "ФИНАЛ ОХОТЫ"
-        if (finalTextRect && finalTextRect.top < window.innerHeight * 0.3) {
+        const vh = window.visualViewport?.height ?? window.innerHeight;
+        if (finalTextRect && finalTextRect.top < vh * 0.3) {
           // Прошли текст "ФИНАЛ ОХОТЫ" - возвращаем главную шапку
           setIsMainHeaderVisible(true);
         } else {
@@ -58,7 +106,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
 
       // Определяем активную категорию на основе позиции объектов
       // Объект считается активным, когда его верхняя часть достигает верхней трети экрана
-      const activationThreshold = window.innerHeight * 0.3;
+      const activationThreshold = (window.visualViewport?.height ?? window.innerHeight) * 0.3;
       const refs = [
         { ref: officeRef, index: 0 },
         { ref: psychushkaRef, index: 1 },
@@ -132,6 +180,14 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
 
   return (
     <main className="relative min-h-screen w-full bg-black" style={{ overflowX: 'hidden' }}>
+      {debugEnabled && (
+        <pre
+          className="fixed bottom-2 left-2 right-2 z-[99999] max-h-[45vh] overflow-auto rounded-md border border-yellow-400/60 bg-black/80 p-2 text-[10px] leading-snug text-yellow-200"
+          style={{ whiteSpace: 'pre-wrap' }}
+        >
+          {debugInfo}
+        </pre>
+      )}
       {/* Скрытые изображения для принудительной загрузки на мобильных устройствах */}
       <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}>
         <img src="/backgrounds/sections/section-1.png" alt="" loading="eager" fetchPriority="high" />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { isProbablyMobile } from "../utils/device";
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -9,20 +10,38 @@ interface ScrollRevealProps {
 }
 
 export default function ScrollReveal({ children, delay = 0, className = '' }: ScrollRevealProps) {
-  const [isVisible, setIsVisible] = useState(false);
-  const [hasBeenVisible, setHasBeenVisible] = useState(false);
+  // ВАЖНО: по умолчанию (до гидрации) контент ДОЛЖЕН быть видимым,
+  // иначе на iOS при сбое/лаг-рендере секции “навсегда” останутся скрытыми.
+  const [isVisible, setIsVisible] = useState(true);
+  const [hasBeenVisible, setHasBeenVisible] = useState(true);
   const [ref, setRef] = useState<HTMLDivElement | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!ref) return;
 
     // Mobile-only: не прячем контент (на iOS/Android IntersectionObserver иногда не срабатывает на реальных устройствах).
     // Важно: это выполняется только после гидрации (useEffect), поэтому hydration mismatch не возникает.
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+    if (typeof window !== 'undefined' && isProbablyMobile()) {
       setIsVisible(true);
       setHasBeenVisible(true);
       return;
     }
+
+    // Десктоп: если элемент не в зоне видимости — прячем после mount и ждём observer.
+    // Если уже в зоне видимости — оставляем видимым (без мигания).
+    try {
+      const rect = ref.getBoundingClientRect();
+      const inViewport = rect.bottom > 0 && rect.top < (window.innerHeight || document.documentElement.clientHeight);
+      if (!inViewport) {
+        setIsVisible(false);
+        setHasBeenVisible(false);
+      }
+    } catch (e) {}
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -61,15 +80,13 @@ export default function ScrollReveal({ children, delay = 0, className = '' }: Sc
   return (
     <div
       ref={setRef}
-      className={className}
+      className={[
+        'scroll-reveal',
+        className,
+        // До mounted НЕ добавляем “hidden” класс — это и есть защита от “чёрного экрана” без JS.
+        mounted ? (isVisible ? 'scroll-reveal--visible' : 'scroll-reveal--hidden') : '',
+      ].filter(Boolean).join(' ')}
       data-scroll-reveal="true"
-      style={{
-        opacity: isVisible ? 1 : 0,
-        transform: isVisible ? 'translateY(0) scale(1)' : 'translateY(9.375rem) scale(0.9)',
-        filter: isVisible ? 'blur(0)' : 'blur(0.625rem)',
-        transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1), filter 1s cubic-bezier(0.16, 1, 0.3, 1)',
-        willChange: 'transform, opacity, filter',
-      }}
     >
       {children}
     </div>

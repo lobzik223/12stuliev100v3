@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
+import "./mobile-safe.css";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import DebugConsole from "@/components/DebugConsole";
 
 export const metadata: Metadata = {
   title: "12 Стульев - 100 лет спустя",
@@ -12,6 +15,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -22,11 +26,68 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+        {/* ВАЖНО: meta viewport генерируется Next.js из export const viewport выше.
+            Дублировать <meta name="viewport"> вручную нельзя — на iOS это часто ломает масштаб/брейкпоинты. */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <link rel="stylesheet" href="//s3.intickets.ru/interposed-frame.min.css" />
+        {/* iOS/Safari иногда отдаёт viewport как “десктопный”, из-за чего ломаются брейкпоинты.
+            Ставим класс force-mobile ДО гидрации, чтобы CSS сразу применился корректно. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var docEl = document.documentElement;
+                  var coarse = false;
+                  try {
+                    coarse = (window.matchMedia && (window.matchMedia('(pointer: coarse)').matches || window.matchMedia('(hover: none)').matches)) || false;
+                  } catch (e) {}
+                  var touch = (navigator && typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 0) || false;
+                  var vv = window.visualViewport && window.visualViewport.width;
+                  var vw = (typeof vv === 'number' && vv > 0) ? vv : window.innerWidth;
+                  var sw = (window.screen && window.screen.width) ? window.screen.width : vw;
+                  var eff = Math.min(vw, sw);
+                  if (coarse || touch || eff < 768) {
+                    docEl.classList.add('force-mobile');
+                  }
+
+                  // Mobile viewport-height fix:
+                  // Real mobile browsers change visible viewport height during scroll (address bar collapse/expand).
+                  // We store the *visible* height (visualViewport.height when available) in CSS var --vvh.
+                  function setVvh() {
+                    try {
+                      var vvh = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
+                      if (typeof vvh === 'number' && vvh > 0) {
+                        docEl.style.setProperty('--vvh', (vvh * 0.01) + 'px');
+                      }
+                    } catch (e) {}
+                  }
+
+                  // Only needed for real mobile/touch devices.
+                  if (docEl.classList.contains('force-mobile')) {
+                    setVvh();
+                    try {
+                      window.addEventListener('resize', setVvh, { passive: true });
+                    } catch (e) {
+                      window.addEventListener('resize', setVvh);
+                    }
+                    if (window.visualViewport) {
+                      try {
+                        window.visualViewport.addEventListener('resize', setVvh, { passive: true });
+                        window.visualViewport.addEventListener('scroll', setVvh, { passive: true });
+                      } catch (e) {
+                        window.visualViewport.addEventListener('resize', setVvh);
+                        window.visualViewport.addEventListener('scroll', setVvh);
+                      }
+                    }
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         {/* Preconnect для быстрой загрузки ресурсов */}
         <link rel="preconnect" href="https://12stuliev100v4.vercel.app" />
         <link rel="dns-prefetch" href="https://12stuliev100v4.vercel.app" />
@@ -44,9 +105,16 @@ export default function RootLayout({
         <link rel="preload" href="/backgrounds/sections/vput4.png" as="image" type="image/png" />
       </head>
       <body>
-        {children}
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
+        <DebugConsole />
         <Script 
           src="//s3.intickets.ru/interposed-frame.min.js" 
+          strategy="afterInteractive"
+        />
+        <Script 
+          src="/mobile-diagnostic.js" 
           strategy="afterInteractive"
         />
         {/* Инициализация клиентских скриптов после загрузки DOM */}

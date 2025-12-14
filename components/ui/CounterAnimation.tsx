@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { isProbablyMobile } from "../utils/device";
 
 interface CounterAnimationProps {
   end: number;
@@ -20,7 +21,7 @@ export default function CounterAnimation({ end, duration = 2000, delay = 0, clas
 
     // Mobile-only: показываем финальное число сразу, без IntersectionObserver/анимации
     // (на iOS IntersectionObserver иногда не срабатывает и остаётся 0).
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+    if (typeof window !== 'undefined' && isProbablyMobile()) {
       setCount(end);
       setIsVisible(true);
       return;
@@ -53,7 +54,7 @@ export default function CounterAnimation({ end, duration = 2000, delay = 0, clas
     if (!isVisible) return;
 
     // Mobile-only: финальное число уже установлено выше.
-    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+    if (typeof window !== 'undefined' && isProbablyMobile()) {
       return;
     }
 

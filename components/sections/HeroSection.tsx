@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import TypingText from '../ui/TypingText';
+import { isProbablyMobile } from '../utils/device';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -18,13 +19,13 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
   const textRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? isProbablyMobile() : false));
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(isProbablyMobile());
     };
     
     // Ждем полной загрузки DOM
@@ -47,6 +48,24 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
   }, []);
 
   useEffect(() => {
+    // На мобильных (особенно iOS) GSAP/ScrollTrigger часто даёт “пропадающий контент”.
+    // Для мобилки оставляем статичный рендер без анимаций.
+    if (isProbablyMobile()) {
+      if (logoRef.current) {
+        logoRef.current.style.opacity = '1';
+        logoRef.current.style.transform = 'none';
+      }
+      if (textRef.current) {
+        textRef.current.style.opacity = '1';
+        textRef.current.style.transform = 'none';
+      }
+      if (buttonContainerRef.current) {
+        buttonContainerRef.current.style.opacity = '1';
+        buttonContainerRef.current.style.transform = 'none';
+      }
+      return;
+    }
+
     // Анимация для логотипа
     if (logoRef.current) {
       gsap.fromTo(logoRef.current,
@@ -93,7 +112,7 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
     }
 
     // Анимация для кнопки (только на десктопе)
-    if (buttonContainerRef.current && window.innerWidth >= 768) {
+    if (buttonContainerRef.current && !isProbablyMobile()) {
       gsap.fromTo(buttonContainerRef.current,
         {
           opacity: 0,
@@ -114,7 +133,7 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
           delay: 0.2
         }
       );
-    } else if (buttonContainerRef.current && window.innerWidth < 768) {
+    } else if (buttonContainerRef.current && isProbablyMobile()) {
       // На мобильных кнопка сразу видна без анимации
       gsap.set(buttonContainerRef.current, {
         opacity: 1,

@@ -9,12 +9,146 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ScrollReveal: по умолчанию всегда ВИДИМО (SSR-safe).
+   Скрываем/анимируем только после гидрации, когда компонент добавит класс scroll-reveal--hidden. */
+.scroll-reveal {
+  opacity: 1;
+  transform: none;
+  filter: none;
+  will-change: auto;
+}
+
+.scroll-reveal.scroll-reveal--hidden {
+  opacity: 0;
+  transform: translateY(9.375rem) scale(0.9);
+  filter: blur(0.625rem);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity, filter;
+}
+
+.scroll-reveal.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity, filter;
+}
+
+/* SAFARI/iOS fallback:
+   Иногда iPhone (особенно в симуляторе/при "Request Desktop Website") получает viewport ~980px,
+   из-за чего tailwind md:* начинает работать как на десктопе и прячет мобильный контент.
+   Эта страховка включает "мобильное" поведение по ФИЗИЧЕСКОЙ ширине устройства. */
+@media (max-device-width: 768px) {
+  /* На мобилке принудительно убираем любые “reveal”-скрытия (на iOS они иногда остаются навсегда) */
+  [data-scroll-reveal="true"] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+
+  .md\:hidden { display: block !important; }
+  .md\:block { display: none !important; }
+  .md\:flex { display: none !important; }
+  .md\:grid { display: none !important; }
+}
+
+/* Более надёжный флаг (ставится скриптом в <head>) — работает даже когда Safari даёт viewport 980px. */
+.force-mobile [data-scroll-reveal="true"] {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
+}
+
+.force-mobile .md\:hidden { display: block !important; }
+.force-mobile .md\:block { display: none !important; }
+.force-mobile .md\:flex { display: none !important; }
+.force-mobile .md\:grid { display: none !important; }
+
+/* Стрелки Swiper для событий: на iOS viewport иногда не попадает в (max-width:768),
+   поэтому дублируем мобильные стили под force-mobile. */
+.force-mobile .swiper-button-prev-events,
+.force-mobile .swiper-button-next-events {
+  width: 44px !important;
+  height: 44px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 200 !important;
+  pointer-events: auto !important;
+  color: #FBC632 !important;
+  filter: drop-shadow(0 0 0.46875rem rgba(251, 198, 50, 0.8)) !important;
+}
+
+.force-mobile .swiper-button-prev-events {
+  left: 0.5rem !important;
+  right: auto !important;
+}
+
+.force-mobile .swiper-button-next-events {
+  right: 0.5rem !important;
+  left: auto !important;
+}
+
+.force-mobile .event-card-wrapper {
+  max-width: min(78vw, 280px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.force-mobile .event-card-bg {
+  padding-top: 120% !important;
+}
+
+.force-mobile .event-card-content {
+  padding-top: clamp(8rem, 15vh, 11rem) !important;
+}
+
+/* Тот же фикс для устройств, где media query по device-width работает, даже если force-mobile по какой-то причине не поставился */
+@media (max-device-width: 768px) {
+  .event-card-wrapper {
+    max-width: min(78vw, 280px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .event-card-bg {
+    padding-top: 120% !important;
+  }
+
+  .event-card-content {
+    padding-top: clamp(8rem, 15vh, 11rem) !important;
+  }
+}
+
+/* iOS/Safari: content-visibility/contain иногда “прячет” секции → чёрный экран. */
+.force-mobile [style*="backgroundImage"],
+.force-mobile [style*="background-image"],
+.force-mobile section,
+.force-mobile main,
+.force-mobile div {
+  content-visibility: visible !important;
+  contain: none !important;
+}
+
 /* Принудительная загрузка фоновых изображений на мобильных устройствах */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-device-width: 768px) {
   /* Убеждаемся что фоновые изображения загружаются принудительно */
   [style*="backgroundImage"],
-  [style*="background-image"] {
+  [style*="background-image"],
+  section[style*="backgroundImage"],
+  section[style*="background-image"],
+  div[style*="backgroundImage"],
+  div[style*="background-image"] {
     image-rendering: -webkit-optimize-contrast;
+    background-attachment: scroll !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
     image-rendering: crisp-edges;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
@@ -64,8 +198,11 @@
     background-size: contain !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
-    width: clamp(18rem, 55vw, 30rem) !important;
-    height: clamp(12.5rem, 45vw, 22rem) !important;
+    /* Раньше минимальная ширина 18rem на телефонах часто выглядела “слишком крупно”.
+       Делаем размер более “мобильным”, не трогая десктоп. */
+    /* Mobile requirement: make top logo ~2x smaller */
+    width: clamp(8rem, 38vw, 16rem) !important;
+    height: clamp(6rem, 30vw, 12rem) !important;
     max-width: 100% !important;
     min-width: 0 !important;
     min-height: 0 !important;
@@ -502,11 +639,65 @@ div.swiper-button-next.swiper-button-next-actors {
   padding: 2rem 0;
 }
 
+/* Swiper sets overflow:hidden on .swiper by default; on real mobile this clips the PNG card frame.
+   Our mobile event card must remain fully visible. */
+@media (max-width: 768px), (pointer: coarse) {
+  .events-carousel.swiper,
+  .events-carousel {
+    overflow: visible !important;
+  }
+
+  .events-carousel .swiper-wrapper,
+  .events-carousel .swiper-slide {
+    overflow: visible !important;
+  }
+}
+
 .events-carousel .swiper-slide {
   display: flex;
   justify-content: center;
   align-items: stretch;
   height: auto;
+}
+
+/* Mobile event card (pltikanovosti.png) — keep proportions, no internal scroll */
+@media (max-width: 768px), (pointer: coarse) {
+  .event-card-mobile {
+    overflow: visible !important;
+  }
+
+  .event-card-mobile__content {
+    overflow: visible !important;
+  }
+
+  /* Prevent any accidental internal scrollbars inside the card */
+  .event-card-mobile,
+  .event-card-mobile * {
+    overflow: visible !important;
+  }
+
+  /* === Mobile UI polish (event card) === */
+  /* 1) Slightly smaller buttons inside the card */
+  .event-card-mobile__content button {
+    /* Mobile: smaller BUTTON (less padding), keep text readable */
+    font-size: clamp(0.68rem, 2.7vw, 0.84rem) !important;
+    padding: 0.24rem 0.52rem !important;
+    line-height: 1.1 !important;
+  }
+
+  /* 2) Make text blocks more compact */
+  .event-card-mobile__content > p {
+    line-height: 1.15 !important;
+  }
+
+  .event-card-mobile__content > h3 {
+    line-height: 1.05 !important;
+  }
+
+  /* Tickets label */
+  .event-card-mobile__content > div > p {
+    line-height: 1.1 !important;
+  }
 }
 
 /* Кастомные кнопки навигации для событий */
@@ -527,12 +718,12 @@ div.swiper-button-next.swiper-button-next-actors {
 }
 
 .swiper-button-prev-events {
-  left: clamp(-1.5rem, -3vw, -1rem) !important;
+  left: -1rem !important;
   right: auto !important;
 }
 
 .swiper-button-next-events {
-  right: clamp(-1.5rem, -3vw, -1rem) !important;
+  right: -1rem !important;
   left: auto !important;
 }
 
@@ -676,9 +867,47 @@ div.swiper-button-next.swiper-button-next-actors {
     left: auto !important;
   }
 
-  /* Кнопка расписания на мобильных - поднимаем выше */
+  /* Кнопка расписания на мобильных — должна быть НИЖЕ карточки, без перекрытий */
   .schedule-button-container {
-    margin-top: clamp(-10rem, -14vh, -11rem) !important;
+    /* 3) Move slightly UP (closer to card), but keep separation */
+    margin-top: clamp(1rem, 2vh, 1.75rem) !important;
+  }
+
+  /* EventsSection: logo100let.png below schedule — mobile only */
+  .events-logo100let {
+    /* Smaller on mobile + keep fully visible (avoid overlap with subtitle) */
+    width: clamp(8rem, 34vw, 10.5rem) !important;
+    height: clamp(5rem, 22vw, 6.5rem) !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    background-size: contain !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    position: relative !important;
+    z-index: 2 !important;
+    /* Slightly higher than subtitle, like desktop */
+    transform: translateY(-10%) !important;
+  }
+
+  /* EventsSection mobile logo as <img> (prevents left/right cropping) */
+  .events-logo100let-img {
+    width: min(76vw, 300px) !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    position: relative !important;
+    z-index: 2 !important;
+    transform: translateY(-10%) !important;
+  }
+
+  /* EventsSection subtitle: reduce negative pull-up on mobile so it doesn't cover the logo */
+  .events-subtitle-block {
+    margin-top: clamp(-0.75rem, -1.2vh, -0.5rem) !important;
+    position: relative !important;
+    z-index: 1 !important;
   }
 
   /* Небольшой блюр для плавного перехода между section-4.png и section-3.png на мобильных */
@@ -1157,8 +1386,54 @@ div.swiper-button-next.swiper-button-next-actors {
   }
 
   /* Стили для стрелок навигации команды в TeamSection - меньшие и тусклые */
+  /* Стили для стрелок team-section - яркие на мобилке как отзывы */
   .swiper-button-prev-team-section,
-  .swiper-button-next-team-section {
+  .swiper-button-next-team-section,
+  .swiper-button-prev.swiper-button-prev-team-section,
+  .swiper-button-next.swiper-button-next-team-section {
+    width: clamp(2rem, 3vw, 3rem) !important;
+    height: clamp(2rem, 3vw, 3rem) !important;
+    color: #FBC632 !important;
+    filter: drop-shadow(0 0 0.46875rem rgba(251, 198, 50, 0.8)) !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    position: absolute !important;
+    top: 50% !important;
+    margin-top: 0 !important;
+    transform: translateY(-50%) !important;
+    z-index: 30 !important;
+    opacity: 1 !important;
+  }
+
+  .swiper-button-prev-team-section,
+  .swiper-button-prev.swiper-button-prev-team-section {
+    left: -1rem !important;
+    right: auto !important;
+  }
+
+  .swiper-button-next-team-section,
+  .swiper-button-next.swiper-button-next-team-section {
+    right: -1rem !important;
+    left: auto !important;
+  }
+
+  .team-section-carousel .swiper-button-prev-team-section::after,
+  .team-section-carousel .swiper-button-next-team-section::after {
+    font-size: clamp(2rem, 3vw, 3rem) !important;
+    font-weight: bold !important;
+    color: #FBC632 !important;
+  }
+
+  .team-section-carousel .swiper-button-prev-team-section:hover,
+  .team-section-carousel .swiper-button-next-team-section:hover {
+    transform: translateY(-50%) scale(1.1) !important;
+    transition: transform 0.3s ease !important;
+  }
+
+  /* Старые стили для обратной совместимости */
+  .swiper-button-prev-team-section-old,
+  .swiper-button-next-team-section-old {
     color: #FBC632 !important;
     width: clamp(1.5rem, 2vw, 2rem) !important;
     height: clamp(1.5rem, 2vw, 2rem) !important;
@@ -1188,48 +1463,80 @@ div.swiper-button-next.swiper-button-next-actors {
     transform: translateX(0) scale(1) !important;
   }
 
-  /* Карусель отзывов на мобильных - показываем только одну карточку */
-  .reviews-carousel .swiper-slide {
+  /* Карусели на мобильных: НИКОГДА не прячем слайды до инициализации Swiper,
+     иначе при сбое/лаг-инициализации на iOS секции становятся “пустыми”. */
+  .reviews-carousel .swiper-slide,
+  .schedule-carousel .swiper-slide,
+  .actors-carousel .swiper-slide,
+  .team-carousel .swiper-slide {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* Когда Swiper инициализировался — можно скрывать неактивные */
+  .reviews-carousel.swiper-initialized .swiper-slide {
     opacity: 0 !important;
     transform: translateX(100%) scale(1) !important;
     transition: transform 0.6s ease, opacity 0.6s ease !important;
   }
 
-  .reviews-carousel .swiper-slide-active {
+  .reviews-carousel.swiper-initialized .swiper-slide-active {
     opacity: 1 !important;
     transform: translateX(0) scale(1) !important;
     transition: transform 0.6s ease, opacity 0.6s ease !important;
   }
 
-  .reviews-carousel .swiper-slide-prev {
+  .reviews-carousel.swiper-initialized .swiper-slide-prev {
     transform: translateX(-100%) scale(1) !important;
     opacity: 0 !important;
   }
 
-  .reviews-carousel .swiper-slide-next {
+  .reviews-carousel.swiper-initialized .swiper-slide-next {
     transform: translateX(100%) scale(1) !important;
     opacity: 0 !important;
   }
 
-  /* Карусель расписания на мобильных - показываем только одну карточку */
-  .schedule-carousel .swiper-slide {
+  .schedule-carousel.swiper-initialized .swiper-slide {
     opacity: 0 !important;
     transform: translateX(100%) scale(1) !important;
     transition: transform 0.6s ease, opacity 0.6s ease !important;
   }
 
-  .schedule-carousel .swiper-slide-active {
+  .schedule-carousel.swiper-initialized .swiper-slide-active {
     opacity: 1 !important;
     transform: translateX(0) scale(1) !important;
     transition: transform 0.6s ease, opacity 0.6s ease !important;
   }
 
-  .schedule-carousel .swiper-slide-prev {
+  .schedule-carousel.swiper-initialized .swiper-slide-prev {
     transform: translateX(-100%) scale(1) !important;
     opacity: 0 !important;
   }
 
-  .schedule-carousel .swiper-slide-next {
+  .schedule-carousel.swiper-initialized .swiper-slide-next {
+    transform: translateX(100%) scale(1) !important;
+    opacity: 0 !important;
+  }
+
+  .actors-carousel.swiper-initialized .swiper-slide {
+    opacity: 0 !important;
+    transform: translateX(100%) scale(1) !important;
+    transition: transform 0.6s ease, opacity 0.6s ease !important;
+  }
+
+  .actors-carousel.swiper-initialized .swiper-slide-active {
+    opacity: 1 !important;
+    transform: translateX(0) scale(1) !important;
+    transition: transform 0.6s ease, opacity 0.6s ease !important;
+  }
+
+  .actors-carousel.swiper-initialized .swiper-slide-prev {
+    transform: translateX(-100%) scale(1) !important;
+    opacity: 0 !important;
+  }
+
+  .actors-carousel.swiper-initialized .swiper-slide-next {
     transform: translateX(100%) scale(1) !important;
     opacity: 0 !important;
   }
@@ -1353,8 +1660,9 @@ div.swiper-button-next.swiper-button-next-actors {
   }
 
   .hero-logo-image {
-    width: clamp(18rem, 55vw, 30rem) !important;
-    height: clamp(12.5rem, 45vw, 22rem) !important;
+    /* Mobile requirement: make top logo ~2x smaller */
+    width: clamp(8rem, 38vw, 16rem) !important;
+    height: clamp(6rem, 30vw, 12rem) !important;
     max-width: 100% !important;
     min-width: 0 !important;
     min-height: 0 !important;
@@ -1511,20 +1819,24 @@ div.swiper-button-next.swiper-button-next-actors {
     /* iOS: фон не должен перехватывать клики */
     .journey-bg-mobile { 
       pointer-events: none !important;
-      /* Используем мобильную версию фона и правильное масштабирование */
-      background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
-      background-size: cover !important;
-      background-position: center !important;
+      /* На iOS использовали section-4-mobile.png, но файла нет → получался чёрный фон.
+         Используем существующий section-4.png и корректное масштабирование. */
+      background-image: url(/backgrounds/sections/section-4.png) !important;
+      /* iOS: cover выглядит “приближенным/растянутым” на длинном (400vh) блоке.
+         Делаем contain + повтор по Y, чтобы сохранить пропорции и композицию. */
+      background-size: contain !important;
+      background-position: top center !important;
+      background-repeat: repeat-y !important;
     }
   }
 
-  /* Для мобильных устройств: используем section-4-mobile.png и cover вместо 100% 100% */
+  /* Для мобильных устройств: cover вместо 100% 100% (на iOS/Safari растяжение часто “ломает” композицию) */
   @media (max-width: 768px) {
     .journey-bg-mobile {
-      background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-repeat: no-repeat !important;
+      background-image: url(/backgrounds/sections/section-4.png) !important;
+      background-size: contain !important;
+      background-position: top center !important;
+      background-repeat: repeat-y !important;
       background-attachment: scroll !important;
       /* Принудительное применение на продакшене */
       box-sizing: border-box !important;
@@ -1535,11 +1847,80 @@ div.swiper-button-next.swiper-button-next-actors {
     .journey-section-container .journey-bg-mobile[style*="section-4"],
     div[class*="journey-bg-mobile"][style*="section-4"],
     .journey-bg-mobile {
-      background-image: url(/backgrounds/sections/section-4-mobile.png) !important;
-      background-size: cover !important;
-      background-position: center !important;
-      background-repeat: no-repeat !important;
+      background-image: url(/backgrounds/sections/section-4.png) !important;
+      background-size: contain !important;
+      background-position: top center !important;
+      background-repeat: repeat-y !important;
       background-attachment: scroll !important;
+    }
+
+    /* iOS mobile layout for Journey: центрируем, уменьшаем и “собираем” композицию */
+    .force-mobile .journey-section-container {
+      overflow: visible !important;
+    }
+
+    .force-mobile .journey-bg-wrapper {
+      overflow: hidden !important;
+    }
+
+    /* Общая центровка абсолютных элементов Journey */
+    .force-mobile .journey-section-container .vput-element-mobile,
+    .force-mobile .journey-section-container .tiraj-element-mobile,
+    .force-mobile .journey-section-container .flash-mobile,
+    .force-mobile .journey-section-container .office-text-mobile,
+    .force-mobile .journey-section-container .stul100let-mobile,
+    .force-mobile .journey-section-container .vput2-mobile,
+    .force-mobile .journey-section-container .analiz-mobile,
+    .force-mobile .journey-section-container .psychushka-text-mobile,
+    .force-mobile .journey-section-container .pamat15-mobile,
+    .force-mobile .journey-section-container .kvartira-kisy-mobile,
+    .force-mobile .journey-section-container .computer-mobile,
+    .force-mobile .journey-section-container .vput3-mobile,
+    .force-mobile .journey-section-container .vput4-mobile,
+    .force-mobile .journey-section-container .yarygina-text-mobile {
+      left: 50% !important;
+      right: auto !important;
+      max-width: 92vw !important;
+      transform: translateX(-50%) !important;
+    }
+
+    /* Позиции/масштаб (только iOS + force-mobile) */
+    .force-mobile .journey-section-container .vput-element-mobile { top: 0svh !important; transform: translateX(-50%) scale(0.82) !important; }
+    .force-mobile .journey-section-container .tiraj-element-mobile { top: 22svh !important; transform: translateX(-50%) scale(0.66) !important; }
+    .force-mobile .journey-section-container .flash-mobile { top: 34svh !important; transform: translateX(-50%) scale(0.66) !important; }
+    .force-mobile .journey-section-container .office-text-mobile { top: 48svh !important; }
+
+    .force-mobile .journey-section-container .stul100let-mobile { top: 70svh !important; transform: translateX(-50%) scale(0.78) !important; }
+    .force-mobile .journey-section-container .vput2-mobile { top: 88svh !important; transform: translateX(-50%) scale(0.82) !important; }
+    .force-mobile .journey-section-container .analiz-mobile { top: 104svh !important; transform: translateX(-50%) scale(0.66) !important; }
+    .force-mobile .journey-section-container .psychushka-text-mobile { top: 120svh !important; }
+
+    .force-mobile .journey-section-container .pamat15-mobile { top: 145svh !important; transform: translateX(-50%) scale(0.78) !important; }
+    .force-mobile .journey-section-container .kvartira-kisy-mobile { top: 163svh !important; }
+    .force-mobile .journey-section-container .computer-mobile { top: 187svh !important; transform: translateX(-50%) scale(0.76) !important; }
+    .force-mobile .journey-section-container .vput3-mobile { top: 205svh !important; transform: translateX(-50%) scale(0.82) !important; }
+
+    .force-mobile .journey-section-container .vput4-mobile { top: 245svh !important; transform: translateX(-50%) scale(0.82) !important; }
+    .force-mobile .journey-section-container .yarygina-text-mobile { top: 285svh !important; }
+
+    /* Тексты: чуть меньше и читабельно */
+    .force-mobile .office-title-mobile,
+    .force-mobile .kvartira-title-mobile,
+    .force-mobile .yarygina-title-mobile {
+      font-size: clamp(1.05rem, 4.3vw, 1.3rem) !important;
+      line-height: 1.15 !important;
+    }
+
+    .force-mobile .office-description-mobile,
+    .force-mobile .kvartira-description-mobile,
+    .force-mobile .yarygina-description-mobile {
+      font-size: clamp(0.95rem, 3.9vw, 1.15rem) !important;
+      line-height: 1.25 !important;
+    }
+
+    .force-mobile .psychushka-text-mobile p {
+      font-size: clamp(0.95rem, 3.9vw, 1.15rem) !important;
+      line-height: 1.25 !important;
     }
 
     /* Убеждаемся, что все кнопки кликабельны на мобильных */

@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { isProbablyMobile } from '../utils/device';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
@@ -20,35 +21,109 @@ interface JourneySectionProps {
 
 export default function JourneySection({ sectionEndRef, finalTextRef, officeRef, psychushkaRef, kisaRef, yaryginaRef }: JourneySectionProps) {
   const vputSectionRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
+
+  // Мобильная версия: без absolute/parallax (на телефонах rem/clamp координаты уводят всё за экран).
+  // ВАЖНО: рендерим mobile+desktop всегда, а показываем только нужное через CSS (md:hidden / hidden md:block + force-mobile),
+  // чтобы даже при лаге/падении JS на iOS не было “пустого экрана”.
+  const MobileJourney = () => {
+    const scenes = [
+      {
+        key: 'office',
+        title: 'ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»',
+        desc: 'ТОЧКА, ГДЕ НАЧИНАЕТСЯ АФЕРА И РАСКРЫВАЕТСЯ ХАКЕРСКАЯ МАХИНАЦИЯ.',
+        img: '/backgrounds/sections/vput.png',
+      },
+      {
+        key: 'psy',
+        title: 'ПСИХУШКА',
+        desc: 'СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.',
+        img: '/backgrounds/sections/vput2.png',
+      },
+      {
+        key: 'kisa',
+        title: 'КВАРТИРА КИСЫ',
+        desc: 'ЛИЧНОЕ УБЕЖИЩЕ И ШТАБ ОПЕРАЦИИ, ГДЕ СТАЛКИВАЮТСЯ ЖАДНОСТЬ И СОВЕСТЬ.',
+        img: '/backgrounds/sections/vput3.png',
+      },
+      {
+        key: 'yarygina',
+        title: 'КВАРТИРА СТАРУХИ ЯРЫГИНОЙ',
+        desc: 'ФИНАЛ ОХОТЫ — ЛОГОВО «БАБКИ-ХАКЕРА», УПРАВЛЯЮЩЕЙ МИЛЛИАРДАМИ ИЗ КРЕСЛА.',
+        img: '/backgrounds/sections/vput4.png',
+      },
+    ];
+
+    return (
+      <div
+        className="md:hidden relative w-full"
+        style={{
+          width: '100%',
+          backgroundImage: 'url(/backgrounds/sections/section-4.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          padding: 'clamp(3rem, 6vh, 5rem) 4% clamp(4rem, 8vh, 6rem) 4%',
+        }}
+      >
+        <div className="w-full max-w-[120rem] mx-auto flex flex-col items-center" style={{ gap: 'clamp(2.5rem, 6vh, 4.5rem)' }}>
+          {scenes.map((s, idx) => (
+            <div
+              key={s.key}
+              ref={idx === 0 ? officeRef : idx === 1 ? psychushkaRef : idx === 2 ? kisaRef : yaryginaRef}
+              className="w-full flex flex-col items-center text-center"
+              style={{ maxWidth: 'min(92vw, 560px)' }}
+            >
+              <div
+                style={{
+                  width: '100%',
+                  aspectRatio: '16/11',
+                  backgroundImage: `url(${s.img})`,
+                  backgroundSize: 'contain',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                  filter: 'drop-shadow(0 0 1.25rem rgba(0,0,0,0.55))',
+                }}
+              />
+              <div style={{ marginTop: 'clamp(0.75rem, 2vh, 1.25rem)' }}>
+                <p
+                  className="uppercase mb-2"
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    fontSize: 'clamp(1.05rem, 4.4vw, 1.35rem)',
+                    color: '#FFFDFD',
+                    filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
+                    textShadow: '0 0 0.9375rem rgba(0,0,0,0.65)',
+                    letterSpacing: '0.08em',
+                    lineHeight: '1.15',
+                  }}
+                >
+                  {s.title}
+                </p>
+                <p
+                  style={{
+                    fontFamily: "'Playfair Display SC', serif",
+                    fontSize: 'clamp(0.95rem, 3.9vw, 1.15rem)',
+                    color: '#FBC632',
+                    filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
+                    textShadow: '0 0 0.9375rem rgba(0,0,0,0.55)',
+                    letterSpacing: '0.03em',
+                    lineHeight: '1.25',
+                  }}
+                >
+                  {s.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    // Ждем полной загрузки DOM
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', checkMobile);
-    } else {
-      checkMobile();
-    }
-    
-    window.addEventListener('resize', checkMobile);
-    window.addEventListener('orientationchange', checkMobile);
-    
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', checkMobile);
-        window.removeEventListener('orientationchange', checkMobile);
-      }
-      document.removeEventListener('DOMContentLoaded', checkMobile);
-    };
-  }, []);
+    // Мобилка/iOS: отключаем GSAP-параллакс (часто ломает скролл/рендер и даёт “чёрные пустоты”).
+    if (isProbablyMobile()) return;
 
-  useEffect(() => {
     // GSAP параллакс для объектов в разделе "В ПУТЬ" (как на hlado.ru)
     if (vputSectionRef.current) {
       // Находим только объекты с изображениями (не тексты)
@@ -117,33 +192,32 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     <section 
       ref={vputSectionRef}
       className="relative w-full journey-section-container"
-      style={{
-        minHeight: '400vh',
-        width: '100%',
-        marginTop: '0',
-        paddingTop: '0'
-      }}
+      style={{ width: '100%', marginTop: 0, paddingTop: 0 }}
     >
-      {/* Фон раздела */}
-      <div className="relative w-full z-0" style={{ minHeight: '400vh', height: '400vh', width: '100%' }}>
-        <div
-          className="journey-bg-mobile"
-          style={{
-            backgroundImage: 'url(/backgrounds/sections/section-4.png)',
-            backgroundSize: '100% 100%',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            width: '100%',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            minHeight: '400vh',
-            willChange: 'auto' // Оптимизация для браузера
-          }}
-        />
-      </div>
+      <MobileJourney />
+
+      {/* Desktop composition (как было) */}
+      <div className="hidden md:block">
+        {/* Фон раздела */}
+        <div className="relative w-full z-0 journey-bg-wrapper" style={{ minHeight: '400vh', height: '400vh', width: '100%' }}>
+          <div
+            className="journey-bg-mobile"
+            style={{
+              backgroundImage: 'url(/backgrounds/sections/section-4.png)',
+              backgroundSize: '100% 100%',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              width: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              minHeight: '400vh',
+              willChange: 'auto' // Оптимизация для браузера
+            }}
+          />
+        </div>
 
       {/* Изображение vput.png поверх фона сверху */}
       <div 
@@ -567,6 +641,12 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           pointerEvents: 'none'
         }}
       />
+      </div>
+      {/* Для мобилки: маркеры внизу секции, чтобы MainScreen логика не ломалась */}
+      <div className="md:hidden">
+        <div ref={sectionEndRef} className="absolute left-0 w-full" style={{ bottom: 0, height: '1px', pointerEvents: 'none' }} />
+        <div ref={finalTextRef} className="absolute left-0 w-full" style={{ bottom: '1px', height: '1px', pointerEvents: 'none' }} />
+      </div>
     </section>
   );
 }
