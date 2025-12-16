@@ -427,13 +427,14 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             <div
               key={s.key}
               ref={idx === 0 ? officeRef : idx === 1 ? psychushkaRef : idx === 2 ? kisaRef : yaryginaRef}
-              className="w-full flex flex-col items-center text-center mobile-scene-card"
+              className={`w-full flex flex-col items-center text-center mobile-scene-card ${idx === 3 ? 'yarygina-mobile-scene' : ''}`}
               style={{ 
                 maxWidth: '100%',
                 width: '100%',
                 marginBottom: idx === 3 ? 'clamp(6rem, 12vh, 8rem)' : 'clamp(3rem, 6vh, 4rem)',
                 paddingBottom: 'clamp(2rem, 4vh, 3rem)',
-                marginTop: idx === 3 ? 'clamp(5rem, 10vh, 7rem)' : '0',
+                marginTop: idx === 3 ? 'clamp(12rem, 20vh, 15rem)' : '0',
+                paddingTop: idx === 3 ? 'clamp(4rem, 8vh, 6rem)' : '0',
                 marginLeft: '0',
                 marginRight: '0',
                 overflow: 'visible',
@@ -751,18 +752,19 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
               </div>
               {/* For ПСИХУШКА (idx === 1) and КВАРТИРА СТАРУХИ ЯРЫГИНОЙ (idx === 3): image on left, text on right */}
               {idx === 1 || idx === 3 ? (
-                <div style={{ 
+                <div className={idx === 3 ? 'yarygina-content-wrapper' : ''} style={{ 
                   width: '100%', 
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
                   gap: 'clamp(1rem, 3vw, 2rem)',
-                  marginTop: 'clamp(-1.2rem, -2vh, -0.8rem)',
+                  marginTop: idx === 3 ? 'clamp(14rem, 26vh, 17rem)' : 'clamp(-1.2rem, -2vh, -0.8rem)',
                   paddingLeft: 'clamp(1rem, 3vw, 2rem)',
                   paddingRight: 'clamp(1rem, 3vw, 2rem)',
                 }}>
                   {/* Image on the left */}
                   <div
+                    className={idx === 3 ? 'computer-mobile-image' : ''}
                     style={{
                       flex: '0 0 auto',
                       width: idx === 1 ? 'clamp(100px, 25vw, 140px)' : 'clamp(120px, 30vw, 170px)',
@@ -773,7 +775,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       backgroundPosition: 'center',
                       flexShrink: 0,
                       marginLeft: idx === 1 ? 'clamp(-2.5rem, -6vw, -2rem)' : '0',
-                      marginTop: idx === 1 ? 'clamp(-1.5rem, -3vh, -1rem)' : '0',
+                      marginTop: idx === 1 ? 'clamp(-1.5rem, -3vh, -1rem)' : idx === 3 ? 'clamp(6rem, 12vh, 8rem)' : '0',
                     }}
                   />
                   {/* Text on the right */}
@@ -1449,7 +1451,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
         {/* Изображение computer.png ниже текста "Личное убежище..." */}
         <div 
-          className="absolute z-[5]"
+          className="absolute z-[5] computer-desktop-mobile-adjust"
           data-animate="vput"
           data-speed="0.5"
           style={{
@@ -1625,9 +1627,9 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         {/* Текст "КВАРТИРА СТАРУХИ ЯРЫГИНОЙ" ниже computer.png */}
         <div 
           ref={finalTextRef}
-          className="absolute z-[5] text-center"
+          className="absolute z-[5] text-center yarygina-text-desktop-mobile-adjust"
           style={{
-            top: 'clamp(325vh, 390vh, 350vh)',
+            top: 'clamp(320vh, 385vh, 345vh)',
             left: 'clamp(2rem, 5.75vw, 12rem)',
             maxWidth: 'clamp(20rem, 31.25vw, 43.75rem)'
           }}

@@ -372,13 +372,42 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
         style={{
           backgroundColor: 'rgba(104, 35, 2, 0.98)',
           backdropFilter: 'blur(10px)',
-          paddingTop: '4.5rem',
+          paddingTop: 'calc(max(env(safe-area-inset-top, 0px), 0) + 2.75rem + 1rem)',
           paddingBottom: '2rem',
+          paddingRight: 'max(1rem, env(safe-area-inset-right, 0px) + 1rem)',
+          paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px) + 1rem)',
           minHeight: '100vh',
           overflowY: 'auto'
         }}
       >
-        <div className="flex flex-col items-center gap-3 px-4">
+        {/* Кнопка закрытия мобильного меню - в самом верху, не заслоняет виджеты */}
+        {!hideCloseButton && (
+          <button
+            onClick={closeMobileMenu}
+            className="absolute z-[10000] flex items-center justify-center cursor-pointer bg-[#682302] rounded-xl shadow-lg hover:bg-[#7a2a03] active:bg-[#5a1f01] transition-all duration-300"
+            style={{ 
+              top: 'max(env(safe-area-inset-top, 0px), 0)',
+              right: 'max(1rem, env(safe-area-inset-right, 0px) + 1rem)',
+              width: '2.75rem',
+              height: '2.75rem',
+              minWidth: '2.75rem',
+              minHeight: '2.75rem',
+              boxShadow: '0 0 1rem rgba(251, 198, 50, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3)',
+              border: '2px solid rgba(251, 198, 50, 0.4)',
+              outline: 'none',
+              pointerEvents: 'auto',
+              padding: '0.5rem',
+            }}
+            aria-label="Закрыть меню"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: '#FFFFFF' }}>
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        )}
+        
+        <div className="flex flex-col items-center gap-3 px-4" style={{ marginTop: '1.5rem' }}>
           {navItems.map((item) => {
             const isActive =
               activeSection === item.href ||

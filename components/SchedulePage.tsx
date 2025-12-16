@@ -298,7 +298,7 @@ export default function SchedulePage() {
             className="schedule-page-bg"
             style={{
               backgroundImage: 'url(/backgrounds/sections/section-4.png)',
-              backgroundSize: isMobile ? '100% 100%' : '100% 100%',
+              backgroundSize: isMobile ? 'cover' : '100% 100%',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
               width: '100%',

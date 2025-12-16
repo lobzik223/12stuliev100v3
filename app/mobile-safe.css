@@ -861,3 +861,52 @@ body[data-debug="true"] section:nth-child(3) { border-color: yellow !important; 
 body[data-debug="true"] section:nth-child(4) { border-color: green !important; }
 body[data-debug="true"] section:nth-child(5) { border-color: blue !important; }
 body[data-debug="true"] section:nth-child(6) { border-color: purple !important; }
+
+/* Опускаем computer.png и текст Ярыгиной ниже на мобильных */
+@media (max-width: 768px), (pointer: coarse) {
+  .computer-mobile,
+  .journey-section-container .computer-mobile {
+    top: clamp(145svh, 155svh, 165svh) !important;
+  }
+  
+  .yarygina-text-mobile,
+  .journey-section-container .yarygina-text-mobile {
+    top: clamp(170svh, 180svh, 190svh) !important;
+  }
+  
+  /* Переопределяем inline стили для desktop элементов на мобильных */
+  .computer-desktop-mobile-adjust {
+    top: clamp(315vh, 370vh, 340vh) !important;
+  }
+  
+  .yarygina-text-desktop-mobile-adjust {
+    top: clamp(365vh, 425vh, 390vh) !important;
+  }
+}
+
+.force-mobile .journey-section-container .computer-mobile {
+  top: 202svh !important;
+}
+
+.force-mobile .journey-section-container .yarygina-text-mobile {
+  top: 300svh !important;
+}
+
+/* Дополнительные правила для опускания computer.png и текста Ярыгиной в мобильной версии */
+@media (max-width: 768px), (pointer: coarse) {
+  .yarygina-mobile-scene {
+    margin-top: clamp(22rem, 35vh, 26rem) !important;
+    padding-top: clamp(8rem, 16vh, 10rem) !important;
+  }
+  
+  .yarygina-content-wrapper {
+    margin-top: clamp(14rem, 26vh, 17rem) !important;
+    align-items: flex-start !important;
+    padding-top: clamp(2rem, 4vh, 3rem) !important;
+  }
+  
+  /* Для computer.png */
+  .computer-mobile-image {
+    margin-top: clamp(6rem, 12vh, 8rem) !important;
+  }
+}

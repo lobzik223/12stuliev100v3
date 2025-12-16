@@ -2616,8 +2616,16 @@ div.swiper-button-next.swiper-button-next-actors {
     .pamat15-mobile { top: clamp(92svh, 102svh, 112svh) !important; }
     .kvartira-kisy-mobile { top: clamp(105svh, 115svh, 125svh) !important; }
     .vput4-mobile { top: clamp(128svh, 138svh, 148svh) !important; }
-    .computer-mobile { top: clamp(130svh, 140svh, 150svh) !important; }
-    .yarygina-text-mobile { top: clamp(155svh, 165svh, 175svh) !important; }
+    .computer-mobile { top: clamp(145svh, 155svh, 165svh) !important; }
+    .yarygina-text-mobile { top: clamp(170svh, 180svh, 190svh) !important; }
+    
+    /* Дополнительные правила для опускания элементов ниже на мобильных */
+    .journey-section-container .computer-mobile { top: clamp(145svh, 155svh, 165svh) !important; }
+    .journey-section-container .yarygina-text-mobile { top: clamp(170svh, 180svh, 190svh) !important; }
+    
+    /* Переопределяем inline стили для desktop версии на мобильных */
+    .computer-desktop-mobile-adjust { top: clamp(315vh, 370vh, 340vh) !important; }
+    .yarygina-text-desktop-mobile-adjust { top: clamp(365vh, 425vh, 390vh) !important; }
 
     /* iOS: фон не должен перехватывать клики */
     .journey-bg-mobile { 
@@ -2700,11 +2708,11 @@ div.swiper-button-next.swiper-button-next-actors {
 
     .force-mobile .journey-section-container .pamat15-mobile { top: 145svh !important; transform: translateX(-65%) scale(0.78) !important; }
     .force-mobile .journey-section-container .kvartira-kisy-mobile { top: 163svh !important; }
-    .force-mobile .journey-section-container .computer-mobile { top: 187svh !important; transform: translateX(-50%) scale(0.76) !important; }
+    .force-mobile .journey-section-container .computer-mobile { top: 202svh !important; transform: translateX(-50%) scale(0.76) !important; }
     .force-mobile .journey-section-container .vput3-mobile { top: 205svh !important; transform: translateX(-50%) scale(0.70) !important; }
 
     .force-mobile .journey-section-container .vput4-mobile { top: 245svh !important; transform: translateX(-50%) scale(0.82) !important; }
-    .force-mobile .journey-section-container .yarygina-text-mobile { top: 285svh !important; }
+    .force-mobile .journey-section-container .yarygina-text-mobile { top: 300svh !important; }
 
     /* Тексты: чуть меньше и читабельно */
     .force-mobile .office-title-mobile,
@@ -2828,14 +2836,14 @@ body.employee-tickets-modal-open .secondary-nav {
 /* Растягивание фона по ширине на странице расписания для мобильных устройств */
 @media (max-width: 768px), (pointer: coarse) {
   .schedule-page-bg {
-    background-size: 100% 100% !important;
+    background-size: cover !important;
     background-position: center !important;
   }
 }
 
 /* Принудительное применение для force-mobile класса */
 .force-mobile .schedule-page-bg {
-  background-size: 100% 100% !important;
+  background-size: cover !important;
   background-position: center !important;
 }
 
