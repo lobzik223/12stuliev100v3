@@ -31,8 +31,16 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
   // Блокировка скролла фона и скрытие header
   useEffect(() => {
     if (isOpen) {
+      if (isMobile) {
+        // На мобильных используем position: fixed для правильной блокировки скролла
+        const scrollY = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.width = '100%';
+      }
       document.body.style.overflow = 'hidden';
       document.body.classList.add('employee-tickets-modal-open');
+      document.body.classList.add('modal-scroll-locked');
       // Скрываем header и все его элементы напрямую
       const header = document.querySelector('header');
       const hamburgerButton = document.querySelector('.mobile-hamburger-button');
@@ -57,8 +65,19 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
         (secondaryNav as HTMLElement).style.pointerEvents = 'none';
       }
     } else {
+      if (isMobile) {
+        // Восстанавливаем скролл на мобильных
+        const savedScrollY = parseInt(document.body.style.top || '0', 10) * -1 || 0;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        requestAnimationFrame(() => {
+          window.scrollTo(0, savedScrollY);
+        });
+      }
       document.body.style.overflow = '';
       document.body.classList.remove('employee-tickets-modal-open');
+      document.body.classList.remove('modal-scroll-locked');
       // Показываем header обратно
       const header = document.querySelector('header');
       const hamburgerButton = document.querySelector('.mobile-hamburger-button');

@@ -88,15 +88,29 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
+      // Добавляем класс для CSS правил
+      document.body.classList.add('modal-scroll-locked');
       
       return () => {
         // Восстанавливаем скролл при закрытии
+        const savedScrollY = parseInt(document.body.style.top || '0', 10) * -1 || scrollY;
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.style.overflow = '';
-        window.scrollTo(0, scrollY);
+        document.body.classList.remove('modal-scroll-locked');
+        // Используем requestAnimationFrame для плавного восстановления
+        requestAnimationFrame(() => {
+          window.scrollTo(0, savedScrollY);
+        });
       };
+    } else if (!isTicketModalOpen && isMobile) {
+      // Убеждаемся что стили очищены даже если модальное окно закрылось другим способом
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.body.classList.remove('modal-scroll-locked');
     }
   }, [isTicketModalOpen, isMobile]);
 

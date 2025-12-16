@@ -57,20 +57,59 @@ export default function SchedulePage() {
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
+      // Добавляем класс для CSS правил
+      document.body.classList.add('modal-scroll-locked');
       
       return () => {
         // Восстанавливаем скролл при закрытии
+        const savedScrollY = parseInt(document.body.style.top || '0', 10) * -1 || scrollY;
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.style.overflow = '';
-        window.scrollTo(0, scrollY);
+        document.body.classList.remove('modal-scroll-locked');
+        // Используем requestAnimationFrame для плавного восстановления
+        requestAnimationFrame(() => {
+          window.scrollTo(0, savedScrollY);
+        });
       };
+    } else if (!isTicketModalOpen && isMobile) {
+      // Убеждаемся что стили очищены даже если модальное окно закрылось другим способом
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+      document.body.classList.remove('modal-scroll-locked');
     }
   }, [isTicketModalOpen]);
 
   // Блокируем прокрутку после раздела "Контакты" - до текста с ИНН и ОГРНИП
+  // MOBILE FIX: Отключаем эту логику на мобильных - используем нативный скролл
   useEffect(() => {
+    // На мобильных отключаем все ограничения скролла - используем нативный скролл
+    if (isMobile) {
+      // Восстанавливаем нормальный скролл на мобильных
+      if (document.body && document.documentElement) {
+        document.body.style.height = '';
+        document.body.style.maxHeight = '';
+        document.body.style.overflowY = '';
+        document.documentElement.style.height = '';
+        document.documentElement.style.maxHeight = '';
+        document.documentElement.style.overflowY = '';
+      }
+      if (containerRef.current) {
+        containerRef.current.style.height = '';
+        containerRef.current.style.maxHeight = '';
+        containerRef.current.style.overflow = '';
+      }
+      if (bgWrapperRef.current) {
+        bgWrapperRef.current.style.height = '';
+        bgWrapperRef.current.style.maxHeight = '';
+        bgWrapperRef.current.style.overflow = '';
+      }
+      return;
+    }
+
     let rafId: number | null = null;
     let isScrolling = false; // Флаг для предотвращения рекурсивных вызовов
     let maxScrollValue = 0; // Кэшируем максимальное значение скролла
@@ -266,8 +305,18 @@ export default function SchedulePage() {
         document.documentElement.style.maxHeight = '';
         document.documentElement.style.overflowY = '';
       }
+      if (containerRef.current) {
+        containerRef.current.style.height = '';
+        containerRef.current.style.maxHeight = '';
+        containerRef.current.style.overflow = '';
+      }
+      if (bgWrapperRef.current) {
+        bgWrapperRef.current.style.height = '';
+        bgWrapperRef.current.style.maxHeight = '';
+        bgWrapperRef.current.style.overflow = '';
+      }
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <div className="relative w-full bg-black" style={{ overflowX: 'hidden', overflowY: 'hidden' }}>
