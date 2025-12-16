@@ -27,8 +27,8 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
   const logoMarginTop = isMobile ? 'clamp(-2rem, -4vh, -1rem)' : 'clamp(0rem, 2vh, 1.5rem)';
   const textMarginTop = isMobile ? 'clamp(-6rem, -12vh, -8.5rem)' : 'clamp(1rem, 3vh, 3rem)';
   const logoWidth = isMobile ? 'clamp(28rem, 95vw, 45rem)' : 'clamp(14rem, 52vw, 26rem)';
-  const subtitleFontSize = isMobile ? 'clamp(0.42rem, 1.5vw, 0.68rem)' : 'clamp(0.7rem, 1.5vw, 1.5rem)';
-  const ctaFontSize = isMobile ? 'clamp(0.4rem, 1.4vw, 0.65rem)' : 'clamp(0.65rem, 1.125vw, 1.125rem)';
+  const subtitleFontSize = isMobile ? 'clamp(0.35rem, 1.2vw, 0.55rem)' : 'clamp(0.7rem, 1.5vw, 1.5rem)';
+  const ctaFontSize = isMobile ? 'clamp(0.32rem, 1.1vw, 0.5rem)' : 'clamp(0.65rem, 1.125vw, 1.125rem)';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

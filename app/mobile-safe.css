@@ -404,15 +404,17 @@
     margin-right: 0 !important;
   }
   
-  /* Применяем правильные размеры к vput2.png, vput3.png, vput4.png (сцены 2, 3, 4) - без обрезки */
+  /* Применяем правильные размеры к vput2.png - такие же как у vput.png */
   .mobile-scene-card:nth-child(2) .mobile-scene-image {
-    height: clamp(200px, 35vh, 300px) !important;
+    height: 0 !important;
+    padding-top: clamp(22%, 26%, 30%) !important;
+    min-width: clamp(200px, 60vw, 300px) !important;
     width: auto !important;
     max-width: 100% !important;
-    min-width: clamp(200px, 70vw, 350px) !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
     transform: none !important;
+    overflow: hidden !important;
     background-size: contain !important;
     background-position: center center !important;
   }

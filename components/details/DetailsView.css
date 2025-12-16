@@ -914,16 +914,17 @@ span.date-time-number {
     z-index: 20 !important;
   }
   
-  /* Видео под рамкой для мобильных - больше ширина, меньше высота */
+  /* Видео под рамкой для мобильных - уменьшаем ширину, чтобы не было растяжения */
   .frame-widget-mobile-first .frame-video,
   .frame-widget .frame-video {
-    width: calc(100% - clamp(0.8rem, 3vw, 1.5rem)) !important;
+    width: calc(100% - clamp(1.2rem, 4vw, 2rem)) !important;
     height: calc(100% - clamp(4.5rem, 11vw, 6rem)) !important;
-    max-width: calc(100% - clamp(0.8rem, 3vw, 1.5rem)) !important;
+    max-width: calc(100% - clamp(1.2rem, 4vw, 2rem)) !important;
     max-height: calc(100% - clamp(4.5rem, 11vw, 6rem)) !important;
     aspect-ratio: auto !important;
     object-fit: cover !important;
     object-position: center bottom !important;
+    transform: translate(-50%, -50%) scaleX(0.97) !important;
   }
   
   .dark-overlay {
@@ -1135,6 +1136,17 @@ span.date-time-number {
   /* Черный блюр между текстовым блоком и разделом "ОТЗЫВЫ" на мобильных - скрывает стык между фонами */
   .mobile-content-blur-overlay {
     display: none !important;
+  }
+  
+  /* Убираем все blur эффекты на мобильных версиях */
+  .date-time-box {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  .venue-widget {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 }
 

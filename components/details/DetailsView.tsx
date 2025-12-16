@@ -734,8 +734,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         blurElement.style.visibility = 'visible';
         blurElement.style.opacity = '1';
         blurElement.style.background = 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)';
-        blurElement.style.backdropFilter = 'blur(80px)';
-        blurElement.style.setProperty('-webkit-backdrop-filter', 'blur(80px)');
+        blurElement.style.backdropFilter = 'none';
+        blurElement.style.setProperty('-webkit-backdrop-filter', 'none');
         blurElement.style.boxShadow = 'inset 0 0 300px rgba(0, 0, 0, 1)';
         // Принудительно применяем стили
         try {
@@ -1127,8 +1127,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
             height: '300px',
             width: '100%',
             background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)',
-            backdropFilter: 'blur(80px)',
-            WebkitBackdropFilter: 'blur(80px)',
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
             zIndex: 12,
             pointerEvents: 'none',
             boxShadow: 'inset 0 0 300px rgba(0, 0, 0, 1)',
@@ -1160,8 +1160,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               height: '200px',
               width: '100%',
               background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0.8) 60%, rgba(0, 0, 0, 0.95) 85%, rgba(0, 0, 0, 1) 100%)',
-              backdropFilter: 'blur(100px)',
-              WebkitBackdropFilter: 'blur(100px)',
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
               zIndex: -1,
               pointerEvents: 'none'
             }}
@@ -1412,8 +1412,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               backgroundPosition: 'center calc(100% - 250px)',
               backgroundRepeat: 'no-repeat',
               transform: 'scaleX(-1)',
-              filter: 'blur(20px)',
-              WebkitFilter: 'blur(20px)',
+              filter: 'none',
+              WebkitFilter: 'none',
               zIndex: -1,
               pointerEvents: 'none',
               opacity: 0.6
@@ -1430,8 +1430,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               height: '300px',
               width: '100%',
               background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 15%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.75) 55%, rgba(0, 0, 0, 0.9) 75%, rgba(0, 0, 0, 0.98) 90%, rgba(0, 0, 0, 1) 100%)',
-              backdropFilter: 'blur(15px)',
-              WebkitBackdropFilter: 'blur(15px)',
+              backdropFilter: 'none',
+              WebkitBackdropFilter: 'none',
               zIndex: 0,
               pointerEvents: 'none'
             }}

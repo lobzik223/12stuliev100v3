@@ -712,6 +712,17 @@ div.swiper-button-next.swiper-button-next-actors {
   color: #FBC632 !important;
 }
 
+/* Явное направление стрелок для актеров - исправление для старых телефонов */
+.actors-carousel .swiper-button-prev-actors::after {
+  content: '‹' !important;
+  transform: none !important;
+}
+
+.actors-carousel .swiper-button-next-actors::after {
+  content: '›' !important;
+  transform: none !important;
+}
+
 .actors-carousel .swiper-button-prev-actors:hover,
 .actors-carousel .swiper-button-next-actors:hover {
   transform: translateY(-50%) scale(1.1) !important;
@@ -795,6 +806,17 @@ div.swiper-button-next.swiper-button-next-actors {
   font-size: clamp(2rem, 3vw, 3rem) !important;
   font-weight: bold !important;
   color: #FBC632 !important;
+}
+
+/* Явное направление стрелок для отзывов - исправление для старых телефонов */
+.reviews-carousel .swiper-button-prev-reviews::after {
+  content: '‹' !important;
+  transform: none !important;
+}
+
+.reviews-carousel .swiper-button-next-reviews::after {
+  content: '›' !important;
+  transform: none !important;
 }
 
 .reviews-carousel .swiper-button-prev-reviews:hover,
@@ -883,6 +905,17 @@ div.swiper-button-next.swiper-button-next-actors {
   font-size: clamp(2rem, 3vw, 3rem) !important;
   font-weight: bold !important;
   color: #FBC632 !important;
+}
+
+/* Явное направление стрелок для расписания - исправление для старых телефонов */
+.schedule-carousel .swiper-button-prev-schedule::after {
+  content: '‹' !important;
+  transform: none !important;
+}
+
+.schedule-carousel .swiper-button-next-schedule::after {
+  content: '›' !important;
+  transform: none !important;
 }
 
 .schedule-carousel .swiper-button-prev-schedule:hover,
@@ -991,6 +1024,17 @@ div.swiper-button-next.swiper-button-next-actors {
   font-size: clamp(2rem, 3vw, 3rem) !important;
   font-weight: bold !important;
   color: #FBC632 !important;
+}
+
+/* Явное направление стрелок для событий - исправление для старых телефонов */
+.events-carousel .swiper-button-prev-events::after {
+  content: '‹' !important;
+  transform: none !important;
+}
+
+.events-carousel .swiper-button-next-events::after {
+  content: '›' !important;
+  transform: none !important;
 }
 
 .events-carousel .swiper-button-prev-events:hover,
@@ -1115,10 +1159,25 @@ div.swiper-button-next.swiper-button-next-actors {
   /* Отдельные стили для стрелок расписания на мобильных - дальше от карточки */
   .swiper-button-prev-schedule {
     left: clamp(-2.5rem, -6vw, -2rem) !important;
+    right: auto !important;
   }
   
   .swiper-button-next-schedule {
     right: clamp(-2.5rem, -6vw, -2rem) !important;
+    left: auto !important;
+  }
+
+  /* Явное направление стрелок расписания на мобильных - исправление для старых телефонов */
+  .schedule-nav-arrow-mobile.swiper-button-prev-schedule::after,
+  .swiper-button-prev-schedule::after {
+    content: '‹' !important;
+    transform: none !important;
+  }
+
+  .schedule-nav-arrow-mobile.swiper-button-next-schedule::after,
+  .swiper-button-next-schedule::after {
+    content: '›' !important;
+    transform: none !important;
   }
 
   /* Кнопки навигации для событий на мобильных - отдельные стили */
@@ -1939,6 +1998,17 @@ div.swiper-button-next.swiper-button-next-actors {
     font-weight: normal !important;
   }
 
+  /* Явное направление стрелок для команды - исправление для старых телефонов */
+  .swiper-button-prev-team::after {
+    content: '‹' !important;
+    transform: none !important;
+  }
+
+  .swiper-button-next-team::after {
+    content: '›' !important;
+    transform: none !important;
+  }
+
   .swiper-button-prev-team:hover,
   .swiper-button-next-team:hover {
     opacity: 0.7 !important;
@@ -1973,6 +2043,17 @@ div.swiper-button-next.swiper-button-next-actors {
     .team-carousel .swiper-button-prev-team::after,
     .team-carousel .swiper-button-next-team::after {
       font-size: clamp(2rem, 3vw, 3rem) !important;
+    }
+
+    /* Явное направление стрелок для команды на мобильных - исправление для старых телефонов */
+    .team-carousel .swiper-button-prev-team::after {
+      content: '‹' !important;
+      transform: none !important;
+    }
+
+    .team-carousel .swiper-button-next-team::after {
+      content: '›' !important;
+      transform: none !important;
       font-weight: bold !important;
       color: #FBC632 !important;
       opacity: 1 !important;
@@ -2115,6 +2196,7 @@ div.swiper-button-next.swiper-button-next-actors {
     }
     
     /* Сдвигаем изображение vput2.png вправо на мобильных - НЕ применяем к элементам с видео */
+    /* Убираем переопределение размеров для vput2 - используем те же размеры, что и у vput.png */
     .mobile-journey-section .mobile-scene-card:nth-child(2) .mobile-scene-image:not(.mobile-vput2-with-video) {
       transform: translateX(clamp(1.5rem, 4vw, 2.5rem)) !important;
       margin-left: clamp(1rem, 3vw, 2rem) !important;
@@ -2207,6 +2289,17 @@ div.swiper-button-next.swiper-button-next-actors {
     color: #FBC632 !important;
   }
 
+  /* Явное направление стрелок для команды - исправление для старых телефонов */
+  .team-section-carousel .swiper-button-prev-team-section::after {
+    content: '‹' !important;
+    transform: none !important;
+  }
+
+  .team-section-carousel .swiper-button-next-team-section::after {
+    content: '›' !important;
+    transform: none !important;
+  }
+
   .team-section-carousel .swiper-button-prev-team-section:hover,
   .team-section-carousel .swiper-button-next-team-section:hover {
     transform: translateY(-50%) scale(1.1) !important;
@@ -2226,6 +2319,17 @@ div.swiper-button-next.swiper-button-next-actors {
   .swiper-button-next-team-section::after {
     font-size: clamp(0.875rem, 1.2vw, 1.125rem) !important;
     font-weight: normal !important;
+  }
+
+  /* Явное направление стрелок для секции команды - исправление для старых телефонов */
+  .swiper-button-prev-team-section::after {
+    content: '‹' !important;
+    transform: none !important;
+  }
+
+  .swiper-button-next-team-section::after {
+    content: '›' !important;
+    transform: none !important;
   }
 
   .swiper-button-prev-team-section:hover,
