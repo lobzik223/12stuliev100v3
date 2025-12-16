@@ -24,9 +24,11 @@ interface HeaderProps {
   onTeamClick?: () => void;
   onReviewsClick?: () => void;
   onContactsClick?: () => void;
+  hideMobileButton?: boolean;
+  hideCloseButton?: boolean;
 }
 
-export default function Header({ isVisible = true, onTicketsClick, onAboutClick, onGalleryClick, onActorsClick, onTeamClick, onReviewsClick, onContactsClick }: HeaderProps) {
+export default function Header({ isVisible = true, onTicketsClick, onAboutClick, onGalleryClick, onActorsClick, onTeamClick, onReviewsClick, onContactsClick, hideMobileButton = false, hideCloseButton = false }: HeaderProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('');
@@ -86,10 +88,30 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
       }
       return;
     }
-    // Если это "ГАЛЕРЕЯ" и есть функция скролла - используем её
-    if (href === '/gallery' && onGalleryClick) {
+    // Если это "ГАЛЕРЕЯ" - всегда предотвращаем переход на отдельную страницу
+    if (href === '/gallery') {
       e.preventDefault();
-      onGalleryClick();
+      // Если есть функция скролла - используем её (для MainScreen)
+      if (onGalleryClick) {
+        onGalleryClick();
+      } else {
+        // Если нет функции (не на главной странице) - перенаправляем на главную
+        if (typeof window !== 'undefined') {
+          window.location.href = '/';
+          // После загрузки главной страницы скроллим к галерее
+          setTimeout(() => {
+            const gallerySection = document.querySelector('[data-gallery-section]');
+            if (gallerySection) {
+              const elementPosition = gallerySection.getBoundingClientRect().top + window.pageYOffset;
+              const offsetPosition = elementPosition - 100;
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+              });
+            }
+          }, 500);
+        }
+      }
       if (isMobile) {
         closeMobileMenu();
       }
@@ -161,6 +183,7 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
       style={{ pointerEvents: 'none' }}
     >
       {/* Mobile hamburger (всегда в DOM; видимость контролируется CSS + force-mobile) */}
+      {!hideMobileButton && (
       <button
         onClick={toggleMobileMenu}
         className="mobile-hamburger-button md:hidden fixed top-4 left-4 z-[10000] flex flex-col justify-center items-center w-14 h-14 cursor-pointer bg-[#682302] rounded-xl shadow-lg hover:bg-[#7a2a03] active:bg-[#5a1f01] transition-all duration-300"
@@ -258,6 +281,7 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
           </div>
         )}
       </button>
+      )}
 
       {/* Desktop header (всегда в DOM; видимость контролируется CSS + force-mobile) */}
       <div

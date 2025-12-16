@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Image from 'next/image';
 import TypingText from '../ui/TypingText';
 import { isProbablyMobile } from '../utils/device';
 
@@ -20,6 +21,14 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const buttonContainerRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? isProbablyMobile() : false));
+
+  // Отдельные отступы для десктопа, чтобы логотип и текст не прижимались к шапке
+  const containerPaddingTop = isMobile ? 'clamp(0.5rem, 1vh, 1rem)' : 'clamp(2rem, 6vh, 4rem)';
+  const logoMarginTop = isMobile ? 'clamp(-2rem, -4vh, -1rem)' : 'clamp(0rem, 2vh, 1.5rem)';
+  const textMarginTop = isMobile ? 'clamp(-6rem, -12vh, -8.5rem)' : 'clamp(1rem, 3vh, 3rem)';
+  const logoWidth = isMobile ? 'clamp(28rem, 95vw, 45rem)' : 'clamp(14rem, 52vw, 26rem)';
+  const subtitleFontSize = isMobile ? 'clamp(0.42rem, 1.5vw, 0.68rem)' : 'clamp(0.7rem, 1.5vw, 1.5rem)';
+  const ctaFontSize = isMobile ? 'clamp(0.4rem, 1.4vw, 0.65rem)' : 'clamp(0.65rem, 1.125vw, 1.125rem)';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -219,30 +228,36 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
       }}
     >
       {/* Контент раздела */}
-      <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-start" style={{ padding: '0 4%', paddingTop: 'clamp(0.5rem, 1vh, 1rem)', pointerEvents: 'auto' }}>
+      <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-start" style={{ padding: '0 4%', paddingTop: containerPaddingTop, pointerEvents: 'auto' }}>
         {/* Логотип по центру сверху */}
-        <div ref={logoRef} className="flex justify-center w-full hero-logo-container" style={{ marginTop: 'clamp(-2rem, -4vh, -1rem)', marginBottom: '0' }}>
-          <div className="hero-logo-image"
+        <div ref={logoRef} className="flex justify-center w-full hero-logo-container" style={{ marginTop: logoMarginTop, marginBottom: '0' }}>
+          <Image
+            src="/photo/logo12stuliev.png"
+            alt="12 СТУЛЬЕВ"
+            width={500}
+            height={200}
+            className="hero-logo-image"
+            priority
+            quality={90}
+            loading="eager"
+            unoptimized
             style={{
-              backgroundImage: 'url(/backgrounds/sections/logo100let.png)',
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              width: 'clamp(10rem, 35vw, 30rem)',
-              height: 'clamp(6.5rem, 25vw, 22rem)',
-              maxWidth: '100%',
-              filter: 'drop-shadow(0 0 1.25rem rgba(255,255,255,0.3))'
+              width: logoWidth,
+              height: 'auto',
+              maxWidth: isMobile ? '95vw' : '100%',
+              filter: 'drop-shadow(0 0 1.25rem rgba(255,255,255,0.3))',
+              objectFit: 'contain'
             }}
           />
         </div>
 
         {/* Текст под логотипом */}
-        <div ref={textRef} className="text-center text-white w-full hero-text-container" style={{ marginTop: 'clamp(-6rem, -12vh, -8.5rem)' }}>
+        <div ref={textRef} className="text-center text-white w-full hero-text-container" style={{ marginTop: textMarginTop }}>
           <p 
             className="uppercase hero-text-subtitle"
             style={{ 
               fontFamily: "'Playfair Display SC', serif",
-              fontSize: 'clamp(0.7rem, 1.5vw, 1.5rem)',
+              fontSize: subtitleFontSize,
               color: '#FBC632',
               filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
               textShadow: '0 0 0.9375rem rgba(231, 200, 132, 0.4), 0 0 1.875rem rgba(231, 200, 132, 0.3)',
@@ -283,7 +298,7 @@ export default function HeroSection({ onStartJourney }: HeroSectionProps) {
             className="uppercase text-white hero-text-cta"
             style={{ 
               fontFamily: "'Playfair Display SC', serif",
-              fontSize: 'clamp(0.65rem, 1.125vw, 1.125rem)',
+              fontSize: ctaFontSize,
               textShadow: '0 0 0.625rem rgba(255,255,255,0.2)',
               color: '#FFFFFF',
               textAlign: 'center',

@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from 'next/image';
 import { isProbablyMobile } from '../utils/device';
 
 // Only register GSAP on client side
@@ -20,8 +21,19 @@ interface JourneySectionProps {
   yaryginaRef?: React.RefObject<HTMLDivElement>;
 }
 
+// Cache-busting version для изображений vput
+const VPUT_IMAGES_VERSION = '?v=2.0';
+
 export default function JourneySection({ sectionEndRef, finalTextRef, officeRef, psychushkaRef, kisaRef, yaryginaRef }: JourneySectionProps) {
   const vputSectionRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const psihuskaVideoRef = useRef<HTMLVideoElement>(null);
+  const mobilePsihuskaVideoRef = useRef<HTMLVideoElement>(null);
+  const kvartiraVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileKvartiraVideoRef = useRef<HTMLVideoElement>(null);
+  const babkaVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileBabkaVideoRef = useRef<HTMLVideoElement>(null);
   const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(null);
   const [isClient, setIsClient] = useState(false);
 
@@ -31,6 +43,322 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     setIsMobileDevice(isProbablyMobile());
   }, []);
 
+  // IntersectionObserver для автоплея видео при скролле (desktop)
+  useEffect(() => {
+    if (!isClient || !videoRef.current) return;
+
+    const video = videoRef.current;
+    
+    // Обработчик загрузки видео
+    video.addEventListener('loadeddata', () => {
+      console.log('Desktop video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Desktop video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
+  // IntersectionObserver для автоплея видео при скролле (mobile)
+  useEffect(() => {
+    if (!isClient || !mobileVideoRef.current) return;
+
+    const video = mobileVideoRef.current;
+    
+    // Обработчик загрузки видео
+    video.addEventListener('loadeddata', () => {
+      console.log('Mobile video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Mobile video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Mobile video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
+  // IntersectionObserver для автоплея видео psihuska.mp4 при скролле (desktop)
+  useEffect(() => {
+    if (!isClient || !psihuskaVideoRef.current) return;
+
+    const video = psihuskaVideoRef.current;
+    
+    // Обработчик загрузки видео
+    video.addEventListener('loadeddata', () => {
+      console.log('Desktop psihuska video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Desktop psihuska video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Psihuska video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
+  // IntersectionObserver для автоплея видео psihuska.mp4 при скролле (mobile)
+  useEffect(() => {
+    if (!isClient || !mobilePsihuskaVideoRef.current) return;
+
+    const video = mobilePsihuskaVideoRef.current;
+    
+    // Обработчик загрузки видео
+    video.addEventListener('loadeddata', () => {
+      console.log('Mobile psihuska video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Mobile psihuska video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Mobile psihuska video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
+  // IntersectionObserver для автоплея видео kvartira.mp4 при скролле (desktop)
+  useEffect(() => {
+    if (!isClient || !kvartiraVideoRef.current) return;
+
+    const video = kvartiraVideoRef.current;
+    
+    video.addEventListener('loadeddata', () => {
+      console.log('Desktop kvartira video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Desktop kvartira video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Kvartira video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
+  // IntersectionObserver для автоплея видео kvartira.mp4 при скролле (mobile)
+  useEffect(() => {
+    if (!isClient || !mobileKvartiraVideoRef.current) return;
+
+    const video = mobileKvartiraVideoRef.current;
+    
+    video.addEventListener('loadeddata', () => {
+      console.log('Mobile kvartira video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Mobile kvartira video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Mobile kvartira video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
+  // IntersectionObserver для автоплея видео babka.mp4 при скролле (desktop)
+  useEffect(() => {
+    if (!isClient || !babkaVideoRef.current) return;
+
+    const video = babkaVideoRef.current;
+    
+    video.addEventListener('loadeddata', () => {
+      console.log('Desktop babka video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Desktop babka video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Babka video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
+  // IntersectionObserver для автоплея видео babka.mp4 при скролле (mobile)
+  useEffect(() => {
+    if (!isClient || !mobileBabkaVideoRef.current) return;
+
+    const video = mobileBabkaVideoRef.current;
+    
+    video.addEventListener('loadeddata', () => {
+      console.log('Mobile babka video loaded');
+    });
+    
+    video.addEventListener('error', (e) => {
+      console.error('Mobile babka video error:', e);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch((err) => {
+              console.log('Mobile babka video autoplay failed:', err);
+            });
+          } else {
+            video.pause();
+          }
+        });
+      },
+      {
+        threshold: 0.3,
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isClient]);
+
   // Mobile-only version - simple, no parallax, no 400vh containers
   const MobileJourney = () => {
     const scenes = [
@@ -38,25 +366,25 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         key: 'office',
         title: 'ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»',
         desc: 'ТОЧКА, ГДЕ НАЧИНАЕТСЯ АФЕРА И РАСКРЫВАЕТСЯ ХАКЕРСКАЯ МАХИНАЦИЯ.',
-        img: '/backgrounds/sections/vput.png',
+        img: `/backgrounds/sections/vput.png${VPUT_IMAGES_VERSION}`,
       },
       {
         key: 'psy',
         title: 'ПСИХУШКА',
         desc: 'СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.',
-        img: '/backgrounds/sections/vput2.png',
+        img: `/backgrounds/sections/vput2.png${VPUT_IMAGES_VERSION}`,
       },
       {
         key: 'kisa',
         title: 'КВАРТИРА КИСЫ',
         desc: 'ЛИЧНОЕ УБЕЖИЩЕ И ШТАБ ОПЕРАЦИИ, ГДЕ СТАЛКИВАЮТСЯ ЖАДНОСТЬ И СОВЕСТЬ.',
-        img: '/backgrounds/sections/vput3.png',
+        img: `/backgrounds/sections/vput3.png${VPUT_IMAGES_VERSION}`,
       },
       {
         key: 'yarygina',
         title: 'КВАРТИРА СТАРУХИ ЯРЫГИНОЙ',
         desc: 'ФИНАЛ ОХОТЫ — ЛОГОВО «БАБКИ-ХАКЕРА», УПРАВЛЯЮЩЕЙ МИЛЛИАРДАМИ ИЗ КРЕСЛА.',
-        img: '/backgrounds/sections/vput4.png',
+        img: `/backgrounds/sections/vput4.png${VPUT_IMAGES_VERSION}`,
       },
     ];
 
@@ -67,7 +395,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           width: '100%',
           minHeight: 'auto',
           height: 'auto',
-          backgroundImage: 'url(/backgrounds/sections/section-4.png)',
+          backgroundImage: 'url(/backgrounds/sections/mobile/section-4-mobile.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -119,40 +447,289 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 width: '100%', 
                 display: 'flex', 
                 alignItems: 'center', 
-                justifyContent: 'center',
+                justifyContent: idx === 2 ? 'flex-start' : 'center',
                 gap: 'clamp(0.5rem, 2vw, 1rem)',
                 marginBottom: 'clamp(1.5rem, 3vh, 2rem)',
                 overflow: 'visible',
                 overflowX: 'visible',
                 overflowY: 'visible',
-                paddingLeft: 'clamp(1rem, 3vw, 2rem)',
-                paddingRight: 'clamp(1rem, 3vw, 2rem)',
+                paddingLeft: idx === 2 ? 'clamp(0.5rem, 2vw, 1rem)' : 'clamp(1rem, 3vw, 2rem)',
+                paddingRight: idx === 2 ? 'clamp(0.5rem, 2vw, 1rem)' : 'clamp(1rem, 3vw, 2rem)',
                 boxSizing: 'border-box',
               }}>
-                <div
-                  className="mobile-scene-image"
-                  style={{
-                    flex: '0 1 auto',
-                    maxWidth: '100%',
-                    width: 'auto',
-                    minWidth: idx === 0 ? 'clamp(280px, 80vw, 400px)' : 'clamp(200px, 70vw, 350px)',
-                    height: idx === 0 ? '0' : 'clamp(200px, 35vh, 300px)',
-                    paddingTop: idx === 0 ? 'clamp(22%, 26%, 30%)' : '0',
-                    backgroundImage: `url(${s.img})`,
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center center',
-                    display: 'block',
-                    visibility: 'visible',
-                    overflow: 'visible',
-                    boxSizing: 'border-box',
-                    position: 'relative',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    transform: idx === 0 ? 'translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(2rem, 5vw, 3rem))' : idx === 2 ? 'translateX(clamp(4rem, 9vw, 6rem))' : idx === 3 ? 'translateX(clamp(4rem, 9vw, 6rem)) translateY(clamp(3rem, 6vh, 4.5rem))' : 'none',
-                    marginTop: idx === 3 ? 'clamp(4rem, 8vh, 6rem)' : '0',
-                  }}
-                />
+                {/* Для idx === 0: сначала vput.png слева с видео внутри, потом tiraj.png справа */}
+                {/* Для idx === 1: vput2.png с видео psihuska.mp4 внутри */}
+                {/* Для idx === 2: только vput3.png (pamat15.png перемещен ниже текста) */}
+                {idx === 0 ? (
+                  <div
+                    className="mobile-scene-image"
+                    style={{
+                      flex: '0 1 auto',
+                      maxWidth: '100%',
+                      width: 'auto',
+                      minWidth: 'clamp(200px, 60vw, 300px)',
+                      height: '0',
+                      paddingTop: 'clamp(22%, 26%, 30%)',
+                      position: 'relative',
+                      display: 'block',
+                      visibility: 'visible',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {/* Видео внутри рамки для мобильной версии */}
+                    <video
+                      ref={mobileVideoRef}
+                      src="/backgrounds/sections/bimbom.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls={false}
+                      preload="auto"
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: 'calc(50% - clamp(0.3rem, 1vw, 0.5rem))',
+                        transform: 'translate(-50%, -50%) scaleX(0.96)',
+                        width: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
+                        height: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
+                        objectFit: 'cover',
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                        outline: 'none',
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                      }}
+                    />
+                    {/* Рамка поверх видео */}
+                    <div
+                      style={{
+                        backgroundImage: `url(${s.img})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center center',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 2,
+                        pointerEvents: 'none'
+                      }}
+                    />
+                  </div>
+                ) : idx === 1 ? (
+                  <div
+                    className="mobile-scene-image mobile-vput2-with-video"
+                    style={{
+                      flex: '0 1 auto',
+                      maxWidth: '100%',
+                      width: 'auto',
+                      minWidth: 'clamp(200px, 60vw, 300px)',
+                      height: '0',
+                      paddingTop: 'clamp(22%, 26%, 30%)',
+                      position: 'relative',
+                      display: 'block',
+                      visibility: 'visible',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box',
+                      transform: 'none',
+                      marginLeft: '0',
+                      marginRight: '0',
+                    }}
+                  >
+                    {/* Видео psihuska.mp4 внутри рамки для мобильной версии */}
+                    <video
+                      ref={mobilePsihuskaVideoRef}
+                      src="/photo/psihuska.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls={false}
+                      preload="auto"
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: 'calc(50% + clamp(0.2rem, 0.8vw, 0.5rem))',
+                        transform: 'translate(-50%, -50%) scaleX(0.96)',
+                        width: 'calc(100% - clamp(2rem, 5vw, 3.5rem))',
+                        height: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
+                        objectFit: 'cover',
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                        outline: 'none',
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                      }}
+                    />
+                    {/* Рамка поверх видео */}
+                    <div
+                      style={{
+                        backgroundImage: `url(${s.img})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center center',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 2,
+                        pointerEvents: 'none'
+                      }}
+                    />
+                  </div>
+                ) : idx === 2 ? (
+                  <div
+                    className="mobile-scene-image vput3-mobile-position"
+                    style={{
+                      flex: '0 1 auto',
+                      maxWidth: '100%',
+                      width: 'auto',
+                      minWidth: 'clamp(280px, 80vw, 400px)',
+                      height: '0',
+                      paddingTop: 'clamp(22%, 26%, 30%)',
+                      position: 'relative',
+                      display: 'block',
+                      visibility: 'visible',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box',
+                      marginLeft: 'clamp(0.5rem, 2vw, 1rem)',
+                      marginRight: 'clamp(0.5rem, 2vw, 1rem)',
+                      transform: 'translateY(clamp(-2.5rem, -5vh, -2rem)) translateX(clamp(-1rem, -2vw, -0.5rem))',
+                    }}
+                  >
+                    {/* Видео kvartira.mp4 внутри рамки для мобильной версии */}
+                    <video
+                      ref={mobileKvartiraVideoRef}
+                      src="/photo/kvartira.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls={false}
+                      preload="auto"
+                      style={{
+                        position: 'absolute',
+                        top: '47%',
+                        left: 'calc(50% + clamp(0.05rem, 0.2vw, 0.15rem))',
+                        transform: 'translate(-50%, -50%) scaleX(0.96)',
+                        width: 'calc(100% - clamp(4.5rem, 10vw, 7.5rem))',
+                        height: 'calc(100% - clamp(4.5rem, 10vw, 7.5rem))',
+                        objectFit: 'cover',
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                        outline: 'none',
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                      }}
+                    />
+                    {/* Рамка поверх видео */}
+                    <div
+                      style={{
+                        backgroundImage: `url(${s.img})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center center',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 2,
+                        pointerEvents: 'none'
+                      }}
+                    />
+                  </div>
+                ) : idx === 3 ? (
+                  <div
+                    className="mobile-scene-image"
+                    style={{
+                      flex: '0 1 auto',
+                      maxWidth: '100%',
+                      width: 'auto',
+                      minWidth: 'clamp(200px, 60vw, 300px)',
+                      height: '0',
+                      paddingTop: 'clamp(22%, 26%, 30%)',
+                      position: 'relative',
+                      display: 'block',
+                      visibility: 'visible',
+                      overflow: 'hidden',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {/* Видео babka.mp4 внутри рамки для мобильной версии */}
+                    <video
+                      ref={mobileBabkaVideoRef}
+                      src="/photo/babka.mp4"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      controls={false}
+                      preload="auto"
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: 'calc(50% - clamp(0.3rem, 1vw, 0.5rem))',
+                        transform: 'translate(-50%, -50%) scaleX(0.96)',
+                        width: 'calc(100% - clamp(2rem, 5vw, 3.5rem))',
+                        height: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
+                        objectFit: 'cover',
+                        zIndex: 1,
+                        pointerEvents: 'none',
+                        outline: 'none',
+                        display: 'block',
+                        visibility: 'visible',
+                        opacity: 1
+                      }}
+                    />
+                    {/* Рамка поверх видео */}
+                    <div
+                      style={{
+                        backgroundImage: `url(${s.img})`,
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center center',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        zIndex: 2,
+                        pointerEvents: 'none'
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="mobile-scene-image"
+                    style={{
+                      flex: '0 1 auto',
+                      maxWidth: '100%',
+                      width: 'auto',
+                      minWidth: 'clamp(200px, 70vw, 350px)',
+                      height: 'clamp(200px, 35vh, 300px)',
+                      paddingTop: '0',
+                      backgroundImage: `url(${s.img})`,
+                      backgroundSize: 'contain',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center center',
+                      display: 'block',
+                      visibility: 'visible',
+                      overflow: 'visible',
+                      boxSizing: 'border-box',
+                      position: 'relative',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                    }}
+                  />
+                )}
                 {idx === 0 && (
                   <div
                     className="mobile-journey-tiraj"
@@ -166,25 +743,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       flexShrink: 0,
                       display: 'block',
                       visibility: 'visible',
-                    transform: 'translateY(clamp(-0.5rem, -1vh, -0.3rem)) translateX(clamp(-2rem, -5vw, -1rem))',
-                    marginLeft: 'clamp(1.5rem, 4vw, 2.5rem)',
-                    }}
-                  />
-                )}
-                {/* Add pamat15.png to the RIGHT of vput3.png (idx === 2) */}
-                {idx === 2 && (
-                  <div
-                    style={{
-                      width: 'clamp(90px, 22vw, 130px)',
-                      height: 'clamp(90px, 22vw, 130px)',
-                      backgroundImage: 'url(/backgrounds/sections/pamat15.png)',
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center',
-                      flexShrink: 0,
-                      display: 'block',
-                      visibility: 'visible',
-                      marginLeft: 'clamp(1rem, 3vw, 2rem)',
+                      transform: 'translateY(clamp(-0.5rem, -1vh, -0.3rem)) translateX(clamp(1rem, 3vw, 2rem))',
+                      marginLeft: '0',
                     }}
                   />
                 )}
@@ -257,6 +817,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                   marginTop: idx === 2 ? 'clamp(-2rem, -3.5vh, -1.5rem)' : 'clamp(-1.2rem, -2vh, -0.8rem)', 
                   width: '100%', 
                   padding: idx === 0 ? '0 1rem 0 clamp(5rem, 12vw, 7rem)' : idx === 2 ? '0 clamp(2rem, 6vw, 4rem) 0 1rem' : '0 1rem',
+                  paddingBottom: idx === 2 ? '0' : undefined,
                   textAlign: idx === 0 ? 'right' : idx === 2 ? 'right' : 'center'
                 }}>
                   <p
@@ -285,6 +846,57 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                   >
                     {s.desc}
                   </p>
+                </div>
+              )}
+              
+              {/* Изображение pamat15.png ниже текста "КВАРТИРА КИСЫ" на мобильной версии */}
+              {idx === 2 && (
+                <div
+                  className="pamat15-wrapper-mobile"
+                  style={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginTop: 'clamp(2.5rem, 5vh, 4rem)',
+                    marginBottom: 'clamp(2rem, 4vh, 3rem)',
+                    paddingTop: 'clamp(1.5rem, 3vh, 2.5rem)',
+                    paddingLeft: 'clamp(1rem, 3vw, 2rem)',
+                    paddingRight: 'clamp(1rem, 3vw, 2rem)',
+                    overflow: 'visible',
+                    boxSizing: 'border-box',
+                    position: 'relative',
+                    zIndex: 10,
+                    visibility: 'visible',
+                    opacity: 1,
+                  }}
+                >
+                  <img
+                    src="/backgrounds/sections/pamat15.png"
+                    alt="Архив памяти"
+                    className="pamat15-mobile-position"
+                    style={{
+                      width: 'clamp(200px, 50vw, 320px)',
+                      height: 'auto',
+                      maxWidth: '100%',
+                      display: 'block',
+                      visibility: 'visible',
+                      opacity: 1,
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
+                      position: 'relative',
+                      zIndex: 10,
+                      objectFit: 'contain',
+                    }}
+                    loading="eager"
+                    onError={(e) => {
+                      console.error('Ошибка загрузки pamat15.png:', e);
+                    }}
+                    onLoad={() => {
+                      console.log('pamat15.png загружено успешно');
+                    }}
+                  />
                 </div>
               )}
               
@@ -427,10 +1039,10 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     <section 
       ref={vputSectionRef}
       className="relative w-full journey-section-container"
-      style={{ width: '100%', marginTop: 0, paddingTop: 0 }}
+      style={{ width: '100%', marginTop: 0, paddingTop: 0, overflow: 'visible', position: 'relative' }}
     >
       {/* Desktop composition - 400vh parallax version */}
-      <div className="desktop-journey">
+      <div className="desktop-journey" style={{ display: 'block', visibility: 'visible', position: 'relative', overflow: 'visible' }}>
         {/* Background */}
         <div className="relative w-full z-0 journey-bg-wrapper" style={{ minHeight: '400vh', height: '400vh', width: '100%' }}>
           <div
@@ -452,31 +1064,80 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           />
         </div>
 
-        {/* Office - vput.png */}
+        {/* Office - vput.png с видео bimbom.mp4 внутри */}
         <div 
           ref={officeRef}
-          className="absolute z-[5]"
+          className="absolute z-[5] desktop-vput-container"
           style={{
             top: '-8vh',
             left: 'clamp(2rem, 4vw, 5rem)',
             maxWidth: 'calc(100vw - clamp(4rem, 8vw, 10rem))',
             width: 'clamp(25rem, 38vw, 45rem)',
-            overflow: 'visible'
+            overflow: 'visible',
+            position: 'absolute',
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1,
+            zIndex: 5
           }}
         >
+          {/* Контейнер для рамки и видео */}
           <div
             style={{
-              backgroundImage: 'url(/backgrounds/sections/vput.png)',
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center center',
+              position: 'relative',
               width: '100%',
               height: 'clamp(18.75rem, 28.5vw, 33.75rem)',
               maxWidth: '100%',
               minWidth: 'clamp(20rem, 30vw, 35rem)',
-              overflow: 'visible'
+              overflow: 'hidden'
             }}
-          />
+          >
+            {/* Видео внутри рамки - уменьшенный размер и смещение влево для ПК */}
+            <video
+              ref={videoRef}
+              src="/backgrounds/sections/bimbom.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls={false}
+              preload="auto"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: 'calc(50% - clamp(0.5rem, 1vw, 1rem))',
+                transform: 'translate(-50%, -50%) scaleX(1.08)',
+                width: 'calc(100% - clamp(8.5rem, 13vw, 16rem))',
+                height: 'calc(100% - clamp(8.5rem, 13vw, 16rem))',
+                objectFit: 'cover',
+                zIndex: 1,
+                pointerEvents: 'none',
+                outline: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+            {/* Рамка поверх видео */}
+            <div
+              style={{
+                backgroundImage: `url(/backgrounds/sections/vput.png${VPUT_IMAGES_VERSION})`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 2,
+                pointerEvents: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+          </div>
         </div>
 
         {/* Tiraj.png */}
@@ -485,7 +1146,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           data-animate="vput"
           data-speed="0.3"
           style={{
-            top: 'clamp(20vh, 30vh, 40vh)',
+            top: 'clamp(10vh, 18vh, 25vh)',
             right: 'clamp(22.5rem, 30vw, 28.125rem)'
           }}
         >
@@ -508,7 +1169,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           data-animate="vput"
           data-speed="0.5"
           style={{
-            top: 'clamp(20.5vh, 31vh, 41vh)',
+            top: 'clamp(10.5vh, 19vh, 26vh)',
             right: 'clamp(0.5rem, 1vw, 1.5rem)'
           }}
         >
@@ -529,7 +1190,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         <div 
           className="absolute z-[5] text-center"
           style={{
-            top: 'clamp(55vh, 65vh, 75vh)',
+            top: 'clamp(40vh, 50vh, 60vh)',
             right: 'clamp(4rem, 6vw, 7rem)',
             paddingLeft: 'clamp(1rem, 2vw, 2rem)',
             paddingRight: 'clamp(1rem, 2vw, 2rem)',
@@ -587,26 +1248,80 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             }}
           />
         </div>
-        {/* Psychushka - vput2.png */}
+        {/* Psychushka - vput2.png с видео psihuska.mp4 внутри */}
         <div 
           ref={psychushkaRef}
-          className="absolute z-[5]"
+          className="absolute z-[5] desktop-vput2-container"
           style={{
             top: 'clamp(85vh, 100vh, 120vh)',
-            left: 'clamp(26rem, 34vw, 40rem)'
+            left: 'clamp(26rem, 34vw, 40rem)',
+            position: 'absolute',
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1,
+            zIndex: 5,
+            maxWidth: 'calc(100vw - clamp(4rem, 8vw, 10rem))',
+            width: 'clamp(25rem, 38vw, 45rem)',
+            overflow: 'visible'
           }}
         >
+          {/* Контейнер для рамки и видео */}
           <div
             style={{
-              backgroundImage: 'url(/backgrounds/sections/vput2.png)',
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              width: 'clamp(25rem, 38vw, 45rem)',
+              position: 'relative',
+              width: '100%',
               height: 'clamp(18.75rem, 28.5vw, 33.75rem)',
-              maxWidth: '100%'
+              maxWidth: '100%',
+              minWidth: 'clamp(20rem, 30vw, 35rem)',
+              overflow: 'hidden'
             }}
-          />
+          >
+            {/* Видео внутри рамки */}
+            <video
+              ref={psihuskaVideoRef}
+              src="/photo/psihuska.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls={false}
+              preload="auto"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: 'calc(50% + clamp(0.1rem, 0.3vw, 0.3rem))',
+                transform: 'translate(-50%, -50%) scaleX(1.08)',
+                width: 'calc(100% - clamp(7rem, 11vw, 14rem))',
+                height: 'calc(100% - clamp(8.5rem, 13vw, 16rem))',
+                objectFit: 'cover',
+                zIndex: 1,
+                pointerEvents: 'none',
+                outline: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+            {/* Рамка поверх видео */}
+            <div
+              style={{
+                backgroundImage: `url(/backgrounds/sections/vput2.png${VPUT_IMAGES_VERSION})`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 2,
+                pointerEvents: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+          </div>
         </div>
 
         {/* Изображение analiz.png справа от vput2.png */}
@@ -755,48 +1470,156 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           />
         </div>
 
-        {/* Kisa - vput3.png */}
+        {/* Kisa - vput3.png с видео kvartira.mp4 внутри */}
         <div 
           ref={kisaRef}
-          className="absolute z-[5]"
+          className="absolute z-[5] desktop-vput3-container"
           style={{
             top: 'clamp(173vh, 206vh, 198vh)',
-            left: 'clamp(50rem, 59vw, 66rem)'
+            left: 'clamp(50rem, 59vw, 66rem)',
+            position: 'absolute',
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1,
+            zIndex: 5,
+            maxWidth: 'calc(100vw - clamp(4rem, 8vw, 10rem))',
+            width: 'clamp(25rem, 38vw, 45rem)',
+            overflow: 'visible'
           }}
         >
+          {/* Контейнер для рамки и видео */}
           <div
             style={{
-              backgroundImage: 'url(/backgrounds/sections/vput3.png)',
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              width: 'clamp(25rem, 38vw, 45rem)',
+              position: 'relative',
+              width: '100%',
               height: 'clamp(18.75rem, 28.5vw, 33.75rem)',
-              maxWidth: '100%'
+              maxWidth: '100%',
+              minWidth: 'clamp(20rem, 30vw, 35rem)',
+              overflow: 'hidden'
             }}
-          />
+          >
+            {/* Видео внутри рамки */}
+            <video
+              ref={kvartiraVideoRef}
+              src="/photo/kvartira.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls={false}
+              preload="auto"
+              style={{
+                position: 'absolute',
+                top: '48%',
+                left: 'calc(50% + clamp(0.1rem, 0.3vw, 0.2rem))',
+                transform: 'translate(-50%, -50%) scaleX(1.08)',
+                width: 'calc(100% - clamp(7rem, 11vw, 14rem))',
+                height: 'calc(100% - clamp(8.5rem, 13vw, 16rem))',
+                objectFit: 'cover',
+                zIndex: 1,
+                pointerEvents: 'none',
+                outline: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+            {/* Рамка поверх видео */}
+            <div
+              style={{
+                backgroundImage: `url(/backgrounds/sections/vput3.png${VPUT_IMAGES_VERSION})`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 2,
+                pointerEvents: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+          </div>
         </div>
 
-        {/* Yarygina - vput4.png */}
+        {/* Yarygina - vput4.png с видео babka.mp4 внутри */}
         <div 
           ref={yaryginaRef}
-          className="absolute z-[5]"
+          className="absolute z-[5] desktop-vput4-container"
           style={{
             top: 'clamp(262vh, 315vh, 288vh)',
-            left: 'clamp(43rem, 53vw, 70rem)'
+            left: 'clamp(43rem, 53vw, 70rem)',
+            position: 'absolute',
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1,
+            zIndex: 5,
+            maxWidth: 'calc(100vw - clamp(4rem, 8vw, 10rem))',
+            width: 'clamp(25rem, 38vw, 45rem)',
+            overflow: 'visible'
           }}
         >
+          {/* Контейнер для рамки и видео */}
           <div
             style={{
-              backgroundImage: 'url(/backgrounds/sections/vput4.png)',
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              width: 'clamp(25rem, 38vw, 45rem)',
+              position: 'relative',
+              width: '100%',
               height: 'clamp(18.75rem, 28.5vw, 33.75rem)',
-              maxWidth: '100%'
+              maxWidth: '100%',
+              minWidth: 'clamp(20rem, 30vw, 35rem)',
+              overflow: 'hidden'
             }}
-          />
+          >
+            {/* Видео внутри рамки */}
+            <video
+              ref={babkaVideoRef}
+              src="/photo/babka.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls={false}
+              preload="auto"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: 'calc(50% + clamp(0.1rem, 0.3vw, 0.2rem))',
+                transform: 'translate(-50%, -50%) scaleX(1.08)',
+                width: 'calc(100% - clamp(7rem, 11vw, 14rem))',
+                height: 'calc(100% - clamp(8.5rem, 13vw, 16rem))',
+                objectFit: 'cover',
+                zIndex: 1,
+                pointerEvents: 'none',
+                outline: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+            {/* Рамка поверх видео */}
+            <div
+              style={{
+                backgroundImage: `url(/backgrounds/sections/vput4.png${VPUT_IMAGES_VERSION})`,
+                backgroundSize: 'contain',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center center',
+                width: '100%',
+                height: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 2,
+                pointerEvents: 'none',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1
+              }}
+            />
+          </div>
         </div>
 
         {/* Текст "КВАРТИРА СТАРУХИ ЯРЫГИНОЙ" ниже computer.png */}
@@ -870,6 +1693,18 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             top: 'clamp(212.5vh, 282.5vh, 237.5vh)',
             height: '1px',
             pointerEvents: 'none'
+          }}
+        />
+        
+        {/* Блюр-градиент в конце desktop-journey для плавного перехода к section-3.png на ПК */}
+        <div 
+          className="absolute bottom-0 left-0 w-full desktop-journey-blur-transition"
+          style={{
+            pointerEvents: 'none',
+            zIndex: 5,
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1,
           }}
         />
       </div>

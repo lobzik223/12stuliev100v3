@@ -9,6 +9,7 @@ import EventsSection from "./sections/EventsSection";
 import JourneySection from "./sections/JourneySectionFixed";
 import ActorsSection from "./sections/ActorsSection";
 import TrailerSection from "./sections/TrailerSection";
+import GalleryView from "./gallery/GalleryView";
 import { useRouter } from 'next/navigation';
 import { isProbablyMobile } from "./utils/device";
 
@@ -18,6 +19,29 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
   const [activeCategory, setActiveCategory] = useState(0); // 0: ОФИС, 1: ПСИХУШКА, 2: КВАРТИРА КИСЫ, 3: КВАРТИРА СТАРУХИ
   const [debugEnabled, setDebugEnabled] = useState(initialDebug);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return isProbablyMobile();
+  });
+
+  // Обновляем isMobile при изменении размера окна
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const checkMobile = () => {
+      setIsMobile(isProbablyMobile());
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    window.addEventListener('orientationchange', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('orientationchange', checkMobile);
+    };
+  }, []);
   const journeySectionRef = useRef<HTMLDivElement>(null);
   const eventsSectionRef = useRef<HTMLDivElement>(null);
   const gallerySectionRef = useRef<HTMLDivElement>(null);
@@ -194,12 +218,15 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
         <img src="/backgrounds/sections/section-2.png" alt="" loading="eager" fetchPriority="high" />
         <img src="/backgrounds/sections/section-3.png" alt="" loading="eager" />
         <img src="/backgrounds/sections/section-4.png" alt="" loading="eager" fetchPriority="high" />
+        {/* Мобильные версии фонов */}
+        <img src="/backgrounds/sections/mobile/section-3-mobile.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/mobile/section-4-mobile.png" alt="" loading="eager" fetchPriority="high" />
         <img src="/backgrounds/sections/logo100let.png" alt="" loading="eager" fetchPriority="high" />
         <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="eager" />
-        <img src="/backgrounds/sections/vput.png" alt="" loading="eager" />
-        <img src="/backgrounds/sections/vput2.png" alt="" loading="eager" />
-        <img src="/backgrounds/sections/vput3.png" alt="" loading="eager" />
-        <img src="/backgrounds/sections/vput4.png" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput.png?v=2.0" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput2.png?v=2.0" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput3.png?v=2.0" alt="" loading="eager" />
+        <img src="/backgrounds/sections/vput4.png?v=2.0" alt="" loading="eager" />
         <img src="/backgrounds/sections/tiraj.png" alt="" loading="eager" />
         <img src="/backgrounds/sections/flash.png" alt="" loading="eager" />
         <img src="/backgrounds/sections/stul100let.png" alt="" loading="eager" />
@@ -304,7 +331,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       />
       <SecondaryNav isVisible={!isMainHeaderVisible} activeCategory={activeCategory} />
       
-      <div className="min-h-screen">
+      <div className="min-h-screen" style={{ position: 'relative', overflow: 'visible' }}>
         {/* Раздел 1 - Hero */}
         <HeroSection onStartJourney={() => {
           if (typeof window === 'undefined') return;
@@ -340,7 +367,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
         </div>
 
         {/* Раздел "В ПУТЬ" */}
-        <div ref={journeySectionRef}>
+        <div ref={journeySectionRef} style={{ position: 'relative' }}>
           <JourneySection 
             sectionEndRef={sectionEndRef} 
             finalTextRef={finalTextRef} 
@@ -352,30 +379,65 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           />
         </div>
 
-        {/* Небольшой блюр для плавного перехода между section-4.png и section-3.png */}
+        {/* Блюр-градиент для плавного перехода между section-4.png и section-3.png (мобильная версия) */}
         <div 
-          className="relative w-full transition-gradient-blur"
+          className="relative w-full transition-gradient-blur mobile-section-transition"
           style={{
-            height: '8vh',
-            width: '100%',
-            background: 'transparent',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
-            zIndex: 10,
-            position: 'relative'
+            pointerEvents: 'none',
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1,
           }}
         />
+
+        {/* Черный блюр-градиент на линии соприкосновения section-4 и section-3 - только для ПК, чуть выше раздела АКТЕРЫ */}
+        <div 
+          className="desktop-pc-blur-transition"
+          style={{
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Blur градиент blur67.png между section-4.png и section-3.png для скрытия линии пересечения */}
+        <div 
+          className="relative w-full puull-gradient-between-sections"
+          style={{
+            pointerEvents: 'none',
+            zIndex: 10,
+          }}
+        >
+          <Image 
+            src="/backgrounds/sections/blur67.png" 
+            alt="Blur градиент между секциями" 
+            width={1920}
+            height={1080}
+            quality={80}
+            loading="lazy"
+            unoptimized
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+              display: 'block',
+            }}
+          />
+        </div>
 
         {/* Раздел с фоном section-3.png */}
         <section 
           className="relative w-full"
           style={{
-            width: '100%'
+            width: '100%',
+            position: 'relative',
+            overflow: 'visible'
           }}
         >
+          
           {/* Фон раздела - покрывает ActorsSection и TrailerSection до конца раздела "Контакты и партнёры" */}
-          <div className="absolute inset-0 z-0" style={{ width: '100%', pointerEvents: 'none' }}>
+          <div className="absolute inset-0 z-0 mobile-section-3-bg" style={{ width: '100%', pointerEvents: 'none' }}>
             <div
+              className="mobile-section-3-background"
               style={{
                 backgroundImage: 'url(/backgrounds/sections/section-3.png)',
                 backgroundSize: '100% 100%',
@@ -392,16 +454,11 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
               }}
             />
           </div>
+          
           {/* Небольшой блюр над фоном section-3.png для плавного перехода */}
           <div 
-            className="absolute top-0 left-0 w-full section3-blur-gradient"
+            className="absolute top-0 left-0 w-full section3-blur-gradient desktop-section3-blur"
             style={{
-              height: '10vh',
-              width: '100%',
-              background: 'transparent',
-              backdropFilter: 'blur(15px)',
-              WebkitBackdropFilter: 'blur(15px)',
-              zIndex: 2,
               pointerEvents: 'none'
             }}
           />
@@ -420,6 +477,12 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
                 reviewsSectionRef={reviewsSectionRef}
                 contactsSectionRef={contactsSectionRef}
                 ssrIsIOS={ssrIsIOS}
+                onGalleryClick={() => {
+                  // Открываем GalleryView только на ПК версии
+                  if (!isMobile) {
+                    setIsGalleryOpen(true);
+                  }
+                }}
                 onViewSchedule={() => {
               try {
                 router.push('/schedule');
@@ -436,6 +499,23 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           </div>
         </section>
       </div>
+
+      {/* GalleryView - открывается только на ПК версии при клике на кнопку "ФОТО СО СПЕКТАКЛЯ" */}
+      {isGalleryOpen && !isMobile && (
+        <div 
+          className="fixed inset-0 z-[10000] bg-black"
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            overflow: 'auto'
+          }}
+        >
+          <GalleryView />
+        </div>
+      )}
     </main>
   );
 }

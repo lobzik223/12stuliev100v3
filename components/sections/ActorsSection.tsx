@@ -119,9 +119,7 @@ export default function ActorsSection() {
                 fontFamily: "'Playfair Display SC', serif",
                 fontSize: 'clamp(1.5rem, 2.25vw, 2.25rem)',
                 color: '#FBC632',
-                filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
-                textShadow:
-                  '0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 12px rgba(0, 0, 0, 0.7), 0 9px 18px rgba(0, 0, 0, 0.5), 0 0 2rem rgba(231, 200, 132, 0.6), 0 0 3.5rem rgba(231, 200, 132, 0.5), 0 0 5rem rgba(231, 200, 132, 0.4), 0 0 6.5rem rgba(231, 200, 132, 0.3)',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
                 letterSpacing: '0.1em',
               }}
             >
@@ -133,9 +131,7 @@ export default function ActorsSection() {
                 fontFamily: "'Playfair Display SC', serif",
                 fontSize: 'clamp(1rem, 1.25vw, 1.25rem)',
                 color: '#FFFFFF',
-                filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
-                textShadow:
-                  '0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 12px rgba(0, 0, 0, 0.7), 0 9px 18px rgba(0, 0, 0, 0.5), 0 0 1.8rem rgba(231, 200, 132, 0.6), 0 0 3rem rgba(231, 200, 132, 0.5), 0 0 4.5rem rgba(231, 200, 132, 0.4), 0 0 6rem rgba(231, 200, 132, 0.3)',
+                textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
                 letterSpacing: '0.05em',
                 lineHeight: '1.3',
               }}
@@ -195,8 +191,7 @@ export default function ActorsSection() {
               fontFamily: "'Playfair Display SC', serif",
               fontSize: 'clamp(1.5rem, 2.25vw, 2.25rem)',
               color: '#FBC632',
-              filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
-              textShadow: '0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 12px rgba(0, 0, 0, 0.7), 0 9px 18px rgba(0, 0, 0, 0.5), 0 0 2rem rgba(231, 200, 132, 0.6), 0 0 3.5rem rgba(231, 200, 132, 0.5), 0 0 5rem rgba(231, 200, 132, 0.4), 0 0 6.5rem rgba(231, 200, 132, 0.3)',
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
               letterSpacing: '0.1em'
             }}
           >
@@ -208,8 +203,7 @@ export default function ActorsSection() {
               fontFamily: "'Playfair Display SC', serif",
               fontSize: 'clamp(1rem, 1.25vw, 1.25rem)',
               color: '#FFFFFF',
-              filter: 'drop-shadow(0 0 0.46875rem rgba(231, 200, 132, 0.6))',
-              textShadow: '0 3px 6px rgba(0, 0, 0, 0.9), 0 6px 12px rgba(0, 0, 0, 0.7), 0 9px 18px rgba(0, 0, 0, 0.5), 0 0 1.8rem rgba(231, 200, 132, 0.6), 0 0 3rem rgba(231, 200, 132, 0.5), 0 0 4.5rem rgba(231, 200, 132, 0.4), 0 0 6rem rgba(231, 200, 132, 0.3)',
+              textShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
               letterSpacing: '0.05em',
               lineHeight: '1.3'
             }}
@@ -223,7 +217,7 @@ export default function ActorsSection() {
         <div ref={containerRef} className="relative w-full" style={{ minHeight: '600px', padding: '2rem 0' }}>
           <Swiper
             modules={[Navigation]}
-            speed={800}
+            speed={isMobile ? 1200 : 800}
             spaceBetween={40}
             loop={true}
             slidesPerView={3}

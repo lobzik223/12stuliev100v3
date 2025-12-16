@@ -8,6 +8,12 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { events } from '../../data/events';
 import { isProbablyMobile } from '../utils/device';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface EventsSectionProps {
   navPanelRef?: React.RefObject<HTMLDivElement>;
@@ -21,6 +27,8 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNavPanelSticky, setIsNavPanelSticky] = useState(false);
   const isMobileUi = typeof window !== 'undefined' ? isProbablyMobile() : false;
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const journeyTextRef = useRef<HTMLDivElement>(null);
 
   // Mobile-only: render card with fixed PNG aspect ratio (prevents real-device vh/viewport stretching)
   const renderEventCardMobile = (event: typeof events[0]) => {
@@ -313,6 +321,61 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
     };
   }, [navPanelRef]);
 
+  // Анимация появления карточек и текста при скролле для ПК версии
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (isMobileUi) return; // Только для ПК версии
+    
+    const cardsContainer = cardsContainerRef.current;
+    const journeyText = journeyTextRef.current;
+    
+    if (!cardsContainer || !journeyText) return;
+
+    // Анимация для карточек - появляются вместе, когда доскроллили до них
+    const cards = Array.from(cardsContainer.children);
+    gsap.set(cards, { opacity: 0, y: 50 });
+    
+    ScrollTrigger.create({
+      trigger: cardsContainer,
+      start: 'top center',
+      once: true,
+      onEnter: () => {
+        gsap.to(cards, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out'
+        });
+      }
+    });
+
+    // Анимация для текста "В ПУТЬ" - появляется когда доскроллили до него
+    gsap.set(journeyText, { opacity: 0, y: 30 });
+    
+    ScrollTrigger.create({
+      trigger: journeyText,
+      start: 'top center',
+      once: true,
+      onEnter: () => {
+        gsap.to(journeyText, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out'
+        });
+      }
+    });
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => {
+        if (trigger.vars.trigger === cardsContainer || trigger.vars.trigger === journeyText) {
+          trigger.kill();
+        }
+      });
+    };
+  }, [isMobileUi]);
+
   const handleBuyTicket = (url: string | undefined) => {
     if (url) {
       setSelectedEventUrl(url);
@@ -586,8 +649,12 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
       <div className="w-full max-w-[87.5rem]" style={{ position: 'relative', zIndex: 10 }}>
         {/* Карточки - Grid для десктопа, Swiper для мобильных */}
         {/* Десктопная версия - Grid (скрыта на мобильных) */}
-        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" style={{ marginTop: 'clamp(-12rem, -18vh, -15rem)', position: 'relative', zIndex: 10, filter: 'none' }}>
-          {events.map((event) => renderEventCard(event, true))}
+        <div 
+          ref={cardsContainerRef}
+          className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6" 
+          style={{ marginTop: 'clamp(-12rem, -18vh, -15rem)', position: 'relative', zIndex: 10, filter: 'none' }}
+        >
+          {events.map((event) => renderEventCard(event, false))}
         </div>
 
         {/* Мобильная версия - Swiper карусель (скрыта на десктопе) */}
@@ -775,8 +842,8 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
               <div 
                 className="rounded-full flex flex-col items-center justify-center"
                 style={{
-                  width: 'clamp(6rem, 8vw, 10rem)',
-                  height: 'clamp(6rem, 8vw, 10rem)',
+                  width: isMobileUi ? 'clamp(6rem, 8vw, 10rem)' : 'clamp(7rem, 9vw, 12rem)',
+                  height: isMobileUi ? 'clamp(6rem, 8vw, 10rem)' : 'clamp(7rem, 9vw, 12rem)',
                   border: '2px solid #FBC632',
                   boxShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.6)',
                   backgroundColor: 'transparent'
@@ -788,7 +855,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                   delay={index * 200}
                   style={{
                     fontFamily: "'Noto Serif Malayalam', serif",
-                    fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)',
+                    fontSize: isMobileUi ? 'clamp(1.5rem, 2.5vw, 2.5rem)' : 'clamp(1.5rem, 2.25vw, 2.5rem)',
                     fontWeight: 400,
                     color: 'white'
                   }}
@@ -797,7 +864,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                   className="uppercase mt-1"
                   style={{
                     fontFamily: "'Playfair Display SC', serif",
-                    fontSize: 'clamp(0.75rem, 1vw, 1rem)',
+                    fontSize: isMobileUi ? 'clamp(0.75rem, 1vw, 1rem)' : 'clamp(0.7rem, 0.95vw, 0.95rem)',
                     color: '#FBC632',
                     fontWeight: 400
                   }}
@@ -810,7 +877,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         </div>
 
         {/* Заголовок "В ПУТЬ" */}
-        <div className="text-center text-white mt-16 space-y-4">
+        <div ref={journeyTextRef} className="text-center text-white mt-16 space-y-4">
           <p 
             className="uppercase"
             style={{ 

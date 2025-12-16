@@ -70,6 +70,122 @@
 .force-mobile .md\:flex { display: none !important; }
 .force-mobile .md\:grid { display: none !important; }
 
+  /* Гарантируем, что киноплёнки всегда в полном цвете на мобильных (включая force-mobile) */
+  .force-mobile .kinolenta-container-mobile img,
+  .force-mobile .kinolenta2-container-mobile img,
+  .force-mobile .kinolenta-animation,
+  .force-mobile .kinolenta2-animation {
+    opacity: 1 !important;
+    filter: brightness(1) grayscale(0%) !important;
+    -webkit-filter: brightness(1) grayscale(0%) !important;
+  }
+
+  /* Скрываем кнопку "ФОТО СО СПЕКТАКЛЯ" на мобильных (включая force-mobile) */
+  .force-mobile .gallery-button-mobile,
+  .force-mobile div.gallery-button-mobile {
+    display: none !important;
+  }
+
+  /* Позиционирование vput3.png и pamat15.png на мобильных */
+  @media (max-width: 768px), (pointer: coarse) {
+    /* Показываем pamat15.png на мобильных устройствах */
+    .pamat15-mobile-position,
+    .pamat15-wrapper-mobile {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    /* Показываем pamat15.png во всех контекстах на мобильных */
+    .mobile-journey-section .mobile-scene-card:nth-child(3) .pamat15-mobile-position,
+    .mobile-journey-section .mobile-scene-card:nth-child(3) .pamat15-wrapper-mobile,
+    .mobile-scene-card:nth-child(3) .pamat15-wrapper-mobile .pamat15-mobile-position {
+      display: flex !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+    
+    /* Гарантируем, что родительский контейнер не обрезает pamat15 */
+    .mobile-journey-section,
+    .mobile-journey-section > div {
+      overflow-x: visible !important;
+    }
+    .vput3-mobile-position {
+      transform: translateY(clamp(-2.5rem, -5vh, -2rem)) translateX(clamp(-1rem, -2vw, -0.5rem)) !important;
+      max-width: 100% !important;
+      min-width: clamp(280px, 80vw, 400px) !important;
+      height: 0 !important;
+      padding-top: clamp(22%, 26%, 30%) !important;
+      margin-left: clamp(0.5rem, 2vw, 1rem) !important;
+      margin-right: clamp(0.5rem, 2vw, 1rem) !important;
+      overflow: visible !important;
+    }
+    
+    /* Специфичное правило для третьего элемента (КВАРТИРА КИСЫ) */
+    .mobile-journey-section .mobile-scene-card:nth-child(3) .vput3-mobile-position,
+    .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image.vput3-mobile-position {
+      transform: translateY(clamp(-2.5rem, -5vh, -2rem)) translateX(clamp(-1rem, -2vw, -0.5rem)) !important;
+      max-width: 100% !important;
+      min-width: clamp(280px, 80vw, 400px) !important;
+      height: 0 !important;
+      padding-top: clamp(22%, 26%, 30%) !important;
+      margin-left: clamp(0.5rem, 2vw, 1rem) !important;
+      margin-right: clamp(0.5rem, 2vw, 1rem) !important;
+      width: auto !important;
+      overflow: visible !important;
+    }
+    
+    /* Убираем обрезку для контейнера vput3.png */
+    .mobile-journey-section .mobile-scene-card:nth-child(3) > div[style*="display: flex"] {
+      overflow: visible !important;
+      overflow-x: visible !important;
+      overflow-y: visible !important;
+    }
+  }
+
+  /* Принудительное применение для force-mobile класса - показываем pamat15.png */
+  .force-mobile .pamat15-mobile-position,
+  .force-mobile .pamat15-wrapper-mobile,
+  .force-mobile .mobile-journey-section .mobile-scene-card:nth-child(3) .pamat15-mobile-position,
+  .force-mobile .mobile-journey-section .mobile-scene-card:nth-child(3) .pamat15-wrapper-mobile,
+  .force-mobile .mobile-scene-card:nth-child(3) .pamat15-wrapper-mobile .pamat15-mobile-position {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .force-mobile .vput3-mobile-position {
+    transform: translateY(clamp(-2.5rem, -5vh, -2rem)) translateX(clamp(-1rem, -2vw, -0.5rem)) !important;
+    max-width: 100% !important;
+    min-width: clamp(280px, 80vw, 400px) !important;
+    height: 0 !important;
+    padding-top: clamp(22%, 26%, 30%) !important;
+    margin-left: clamp(0.5rem, 2vw, 1rem) !important;
+    margin-right: clamp(0.5rem, 2vw, 1rem) !important;
+    overflow: visible !important;
+  }
+  
+  .force-mobile .mobile-journey-section .mobile-scene-card:nth-child(3) .vput3-mobile-position,
+  .force-mobile .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image.vput3-mobile-position {
+    transform: translateY(clamp(-2.5rem, -5vh, -2rem)) translateX(clamp(-1rem, -2vw, -0.5rem)) !important;
+    max-width: 100% !important;
+    min-width: clamp(280px, 80vw, 400px) !important;
+    height: 0 !important;
+    padding-top: clamp(22%, 26%, 30%) !important;
+    margin-left: clamp(0.5rem, 2vw, 1rem) !important;
+    margin-right: clamp(0.5rem, 2vw, 1rem) !important;
+    width: auto !important;
+    overflow: visible !important;
+  }
+  
+  .force-mobile .mobile-journey-section .mobile-scene-card:nth-child(3) > div[style*="display: flex"] {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+  }
+
 /* КРИТИЧНО: Гарантируем видимость гамбургер-кнопки на мобильных */
 .force-mobile .mobile-hamburger-button,
 .force-mobile button.mobile-hamburger-button {
@@ -228,18 +344,36 @@
   .hero-logo-image[style*="logo100let.png"],
   div[class*="hero-logo-image"][style*="logo100let.png"],
   .hero-logo-image {
-    background-size: contain !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
+    background-size: none !important;
+    background-position: none !important;
+    background-repeat: none !important;
     /* Раньше минимальная ширина 18rem на телефонах часто выглядела “слишком крупно”.
        Делаем размер более “мобильным”, не трогая десктоп. */
-    /* Mobile requirement: make top logo ~2x smaller */
-    width: clamp(8rem, 38vw, 16rem) !important;
-    height: clamp(6rem, 30vw, 12rem) !important;
+    /* Убираем фиксированные размеры - используем размеры из inline стилей Image компонента */
     max-width: 100% !important;
     min-width: 0 !important;
     min-height: 0 !important;
-    background-image: url(/backgrounds/sections/logo100let.png) !important;
+    background-image: none !important; /* Убираем background-image на мобильных - используем только Image компонент с logo12stuliev.png */
+  }
+  
+  /* Дополнительное правило для img элементов и родительских контейнеров - полностью убираем background */
+  img.hero-logo-image,
+  .hero-logo-image img,
+  .hero-logo-container .hero-logo-image,
+  .hero-logo-container > *,
+  div.hero-logo-image {
+    background-image: none !important;
+    background-size: none !important;
+    background-position: none !important;
+    background-repeat: none !important;
+  }
+  
+  /* Скрываем любые div элементы с background-image logo100let.png на мобильных */
+  div[style*="logo100let.png"].hero-logo-image,
+  .hero-logo-image[style*="logo100let.png"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
   }
   
   /* Улучшаем видимость кнопок на мобильных */
@@ -375,18 +509,18 @@ html {
   }
   25% {
     transform: translateX(-15%) translateZ(-80px) rotateY(8deg) scale(0.95);
-    opacity: 0.85;
-    filter: brightness(0.9);
+    opacity: 1;
+    filter: brightness(1);
   }
   50% {
     transform: translateX(-30%) translateZ(-150px) rotateY(15deg) scale(0.9);
-    opacity: 0.6;
-    filter: brightness(0.7);
+    opacity: 1;
+    filter: brightness(1);
   }
   75% {
     transform: translateX(-15%) translateZ(-80px) rotateY(8deg) scale(0.95);
-    opacity: 0.85;
-    filter: brightness(0.9);
+    opacity: 1;
+    filter: brightness(1);
   }
   100% {
     transform: translateX(0%) translateZ(0px) rotateY(0deg) scale(1);
@@ -421,18 +555,18 @@ html {
   }
   25% {
     transform: translateX(-35%) translateZ(-80px) rotateY(-8deg) scale(0.95);
-    opacity: 0.85;
-    filter: brightness(0.9);
+    opacity: 1;
+    filter: brightness(1);
   }
   50% {
     transform: translateX(-20%) translateZ(-150px) rotateY(-15deg) scale(0.9);
-    opacity: 0.6;
-    filter: brightness(0.7);
+    opacity: 1;
+    filter: brightness(1);
   }
   75% {
     transform: translateX(-35%) translateZ(-80px) rotateY(-8deg) scale(0.95);
-    opacity: 0.85;
-    filter: brightness(0.9);
+    opacity: 1;
+    filter: brightness(1);
   }
   100% {
     transform: translateX(-50%) translateZ(0px) rotateY(0deg) scale(1);
@@ -964,8 +1098,7 @@ div.swiper-button-next.swiper-button-next-actors {
   .swiper-button-next-actors,
   .swiper-button-prev-reviews,
   .swiper-button-next-reviews,
-  .swiper-button-prev-schedule,
-  .swiper-button-next-schedule {
+  .swiper-button-prev-schedule {
     width: clamp(2rem, 5vw, 2.5rem) !important;
     height: clamp(2rem, 5vw, 2.5rem) !important;
     left: clamp(-0.5rem, -2vw, -1rem) !important;
@@ -974,21 +1107,32 @@ div.swiper-button-next.swiper-button-next-actors {
   .swiper-button-next-actors,
   .swiper-button-next-reviews,
   .swiper-button-next-schedule {
+    width: clamp(2rem, 5vw, 2.5rem) !important;
+    height: clamp(2rem, 5vw, 2.5rem) !important;
     right: clamp(-0.5rem, -2vw, -1rem) !important;
+  }
+  
+  /* Отдельные стили для стрелок расписания на мобильных - дальше от карточки */
+  .swiper-button-prev-schedule {
+    left: clamp(-2.5rem, -6vw, -2rem) !important;
+  }
+  
+  .swiper-button-next-schedule {
+    right: clamp(-2.5rem, -6vw, -2rem) !important;
   }
 
   /* Кнопки навигации для событий на мобильных - отдельные стили */
   .swiper-button-prev-events {
     width: clamp(2rem, 5vw, 2.5rem) !important;
     height: clamp(2rem, 5vw, 2.5rem) !important;
-    left: clamp(-1.5rem, -3vw, -1rem) !important;
+    left: clamp(-1rem, -2.5vw, -0.5rem) !important;
     right: auto !important;
   }
 
   .swiper-button-next-events {
     width: clamp(2rem, 5vw, 2.5rem) !important;
     height: clamp(2rem, 5vw, 2.5rem) !important;
-    right: clamp(-1.5rem, -3vw, -1rem) !important;
+    right: clamp(-1rem, -2.5vw, -0.5rem) !important;
     left: auto !important;
   }
 
@@ -1042,6 +1186,329 @@ div.swiper-button-next.swiper-button-next-actors {
     background: transparent !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
+  }
+  
+  /* На ПК версии переопределяем для desktop-section-transition */
+  @media (min-width: 769px) {
+    .transition-gradient-blur.desktop-section-transition {
+      height: clamp(18vh, 22vh, 26vh) !important;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.1) 8%,
+        rgba(0, 0, 0, 0.3) 18%,
+        rgba(0, 0, 0, 0.6) 30%,
+        rgba(0, 0, 0, 0.85) 42%,
+        rgba(0, 0, 0, 0.95) 50%,
+        rgba(0, 0, 0, 0.98) 58%,
+        rgba(0, 0, 0, 0.99) 65%,
+        rgba(0, 0, 0, 1) 72%,
+        rgba(0, 0, 0, 1) 100%
+      ) !important;
+      backdrop-filter: blur(300px) !important;
+      -webkit-backdrop-filter: blur(300px) !important;
+    }
+  }
+  
+  /* Десктопная версия блюр-градиента - длиннее и более плавная */
+  @media (min-width: 769px) {
+    /* Убеждаемся, что desktop-journey виден на ПК */
+    .desktop-journey {
+      display: block !important;
+      visibility: visible !important;
+      position: relative !important;
+      opacity: 1 !important;
+      z-index: 1 !important;
+      overflow: visible !important;
+    }
+    
+    /* Гарантируем видимость элемента с vput.png и видео на desktop */
+    .desktop-vput-container {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+      z-index: 5 !important;
+    }
+    
+    .desktop-vput-container video {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+    }
+    
+    .desktop-vput-container > div {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+    }
+
+    /* Гарантируем видимость элемента с vput2.png и видео psihuska.mp4 на desktop */
+    .desktop-vput2-container {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+      z-index: 5 !important;
+    }
+
+    .desktop-vput2-container video {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+    }
+
+    .desktop-vput2-container > div {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+    }
+
+    /* Гарантируем видимость элемента с vput3.png и видео kvartira.mp4 на desktop */
+    .desktop-vput3-container {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+      z-index: 5 !important;
+    }
+
+    .desktop-vput3-container video {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+    }
+
+    .desktop-vput3-container > div {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+    }
+
+    /* Гарантируем видимость элемента с vput4.png и видео babka.mp4 на desktop */
+    .desktop-vput4-container {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+      z-index: 5 !important;
+    }
+
+    .desktop-vput4-container video {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: absolute !important;
+    }
+
+    .desktop-vput4-container > div {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+    }
+    /* Используем обычную версию section-3 на ПК для лучшего качества и плавного перехода */
+    .mobile-section-3-background {
+      background-image: url(/backgrounds/sections/section-3.png) !important;
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      z-index: 0 !important;
+    }
+    
+    .mobile-section-3-bg {
+      z-index: 0 !important;
+    }
+    
+    /* Используем мобильную версию section-4 на ПК для лучшего перехода */
+    .mobile-journey-section {
+      background-image: url(/backgrounds/sections/mobile/section-4-mobile.png) !important;
+      z-index: 0 !important;
+    }
+    
+    /* Используем обычную версию section-4 на ПК в desktop-journey для лучшего качества */
+    .journey-bg-desktop {
+      background-image: url(/backgrounds/sections/section-4.png) !important;
+      z-index: 0 !important;
+    }
+    
+    .journey-bg-wrapper {
+      z-index: 0 !important;
+    }
+    
+    /* Черный блюр-градиент между section-4 и section-3 на ПК - очень интенсивный и короткий */
+    .desktop-section-transition {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      height: clamp(18vh, 22vh, 26vh) !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      min-width: 100% !important;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.1) 8%,
+        rgba(0, 0, 0, 0.3) 18%,
+        rgba(0, 0, 0, 0.6) 30%,
+        rgba(0, 0, 0, 0.85) 42%,
+        rgba(0, 0, 0, 0.95) 50%,
+        rgba(0, 0, 0, 0.98) 58%,
+        rgba(0, 0, 0, 0.99) 65%,
+        rgba(0, 0, 0, 1) 72%,
+        rgba(0, 0, 0, 1) 100%
+      ) !important;
+      backdrop-filter: blur(300px) !important;
+      -webkit-backdrop-filter: blur(300px) !important;
+      z-index: 5 !important;
+      margin-top: clamp(4vh, 5vh, 6vh) !important;
+      position: relative !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    /* Черный блюр-градиент в конце desktop-journey для плавного перехода к section-3 - очень интенсивный и короткий */
+    .desktop-journey-blur-transition {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      height: clamp(18vh, 22vh, 26vh) !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      min-width: 100% !important;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.1) 8%,
+        rgba(0, 0, 0, 0.3) 18%,
+        rgba(0, 0, 0, 0.6) 30%,
+        rgba(0, 0, 0, 0.85) 42%,
+        rgba(0, 0, 0, 0.95) 50%,
+        rgba(0, 0, 0, 0.98) 58%,
+        rgba(0, 0, 0, 0.99) 65%,
+        rgba(0, 0, 0, 1) 72%,
+        rgba(0, 0, 0, 1) 100%
+      ) !important;
+      backdrop-filter: blur(300px) !important;
+      -webkit-backdrop-filter: blur(300px) !important;
+      z-index: 5 !important;
+      position: absolute !important;
+      bottom: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    .desktop-section3-blur {
+      height: clamp(18vh, 22vh, 26vh) !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      min-width: 100% !important;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) 28%,
+        rgba(0, 0, 0, 0.99) 35%,
+        rgba(0, 0, 0, 0.98) 42%,
+        rgba(0, 0, 0, 0.95) 50%,
+        rgba(0, 0, 0, 0.85) 58%,
+        rgba(0, 0, 0, 0.6) 70%,
+        rgba(0, 0, 0, 0.3) 82%,
+        rgba(0, 0, 0, 0.1) 92%,
+        rgba(0, 0, 0, 0) 100%
+      ) !important;
+      backdrop-filter: blur(300px) !important;
+      -webkit-backdrop-filter: blur(300px) !important;
+      z-index: 5 !important;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+    
+    /* Черный блюр-градиент на линии соприкосновения section-4 и section-3 - только для ПК, чуть выше раздела АКТЕРЫ */
+    .desktop-pc-blur-transition {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      height: clamp(25vh, 30vh, 35vh) !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      min-width: 100% !important;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.3) 8%,
+        rgba(0, 0, 0, 0.6) 18%,
+        rgba(0, 0, 0, 0.85) 32%,
+        rgba(0, 0, 0, 0.95) 48%,
+        rgba(0, 0, 0, 0.98) 62%,
+        rgba(0, 0, 0, 0.99) 78%,
+        rgba(0, 0, 0, 1) 88%,
+        rgba(0, 0, 0, 1) 100%
+      ) !important;
+      backdrop-filter: blur(500px) !important;
+      -webkit-backdrop-filter: blur(500px) !important;
+      box-shadow: 
+        inset 0 0 200px rgba(0, 0, 0, 0.95),
+        0 0 150px rgba(0, 0, 0, 0.7) !important;
+      z-index: 20 !important;
+      position: relative !important;
+      left: 0 !important;
+      right: 0 !important;
+      margin: 0 !important;
+      margin-top: clamp(-25vh, -30vh, -35vh) !important;
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      pointer-events: none !important;
+      will-change: auto !important;
+      transform: translateZ(0) !important;
+    }
+    
+    /* Blur градиент blur67.png между section-4.png и section-3.png для скрытия линии пересечения (ПК версия) */
+    .puull-gradient-between-sections {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      width: 130vw !important;
+      max-width: 130vw !important;
+      min-width: 130vw !important;
+      height: clamp(18vh, 23vh, 28vh) !important;
+      max-height: clamp(18vh, 23vh, 28vh) !important;
+      z-index: 10 !important;
+      position: relative !important;
+      left: 50% !important;
+      right: auto !important;
+      transform: translateX(-50%) translateY(clamp(-15vh, -13vh, -11vh)) !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-top: clamp(-15vh, -13vh, -11vh) !important;
+      margin-bottom: 0 !important;
+      pointer-events: none !important;
+      overflow: hidden !important;
+    }
+    
+    .puull-gradient-between-sections img,
+    .puull-gradient-between-sections > span {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      min-height: 100% !important;
+      display: block !important;
+      object-fit: cover !important;
+      object-position: center !important;
+    }
   }
 
   /* Небольшой блюр над section-3.png для плавного перехода на мобильных */
@@ -1144,9 +1611,9 @@ div.swiper-button-next.swiper-button-next-actors {
     margin-top: clamp(2rem, 4vh, 3rem) !important;
   }
 
-  /* Опускаем киноленты ниже на мобильных, чтобы они не загораживали кнопку "ФОТО СО СПЕКТАКЛЯ" */
+  /* Опускаем киноленты ниже на мобильных, ближе к тексту (кнопка скрыта) */
   .kinolenta-container-mobile {
-    margin-top: clamp(2rem, 4vh, 3rem) !important;
+    margin-top: clamp(1rem, 2vh, 2rem) !important;
   }
   
   /* Увеличиваем размер kinolenta.png на мобильных */
@@ -1194,16 +1661,19 @@ div.swiper-button-next.swiper-button-next-actors {
   .kinolenta-container-mobile .kinolenta-animation {
     animation: kinolentaMove3D 20s ease-in-out infinite !important;
     transform-style: preserve-3d !important;
-    will-change: transform, opacity, filter !important;
+    will-change: transform !important;
     position: relative !important;
     z-index: 10 !important;
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
+    opacity: 1 !important;
+    filter: brightness(1) !important;
+    -webkit-filter: brightness(1) !important;
   }
 
   /* Поднимаем kinolenta2.png выше, ближе к kinolenta.png на мобильных */
   .kinolenta2-container-mobile {
-    margin-top: clamp(-3rem, -5vh, -2rem) !important;
+    margin-top: clamp(-2rem, -3vh, -1rem) !important;
     perspective: 1000px !important;
     perspective-origin: center center !important;
     transform-style: preserve-3d !important;
@@ -1226,11 +1696,24 @@ div.swiper-button-next.swiper-button-next-actors {
   .kinolenta2-container-mobile .kinolenta2-animation {
     animation: kinolenta2Move3D 20s ease-in-out infinite !important;
     transform-style: preserve-3d !important;
-    will-change: transform, opacity, filter !important;
+    will-change: transform !important;
     position: relative !important;
     z-index: 10 !important;
     backface-visibility: hidden !important;
     -webkit-backface-visibility: hidden !important;
+    opacity: 1 !important;
+    filter: brightness(1) !important;
+    -webkit-filter: brightness(1) !important;
+  }
+
+  /* Гарантируем, что киноплёнки всегда в полном цвете на мобильных - без затемнения */
+  .kinolenta-container-mobile img,
+  .kinolenta2-container-mobile img,
+  .kinolenta-animation,
+  .kinolenta2-animation {
+    opacity: 1 !important;
+    filter: brightness(1) grayscale(0%) !important;
+    -webkit-filter: brightness(1) grayscale(0%) !important;
   }
 
   /* Уменьшаем размер кнопки "ФОТО СО СПЕКТАКЛЯ" на мобильных */
@@ -1572,7 +2055,7 @@ div.swiper-button-next.swiper-button-next-actors {
     .schedule-carousel-wrapper .swiper-button-prev.swiper-button-prev-schedule,
     .schedule-carousel .swiper-button-prev-schedule,
     .schedule-carousel .swiper-button-prev.swiper-button-prev-schedule {
-      left: 0.5rem !important;
+      left: clamp(-2.5rem, -6vw, -2rem) !important;
       right: auto !important;
     }
 
@@ -1582,7 +2065,7 @@ div.swiper-button-next.swiper-button-next-actors {
     .schedule-carousel-wrapper .swiper-button-next.swiper-button-next-schedule,
     .schedule-carousel .swiper-button-next-schedule,
     .schedule-carousel .swiper-button-next.swiper-button-next-schedule {
-      right: 0.5rem !important;
+      right: clamp(-2.5rem, -6vw, -2rem) !important;
       left: auto !important;
     }
 
@@ -1601,6 +2084,79 @@ div.swiper-button-next.swiper-button-next-actors {
       text-align: center !important;
       width: 100% !important;
       max-width: 100% !important;
+    }
+
+    /* Выравнивание всего текста по центру в разделе "В ПУТЬ" на мобильных */
+    .mobile-journey-section .mobile-scene-card,
+    .mobile-journey-section .mobile-scene-card > div,
+    .mobile-journey-section .mobile-scene-card > div > div,
+    .mobile-journey-section .mobile-scene-card p {
+      text-align: center !important;
+    }
+    
+    .mobile-journey-section .mobile-scene-card div[style*="textAlign"],
+    .mobile-journey-section .mobile-scene-card div[style*="text-align"] {
+      text-align: center !important;
+    }
+    
+    /* Расширяем текст в сцене "ПСИХУШКА" на мобильных */
+    .mobile-journey-section .mobile-scene-card:nth-child(2) > div:last-child > div:last-child {
+      flex: 1 1 auto !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      width: auto !important;
+      padding-left: clamp(1.5rem, 4vw, 2.5rem) !important;
+      padding-right: clamp(1.5rem, 4vw, 2.5rem) !important;
+    }
+    
+    .mobile-journey-section .mobile-scene-card:nth-child(2) > div:last-child {
+      padding-left: clamp(0.5rem, 2vw, 1rem) !important;
+      padding-right: clamp(0.5rem, 2vw, 1rem) !important;
+    }
+    
+    /* Сдвигаем изображение vput2.png вправо на мобильных - НЕ применяем к элементам с видео */
+    .mobile-journey-section .mobile-scene-card:nth-child(2) .mobile-scene-image:not(.mobile-vput2-with-video) {
+      transform: translateX(clamp(1.5rem, 4vw, 2.5rem)) !important;
+      margin-left: clamp(1rem, 3vw, 2rem) !important;
+    }
+    
+    /* Для vput2.png с видео - используем те же стили, что и для vput.png */
+    .mobile-journey-section .mobile-scene-card:nth-child(2) .mobile-scene-image.mobile-vput2-with-video {
+      transform: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      min-width: clamp(200px, 60vw, 300px) !important;
+      height: 0 !important;
+      padding-top: clamp(22%, 26%, 30%) !important;
+      max-width: 100% !important;
+      width: auto !important;
+    }
+    
+    /* Уменьшаем ширину модального окна расписания на мобильных */
+    div[style*="width: '90vw'"],
+    div[style*='width: "90vw"'],
+    div[style*="90vw"],
+    div[style*="width: '80vw'"],
+    div[style*='width: "80vw"'],
+    div[style*="80vw"] {
+      width: 75vw !important;
+      max-width: 350px !important;
+    }
+    
+    /* Более специфичный селектор для модального окна с белым фоном */
+    .fixed.inset-0.z-\\[9999\\] > div.relative.bg-white.rounded-lg,
+    .fixed.inset-0[style*="z-index: 9999"] > div.relative.bg-white,
+    .fixed.inset-0[style*="z-index: 9999"] > div[class*="bg-white"] {
+      width: 75vw !important;
+      max-width: 350px !important;
+    }
+    
+    /* Дополнительный селектор для модального окна расписания */
+    div[style*="width: '75vw'"],
+    div[style*='width: "75vw"'],
+    div[style*="75vw"] {
+      width: 75vw !important;
+      max-width: 350px !important;
     }
 
     /* Центрируем логотип в мобильной версии */
@@ -1803,40 +2359,56 @@ div.swiper-button-next.swiper-button-next-actors {
   .actors-carousel .swiper-slide {
     opacity: 0 !important;
     transform: translateX(100%) scale(1) !important;
-    transition: transform 0.6s ease, opacity 0.6s ease !important;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), filter 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .actors-carousel .swiper-slide-active {
     opacity: 1 !important;
     transform: translateX(0) scale(1) !important;
-    transition: transform 0.6s ease, opacity 0.6s ease !important;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), filter 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .actors-carousel .swiper-slide-prev {
     transform: translateX(-100%) scale(1) !important;
     opacity: 0 !important;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .actors-carousel .swiper-slide-next {
     transform: translateX(100%) scale(1) !important;
     opacity: 0 !important;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   /* Уменьшаем размер карточек актера на мобильных */
   .actors-carousel .swiper-slide-active .actor-card-image {
     max-width: clamp(12rem, 50vw, 16rem) !important;
     width: clamp(12rem, 50vw, 16rem) !important;
-    transition: max-width 0.6s ease, width 0.6s ease !important;
+    transition: max-width 1.2s cubic-bezier(0.4, 0, 0.2, 1), width 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .actors-carousel .swiper-slide-active .actor-card-line {
     max-width: clamp(14rem, 60vw, 20rem) !important;
-    transition: max-width 0.6s ease !important;
+    transition: max-width 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   .actors-carousel .swiper-slide-active .actor-card-text {
     max-width: clamp(16rem, 65vw, 22rem) !important;
-    transition: max-width 0.6s ease !important;
+    transition: max-width 1.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .actors-carousel .swiper-slide-active .actor-card-name,
+  .actors-carousel .swiper-slide-active .actor-card-role {
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  /* Плавные переходы для всех элементов карточки актера на мобильных */
+  .actors-carousel .swiper-slide .actor-card-image,
+  .actors-carousel .swiper-slide .actor-card-line,
+  .actors-carousel .swiper-slide .actor-card-text,
+  .actors-carousel .swiper-slide .actor-card-name,
+  .actors-carousel .swiper-slide .actor-card-role {
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   /* Позиционируем стрелки навигации по центру карточки актера на мобильных */
@@ -1896,22 +2468,17 @@ div.swiper-button-next.swiper-button-next-actors {
   }
 
   .hero-logo-image {
-    /* Mobile requirement: make top logo ~2x smaller */
-    width: clamp(8rem, 38vw, 16rem) !important;
-    height: clamp(6rem, 30vw, 12rem) !important;
+    /* Увеличен размер логотипа logo12stuliev.png на главном экране для мобильных */
+    width: clamp(12rem, 48vw, 22rem) !important; /* Увеличено еще больше: с 10rem-18rem до 12rem-22rem */
+    height: auto !important; /* Автоматическая высота для сохранения пропорций */
     max-width: 100% !important;
     min-width: 0 !important;
     min-height: 0 !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    background-attachment: scroll !important;
+    object-fit: contain !important;
     /* Принудительное применение размеров на продакшене */
     box-sizing: border-box !important;
     /* Переопределяем любые inline стили */
     flex-shrink: 0 !important;
-    /* Принудительная загрузка фона */
-    background-image: url(/backgrounds/sections/logo100let.png) !important;
   }
 
   /* Сдвигаем фон главного экрана немного вправо на мобильных */
@@ -2131,10 +2698,10 @@ div.swiper-button-next.swiper-button-next-actors {
     .force-mobile .journey-section-container .analiz-mobile { top: 104svh !important; transform: translateX(-50%) scale(0.66) !important; }
     .force-mobile .journey-section-container .psychushka-text-mobile { top: 120svh !important; }
 
-    .force-mobile .journey-section-container .pamat15-mobile { top: 145svh !important; transform: translateX(-50%) scale(0.78) !important; }
+    .force-mobile .journey-section-container .pamat15-mobile { top: 145svh !important; transform: translateX(-65%) scale(0.78) !important; }
     .force-mobile .journey-section-container .kvartira-kisy-mobile { top: 163svh !important; }
     .force-mobile .journey-section-container .computer-mobile { top: 187svh !important; transform: translateX(-50%) scale(0.76) !important; }
-    .force-mobile .journey-section-container .vput3-mobile { top: 205svh !important; transform: translateX(-50%) scale(0.82) !important; }
+    .force-mobile .journey-section-container .vput3-mobile { top: 205svh !important; transform: translateX(-50%) scale(0.70) !important; }
 
     .force-mobile .journey-section-container .vput4-mobile { top: 245svh !important; transform: translateX(-50%) scale(0.82) !important; }
     .force-mobile .journey-section-container .yarygina-text-mobile { top: 285svh !important; }
@@ -2238,12 +2805,16 @@ body.employee-tickets-modal-open .secondary-nav {
   }
 }
 
-/* На PC версии - увеличиваем padding для полного отображения фона */
+/* На PC версии - фон на весь экран */
 @media (min-width: 769px) {
   .employee-tickets-modal-bg {
     background-size: cover !important;
     background-position: center center !important;
-    min-height: clamp(700px, 85vh, 900px) !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
     padding-top: clamp(4rem, 6vh, 5rem) !important;
     padding-bottom: clamp(4rem, 6vh, 5rem) !important;
   }
@@ -2251,6 +2822,225 @@ body.employee-tickets-modal-open .secondary-nav {
   /* Увеличиваем maxHeight контейнера модального окна на PC */
   div[style*="slideUp"] {
     max-height: clamp(700px, 90vh, 950px) !important;
+  }
+}
+
+/* Растягивание фона по ширине на странице расписания для мобильных устройств */
+@media (max-width: 768px), (pointer: coarse) {
+  .schedule-page-bg {
+    background-size: 100% 100% !important;
+    background-position: center !important;
+  }
+}
+
+/* Принудительное применение для force-mobile класса */
+.force-mobile .schedule-page-bg {
+  background-size: 100% 100% !important;
+  background-position: center !important;
+}
+
+/* Мобильные версии фонов и улучшенный блюр-градиент между section-4-mobile и section-3-mobile */
+/* ВАЖНО: Используем только max-width для скрытия desktop версии, чтобы не скрывать на touch-экранах ПК */
+@media (max-width: 768px) {
+  /* Скрываем desktop-journey на мобильных */
+  .desktop-journey {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Скрываем desktop версию vput.png с видео на мобильных */
+  .desktop-vput-container {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Скрываем desktop версию vput2.png с видео на мобильных */
+  .desktop-vput2-container {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Скрываем desktop версию vput3.png с видео на мобильных */
+  .desktop-vput3-container {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Скрываем desktop версию vput4.png с видео на мобильных */
+  .desktop-vput4-container {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Скрываем ПК блюр на мобильных */
+  .desktop-pc-blur-transition {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Используем мобильные версии фонов */
+  .mobile-section-3-background {
+    background-image: url(/backgrounds/sections/mobile/section-3-mobile.png) !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+  }
+  
+  /* Улучшенный блюр-градиент для плавного перехода между section-4-mobile и section-3-mobile */
+  .mobile-section-transition {
+    height: clamp(5vh, 7vh, 9vh) !important;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.3) 15%,
+      rgba(0, 0, 0, 0.5) 30%,
+      rgba(0, 0, 0, 0.7) 50%,
+      rgba(0, 0, 0, 0.85) 70%,
+      rgba(0, 0, 0, 0.95) 85%,
+      rgba(0, 0, 0, 1) 100%
+    ) !important;
+    backdrop-filter: blur(50px) !important;
+    -webkit-backdrop-filter: blur(50px) !important;
+    pointer-events: none !important;
+    position: relative !important;
+    z-index: 5 !important;
+    margin-top: -1px !important;
+  }
+  
+  /* Дополнительный градиент поверх section-3-mobile для плавного перехода */
+  .section3-blur-gradient {
+    height: clamp(5vh, 7vh, 9vh) !important;
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0.95) 10%,
+      rgba(0, 0, 0, 0.85) 25%,
+      rgba(0, 0, 0, 0.7) 45%,
+      rgba(0, 0, 0, 0.5) 65%,
+      rgba(0, 0, 0, 0.3) 80%,
+      rgba(0, 0, 0, 0.1) 95%,
+      rgba(0, 0, 0, 0) 100%
+    ) !important;
+    backdrop-filter: blur(50px) !important;
+    -webkit-backdrop-filter: blur(50px) !important;
+    z-index: 5 !important;
+  }
+  
+  /* Blur градиент blur67.png между section-4.png и section-3.png для скрытия линии пересечения (мобильная версия) */
+  .puull-gradient-between-sections {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-width: 100vw !important;
+    height: clamp(15vh, 18vh, 21vh) !important;
+    max-height: clamp(15vh, 18vh, 21vh) !important;
+    z-index: 10 !important;
+    position: relative !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-top: clamp(-4vh, -3vh, -2vh) !important;
+    margin-bottom: 0 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+  }
+  
+  .puull-gradient-between-sections img,
+  .puull-gradient-between-sections > span {
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: 100% !important;
+    min-height: 100% !important;
+    display: block !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+}
+
+/* Дополнительная проверка для force-mobile класса (iOS Safari) */
+.force-mobile .desktop-journey,
+.force-mobile .desktop-vput-container,
+.force-mobile .desktop-vput2-container,
+.force-mobile .desktop-vput3-container,
+.force-mobile .desktop-vput4-container {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Для force-mobile класса */
+.force-mobile .mobile-section-3-background {
+  background-image: url(/backgrounds/sections/mobile/section-3-mobile.png) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.force-mobile .mobile-section-transition {
+  height: clamp(5vh, 7vh, 9vh) !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.3) 15%,
+    rgba(0, 0, 0, 0.5) 30%,
+    rgba(0, 0, 0, 0.7) 50%,
+    rgba(0, 0, 0, 0.85) 70%,
+    rgba(0, 0, 0, 0.95) 85%,
+    rgba(0, 0, 0, 1) 100%
+  ) !important;
+  backdrop-filter: blur(50px) !important;
+  -webkit-backdrop-filter: blur(50px) !important;
+  z-index: 5 !important;
+  margin-top: -1px !important;
+}
+
+.force-mobile .section3-blur-gradient {
+  height: clamp(5vh, 7vh, 9vh) !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.95) 10%,
+    rgba(0, 0, 0, 0.85) 25%,
+    rgba(0, 0, 0, 0.7) 45%,
+    rgba(0, 0, 0, 0.5) 65%,
+    rgba(0, 0, 0, 0.3) 80%,
+    rgba(0, 0, 0, 0.1) 95%,
+    rgba(0, 0, 0, 0) 100%
+  ) !important;
+  backdrop-filter: blur(50px) !important;
+  -webkit-backdrop-filter: blur(50px) !important;
+  z-index: 5 !important;
+}
+
+/* Десктопная версия для force-mobile (если используется на больших экранах) */
+@media (min-width: 769px) {
+  .force-mobile .desktop-section-transition {
+    height: clamp(18vh, 22vh, 26vh) !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 100% !important;
+    margin-top: clamp(4vh, 5vh, 6vh) !important;
+    backdrop-filter: blur(300px) !important;
+    -webkit-backdrop-filter: blur(300px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  .force-mobile .desktop-section3-blur {
+    height: clamp(18vh, 22vh, 26vh) !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 100% !important;
+    backdrop-filter: blur(300px) !important;
+    -webkit-backdrop-filter: blur(300px) !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }
 

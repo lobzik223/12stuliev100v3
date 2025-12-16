@@ -6,15 +6,30 @@ import Image from 'next/image';
 import Header from './Header';
 import { scheduleItems } from '../data/schedule';
 import EmployeeTicketsModal from './ui/EmployeeTicketsModal';
+import { isProbablyMobile } from '../components/utils/device';
 
 export default function SchedulePage() {
   const router = useRouter();
   const [selectedScheduleUrl, setSelectedScheduleUrl] = useState<string | null>(null);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isEmployeeTicketsModalOpen, setIsEmployeeTicketsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? isProbablyMobile() : false));
   const legalInfoRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const bgWrapperRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const checkMobile = () => setIsMobile(isProbablyMobile());
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      window.addEventListener('orientationchange', checkMobile);
+      return () => {
+        window.removeEventListener('resize', checkMobile);
+        window.removeEventListener('orientationchange', checkMobile);
+      };
+    }
+  }, []);
 
   const handleBuyTicket = (url: string | undefined) => {
     if (url) {
@@ -280,9 +295,10 @@ export default function SchedulePage() {
         {/* Фон раздела - растянут в длину как в разделе "В ПУТЬ", обрезается на тексте с ИНН/ОГРНИП */}
         <div ref={bgWrapperRef} className="absolute inset-0 z-0" style={{ width: '100%', overflow: 'hidden' }}>
           <div
+            className="schedule-page-bg"
             style={{
               backgroundImage: 'url(/backgrounds/sections/section-4.png)',
-              backgroundSize: '100% 100%',
+              backgroundSize: isMobile ? '100% 100%' : '100% 100%',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
               width: '100%',
@@ -465,7 +481,7 @@ export default function SchedulePage() {
                       </button>
                       <button
                         onClick={() => handleBuyTicket(item.buyTicketUrl)}
-                        className="px-16 md:px-20 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105"
+                        className="px-10 md:px-12 py-2 rounded-md border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
                         style={{
                           fontFamily: "'Playfair Display SC', serif",
                           fontSize: 'clamp(14px, 1vw, 16px)',
@@ -473,7 +489,7 @@ export default function SchedulePage() {
                           color: '#682302',
                           backgroundColor: '#FBC632',
                           borderColor: '#FBC632',
-                          boxShadow: '0 0 12px rgba(251, 198, 50, 0.4), 0 0 22px rgba(251, 198, 50, 0.2)',
+                          boxShadow: '0 0 10px rgba(251, 198, 50, 0.35), 0 0 20px rgba(251, 198, 50, 0.2)',
                           whiteSpace: 'nowrap',
                           paddingTop: '10px',
                           paddingBottom: '10px',
@@ -737,9 +753,10 @@ export default function SchedulePage() {
           <div
             className="relative bg-white rounded-lg overflow-hidden"
             style={{
-              width: '90vw',
+              width: isMobile ? '75vw' : '90vw',
               height: '85vh',
-              maxWidth: '1200px',
+              margin: '0 auto',
+              maxWidth: isMobile ? '400px' : '1200px',
               maxHeight: '800px',
               boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
               overflowY: 'auto',

@@ -99,10 +99,10 @@ export default function RootLayout({
         <link rel="preload" href="/backgrounds/sections/logo100let.png" as="image" type="image/png" fetchPriority="high" />
         <link rel="preload" href="/backgrounds/sections/plitkanovosti.png" as="image" type="image/png" />
         {/* Preload критических изображений для JourneySection */}
-        <link rel="preload" href="/backgrounds/sections/vput.png" as="image" type="image/png" />
-        <link rel="preload" href="/backgrounds/sections/vput2.png" as="image" type="image/png" />
-        <link rel="preload" href="/backgrounds/sections/vput3.png" as="image" type="image/png" />
-        <link rel="preload" href="/backgrounds/sections/vput4.png" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/vput.png?v=2.0" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/vput2.png?v=2.0" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/vput3.png?v=2.0" as="image" type="image/png" />
+        <link rel="preload" href="/backgrounds/sections/vput4.png?v=2.0" as="image" type="image/png" />
       </head>
       <body>
         <ErrorBoundary>

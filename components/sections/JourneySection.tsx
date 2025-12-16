@@ -19,6 +19,9 @@ interface JourneySectionProps {
   yaryginaRef?: React.RefObject<HTMLDivElement>;
 }
 
+// Cache-busting version для изображений vput
+const VPUT_IMAGES_VERSION = '?v=2.0';
+
 export default function JourneySection({ sectionEndRef, finalTextRef, officeRef, psychushkaRef, kisaRef, yaryginaRef }: JourneySectionProps) {
   const vputSectionRef = useRef<HTMLDivElement>(null);
 
@@ -31,25 +34,25 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         key: 'office',
         title: 'ОФИС ЛОТЕРЕИ «БИМ-БОМ-26»',
         desc: 'ТОЧКА, ГДЕ НАЧИНАЕТСЯ АФЕРА И РАСКРЫВАЕТСЯ ХАКЕРСКАЯ МАХИНАЦИЯ.',
-        img: '/backgrounds/sections/vput.png',
+        img: `/backgrounds/sections/vput.png${VPUT_IMAGES_VERSION}`,
       },
       {
         key: 'psy',
         title: 'ПСИХУШКА',
         desc: 'СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.',
-        img: '/backgrounds/sections/vput2.png',
+        img: `/backgrounds/sections/vput2.png${VPUT_IMAGES_VERSION}`,
       },
       {
         key: 'kisa',
         title: 'КВАРТИРА КИСЫ',
         desc: 'ЛИЧНОЕ УБЕЖИЩЕ И ШТАБ ОПЕРАЦИИ, ГДЕ СТАЛКИВАЮТСЯ ЖАДНОСТЬ И СОВЕСТЬ.',
-        img: '/backgrounds/sections/vput3.png',
+        img: `/backgrounds/sections/vput3.png${VPUT_IMAGES_VERSION}`,
       },
       {
         key: 'yarygina',
         title: 'КВАРТИРА СТАРУХИ ЯРЫГИНОЙ',
         desc: 'ФИНАЛ ОХОТЫ — ЛОГОВО «БАБКИ-ХАКЕРА», УПРАВЛЯЮЩЕЙ МИЛЛИАРДАМИ ИЗ КРЕСЛА.',
-        img: '/backgrounds/sections/vput4.png',
+        img: `/backgrounds/sections/vput4.png${VPUT_IMAGES_VERSION}`,
       },
     ];
 
@@ -231,7 +234,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         <div
           className="vput-inner-mobile"
           style={{
-            backgroundImage: 'url(/backgrounds/sections/vput.png)',
+            backgroundImage: `url(/backgrounds/sections/vput.png${VPUT_IMAGES_VERSION})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'top center',
@@ -365,7 +368,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       >
         <div
           style={{
-            backgroundImage: 'url(/backgrounds/sections/vput2.png)',
+            backgroundImage: `url(/backgrounds/sections/vput2.png${VPUT_IMAGES_VERSION})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
@@ -534,7 +537,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       >
         <div
           style={{
-            backgroundImage: 'url(/backgrounds/sections/vput3.png)',
+            backgroundImage: `url(/backgrounds/sections/vput3.png${VPUT_IMAGES_VERSION})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
@@ -597,7 +600,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       >
         <div
           style={{
-            backgroundImage: 'url(/backgrounds/sections/vput4.png)',
+            backgroundImage: `url(/backgrounds/sections/vput4.png${VPUT_IMAGES_VERSION})`,
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',

@@ -10,59 +10,51 @@ export interface Actor {
 export const actors: Actor[] = [
   {
     id: 1,
-    name: 'Андрей Лебедев',
-    role: 'Киса',
-    image: '/actors/andrey-lebedev.jpg',
+    name: 'Гурам Баблишвили',
+    role: 'Остап Бендер',
+    image: '',
     hasExtraContent: false
   },
   {
     id: 2,
-    name: 'ГУРАМ МИХАЙЛОВИЧ',
-    fullName: 'БАБЛИШВИЛИ',
-    role: 'Остап бендер',
-    image: '/actors/guram-bablishvili.jpg',
-    hasExtraContent: true
+    name: 'Андрей Лебедев',
+    role: 'Киса',
+    image: '',
+    hasExtraContent: false
   },
   {
     id: 3,
-    name: 'Мария Шахнович',
-    role: 'Анфиса',
-    image: '/actors/mariya-shakhnovich.jpg',
+    name: 'Серафима Низовская',
+    role: 'Бабищева',
+    image: '',
     hasExtraContent: false
   },
   {
     id: 4,
-    name: 'Иван Петров',
-    role: 'Воробьянинов',
-    image: '/actors/ivan-petrov.jpg',
+    name: 'Петр Баранчеев',
+    role: 'чиновник',
+    image: '',
     hasExtraContent: false
   },
   {
     id: 5,
-    name: 'Елена Смирнова',
-    role: 'Эллочка',
-    image: '/actors/elena-smirnova.jpg',
+    name: 'Мария Шахнович',
+    role: 'Анфиса',
+    image: '',
     hasExtraContent: false
   },
   {
     id: 6,
-    name: 'Дмитрий Волков',
-    role: 'Отец Фёдор',
-    image: '/actors/dmitry-volkov.jpg',
+    name: 'Александр Степанцов',
+    role: 'Киса',
+    image: '',
     hasExtraContent: false
   },
   {
     id: 7,
-    name: 'Александр Новиков',
-    role: 'Эллочка-людоедка',
-    image: '/actors/alexander-novikov.jpg',
-    hasExtraContent: false
-  },
-  {
-    id: 8,
-    name: 'Сергей Морозов',
-    role: 'Инженер Брунс',
-    image: '/actors/sergey-morozov.jpg',
+    name: 'Тимур Ефременков',
+    role: 'владелец типографии',
+    image: '',
     hasExtraContent: false
   }
 ];

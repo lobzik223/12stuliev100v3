@@ -38,7 +38,10 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const dateTimeValue = dateTime || defaultDateTime;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isEmployeeTicketsModalOpen, setIsEmployeeTicketsModalOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth <= 768;
+  });
 
   const handleBuyTicket = () => {
     if (buyTicketUrl) {
@@ -55,13 +58,29 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const legalInfoRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Инициализация isMobile при монтировании и изменении размера окна
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    window.addEventListener('orientationchange', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('orientationchange', checkMobile);
+    };
+  }, []);
+
   // Блокируем скролл body при открытии модального окна на мобильных
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    const isMobileDevice = window.innerWidth <= 768;
-    
-    if (isTicketModalOpen && isMobileDevice) {
+    if (isTicketModalOpen && isMobile) {
       // Сохраняем текущую позицию скролла
       const scrollY = window.scrollY;
       // Блокируем скролл body
@@ -79,54 +98,59 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         window.scrollTo(0, scrollY);
       };
     }
-  }, [isTicketModalOpen]);
+  }, [isTicketModalOpen, isMobile]);
 
-  // Блокируем прокрутку после раздела "Контакты" (footer) - до текста с ИНН и ОГРНИП
+  // УПРОЩЕННАЯ логика скролла - на мобильных используем нативный скролл без ограничений
   useEffect(() => {
+    // На мобильных отключаем все ограничения скролла - используем нативный скролл
+    if (isMobile) {
+      // Восстанавливаем нормальный скролл на мобильных
+      if (document.body && document.documentElement) {
+        document.body.style.height = '';
+        document.body.style.maxHeight = '';
+        document.body.style.overflowY = '';
+        document.documentElement.style.height = '';
+        document.documentElement.style.maxHeight = '';
+        document.documentElement.style.overflowY = '';
+      }
+      if (containerRef.current) {
+        containerRef.current.style.height = '';
+        containerRef.current.style.maxHeight = '';
+        containerRef.current.style.overflow = '';
+      }
+      return;
+    }
+
+    // Для десктопа оставляем ограничение скролла
     let rafId: number | null = null;
-    let isScrolling = false; // Флаг для предотвращения рекурсивных вызовов
-    let maxScrollValue = 0; // Кэшируем максимальное значение скролла
+    let isScrolling = false;
+    let maxScrollValue = 0;
     let observer: IntersectionObserver | null = null;
 
-    // Вычисляем максимальную позицию скролла один раз при загрузке и изменении размера
     const calculateMaxScroll = () => {
-      // Используем legalInfoRef если есть, иначе contactsSectionRef
       const targetRef = legalInfoRef.current || contactsSectionRef.current;
       if (!targetRef || !containerRef.current) return;
       
-      // Ждем, пока элемент будет полностью отрендерен
       const rect = targetRef.getBoundingClientRect();
       const targetBottom = window.scrollY + rect.bottom;
-      // Увеличиваем отступ снизу для полной видимости раздела контактов
       const exactHeight = Math.ceil(targetBottom + 40);
       maxScrollValue = Math.max(0, exactHeight - window.innerHeight);
       
-      // Устанавливаем точную высоту документа и контейнера, чтобы не было лишнего пространства
       if (document.body && document.documentElement && containerRef.current) {
-        // Устанавливаем точную высоту для body, html и контейнера
-        // НЕ устанавливаем overflowY на body, чтобы избежать двойного скролла
         document.body.style.height = `${exactHeight}px`;
         document.body.style.maxHeight = `${exactHeight}px`;
-        document.body.style.overflowY = 'hidden'; // Убираем скролл с body
+        document.body.style.overflowY = 'hidden';
         document.documentElement.style.height = `${exactHeight}px`;
         document.documentElement.style.maxHeight = `${exactHeight}px`;
-        document.documentElement.style.overflowY = 'auto'; // Скролл только на html
+        document.documentElement.style.overflowY = 'auto';
         containerRef.current.style.height = `${exactHeight}px`;
         containerRef.current.style.maxHeight = `${exactHeight}px`;
-        containerRef.current.style.overflow = 'hidden'; // Убираем скролл с контейнера
+        containerRef.current.style.overflow = 'hidden';
         
-        // Устанавливаем высоту для псевдоэлемента ::after (черный фон)
-        // Вычисляем высоту черного фона: от 600vh (десктоп) или ~400vh (мобильный) до конца контента
-        const isMobile = window.innerWidth <= 768;
-        // На мобильных используем среднее значение из clamp(380vh, 400vh, 420vh) = ~400vh
-        const backgroundHeightVh = isMobile ? 400 : 600; // ~400vh для мобильных, 600vh для десктопа
-        const blackBgStart = backgroundHeightVh * window.innerHeight / 100; // Высота фона в пикселях
+        const backgroundHeightVh = 600;
+        const blackBgStart = backgroundHeightVh * window.innerHeight / 100;
         const blackBgHeight = Math.max(0, exactHeight - blackBgStart);
-        if (blackBgHeight > 0) {
-          containerRef.current.style.setProperty('--after-height', `${blackBgHeight}px`);
-        } else {
-          containerRef.current.style.setProperty('--after-height', '0px');
-        }
+        containerRef.current.style.setProperty('--after-height', blackBgHeight > 0 ? `${blackBgHeight}px` : '0px');
       }
     };
 
@@ -134,7 +158,6 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       const targetRef = legalInfoRef.current || contactsSectionRef.current;
       if (!targetRef || isScrolling) return;
 
-      // Отменяем предыдущий запрос анимации, если он есть
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
       }
@@ -146,28 +169,22 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         }
 
         const currentScroll = window.scrollY;
-        
-        // Пересчитываем максимальный скролл для точности
         const rect = targetRef.getBoundingClientRect();
         const targetBottom = window.scrollY + rect.bottom;
         const exactHeight = Math.ceil(targetBottom + 40);
         const calculatedMaxScroll = Math.max(0, exactHeight - window.innerHeight);
         
-        // Обновляем кэш
         if (maxScrollValue === 0 || Math.abs(maxScrollValue - calculatedMaxScroll) > 5) {
           maxScrollValue = calculatedMaxScroll;
         }
         
-        // Проверяем, не превысил ли пользователь максимальный скролл
-        // Используем погрешность в 2px для избежания дрожания
         const threshold = 2;
         if (currentScroll > maxScrollValue + threshold) {
-          isScrolling = true; // Устанавливаем флаг перед скроллом
+          isScrolling = true;
           window.scrollTo({
             top: maxScrollValue,
             behavior: 'auto'
           });
-          // Сбрасываем флаг после задержки, чтобы избежать повторных вызовов
           setTimeout(() => {
             isScrolling = false;
           }, 150);
@@ -177,57 +194,30 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       });
     };
 
-    // Вычисляем высоту после загрузки контента и изображений
     const initHeight = () => {
       calculateMaxScroll();
-      // Несколько попыток пересчета для учета загрузки всех элементов
-      setTimeout(() => {
-        calculateMaxScroll();
-      }, 300);
-      setTimeout(() => {
-        calculateMaxScroll();
-      }, 600);
-      setTimeout(() => {
-        calculateMaxScroll();
-      }, 1000);
+      setTimeout(() => calculateMaxScroll(), 300);
+      setTimeout(() => calculateMaxScroll(), 600);
+      setTimeout(() => calculateMaxScroll(), 1000);
     };
     
-    // Используем IntersectionObserver для отслеживания загрузки раздела контактов
     if (legalInfoRef.current) {
-      observer = new IntersectionObserver((entries) => {
-        entries.forEach(() => {
-          // Пересчитываем высоту когда элемент становится видимым
-          setTimeout(() => {
-            calculateMaxScroll();
-          }, 100);
-        });
-      }, {
-        threshold: 0.1
-      });
+      observer = new IntersectionObserver(() => {
+        setTimeout(() => calculateMaxScroll(), 100);
+      }, { threshold: 0.1 });
       observer.observe(legalInfoRef.current);
     }
     
-    // Обработчик изменения видимости вкладки
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        // Пересчитываем высоту при возврате на вкладку
-        setTimeout(() => {
-          calculateMaxScroll();
-        }, 200);
+        setTimeout(() => calculateMaxScroll(), 200);
       }
     };
     
     setTimeout(initHeight, 100);
     
-    // Определяем мобильное устройство
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    checkMobile();
-    
     const handleResize = () => {
-      checkMobile();
-      maxScrollValue = 0; // Сбрасываем кэш при изменении размера
+      maxScrollValue = 0;
       calculateMaxScroll();
     };
     
@@ -246,7 +236,6 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         observer.disconnect();
       }
       isScrolling = false;
-      // Восстанавливаем стили
       if (document.body && document.documentElement) {
         document.body.style.height = '';
         document.body.style.maxHeight = '';
@@ -256,13 +245,16 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         document.documentElement.style.overflowY = '';
       }
     };
-  }, []);
+  }, [isMobile]);
 
   // Refs для анимации PNG объектов
   const quoteTextRef = useRef<HTMLDivElement>(null);
   const longQuoteTextRef = useRef<HTMLDivElement>(null);
   const triangleRef = useRef<HTMLDivElement>(null);
   const reviewsSectionRef = useRef<HTMLDivElement>(null);
+  const buyTicketButtonRef = useRef<HTMLButtonElement>(null);
+  const venueWidgetRef = useRef<HTMLDivElement>(null);
+  const mobileBlurOverlayRef = useRef<HTMLDivElement>(null);
   
   // Фиксируем позицию треугольника сразу после монтирования
   useEffect(() => {
@@ -288,6 +280,36 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const topDirectorTextRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // ОТКЛЮЧАЕМ ВСЕ АНИМАЦИИ НА МОБИЛЬНЫХ ДЛЯ ИСПРАВЛЕНИЯ БАГОВ
+    if (isMobile) {
+      // На мобильных просто показываем элементы без анимаций
+      const elements = [
+        quoteTextRef.current,
+        longQuoteTextRef.current,
+        triangleRef.current,
+        advantagesTitleRef.current,
+        starImageRef.current,
+        logoInStarRef.current,
+        comedyQualityTextRef.current,
+        premiumSegmentTextRef.current,
+        artistsIconRef.current,
+        bestArtistsTextRef.current,
+        directorIconRef.current,
+        topDirectorTextRef.current
+      ];
+      
+      elements.forEach(el => {
+        if (el) {
+          (el as HTMLElement).style.opacity = '1';
+          (el as HTMLElement).style.transform = '';
+          (el as HTMLElement).style.visibility = 'visible';
+        }
+      });
+      
+      return;
+    }
+
+    // Анимации только для десктопа
     // Анимация для короткой цитаты (text1.png)
     if (quoteTextRef.current) {
       gsap.fromTo(quoteTextRef.current,
@@ -586,270 +608,157 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, []);
+  }, [isMobile]);
 
-  // Позиционирование текста "Наши преимущества", звезды и dark-overlay-duplicate сразу после textmibile.png на мобильных
+  // УПРОЩЕННОЕ позиционирование для мобильных - БЕЗ СЛОЖНЫХ ВЫЧИСЛЕНИЙ
   useEffect(() => {
-    if (!isMobile || !longQuoteTextRef.current || !advantagesTitleRef.current || !starImageRef.current || !darkOverlayDuplicateRef.current || !containerRef.current) return;
+    if (!isMobile) return;
 
-    const updatePosition = () => {
-      const longQuoteElement = longQuoteTextRef.current;
-      const advantagesElement = advantagesTitleRef.current;
-      const starElement = starImageRef.current;
-      const darkOverlayElement = darkOverlayDuplicateRef.current;
-      const containerElement = containerRef.current;
-      
-      if (!longQuoteElement || !advantagesElement || !starElement || !darkOverlayElement || !containerElement) return;
-
-      // Получаем позицию и размеры textmibile.png относительно viewport
-      const longQuoteRect = longQuoteElement.getBoundingClientRect();
-      const longQuoteHeight = longQuoteRect.height;
-      const longQuoteBottom = longQuoteRect.bottom;
-      
-      // Получаем позицию контейнера dark-overlay-duplicate относительно viewport
-      const advantagesOffsetParent = advantagesElement.offsetParent as HTMLElement;
-      if (!advantagesOffsetParent) return;
-      
-      const offsetParentRect = advantagesOffsetParent.getBoundingClientRect();
-      
-      // Вычисляем позицию текста "Наши преимущества" относительно его offsetParent
-      // Используем нижнюю границу textmibile.png и добавляем отступ (30px) - немного ниже
-      const advantagesTop = longQuoteBottom - offsetParentRect.top + 30;
-      
-      // Убеждаемся, что элемент виден
-      advantagesElement.style.display = 'block';
-      advantagesElement.style.visibility = 'visible';
-      advantagesElement.style.opacity = '1';
-      
-      // Устанавливаем стили напрямую через inline стили и класс
-      // Inline стили имеют приоритет над CSS, но для надежности также добавляем класс
-      advantagesElement.style.position = 'absolute';
-      advantagesElement.style.top = `${advantagesTop}px`;
-      advantagesElement.style.left = '50%';
-      advantagesElement.style.transform = 'translateX(-50%)';
-      advantagesElement.style.zIndex = '10';
-      advantagesElement.classList.add('advantages-title-mobile-positioned');
-      
-      // Также пытаемся использовать setProperty с important для дополнительной надежности
-      try {
-        (advantagesElement.style as any).setProperty('top', `${advantagesTop}px`, 'important');
-        (advantagesElement.style as any).setProperty('display', 'block', 'important');
-        (advantagesElement.style as any).setProperty('visibility', 'visible', 'important');
-      } catch (e) {
-        // Игнорируем ошибку, inline стили уже установлены
-      }
-      
-      // Позиционируем звезду под текстом "Наши преимущества"
-      const advantagesRect = advantagesElement.getBoundingClientRect();
-      const advantagesHeight = advantagesRect.height;
-      const advantagesBottom = advantagesRect.bottom;
-      
-      // Вычисляем позицию звезды относительно того же offsetParent
-      const starTop = advantagesBottom - offsetParentRect.top + 20; // 20px отступ под текстом
-      
-      // Убеждаемся, что звезда видна
-      starElement.style.display = 'block';
-      starElement.style.visibility = 'visible';
-      starElement.style.opacity = '1';
-      
-      // Устанавливаем позицию звезды
-      starElement.style.position = 'absolute';
-      starElement.style.top = `${starTop}px`;
-      starElement.style.left = '50%';
-      starElement.style.transform = 'translateX(-50%)';
-      starElement.style.zIndex = '9';
-      starElement.classList.add('star-image-mobile-positioned');
-      
-      // Также пытаемся использовать setProperty с important
-      try {
-        (starElement.style as any).setProperty('top', `${starTop}px`, 'important');
-        (starElement.style as any).setProperty('display', 'block', 'important');
-        (starElement.style as any).setProperty('visibility', 'visible', 'important');
-      } catch (e) {
-        // Игнорируем ошибку, inline стили уже установлены
-      }
-      
-      // Позиционируем dark-overlay-duplicate под звездой
-      const starRect = starElement.getBoundingClientRect();
-      const starBottom = starRect.bottom;
-      
-      // Получаем позицию контейнера dark-overlay-duplicate относительно его offsetParent
-      const darkOverlayOffsetParent = darkOverlayElement.offsetParent as HTMLElement;
-      if (!darkOverlayOffsetParent) return;
-      
-      const darkOverlayOffsetParentRect = darkOverlayOffsetParent.getBoundingClientRect();
-      
-      // Вычисляем позицию dark-overlay-duplicate относительно его offsetParent
-      const darkOverlayTop = starBottom - darkOverlayOffsetParentRect.top + 20; // 20px отступ под звездой
-      
-      // Убеждаемся, что контейнер виден
-      darkOverlayElement.style.display = 'block';
-      darkOverlayElement.style.visibility = 'visible';
-      darkOverlayElement.style.opacity = '1';
-      
-      // Устанавливаем позицию dark-overlay-duplicate
-      darkOverlayElement.style.position = 'absolute';
-      darkOverlayElement.style.top = `${darkOverlayTop}px`;
-      darkOverlayElement.style.left = '0';
-      darkOverlayElement.style.right = '0';
-      darkOverlayElement.style.width = '100%';
-      darkOverlayElement.style.zIndex = '1';
-      darkOverlayElement.classList.add('dark-overlay-duplicate-mobile-positioned');
-      
-      // Также пытаемся использовать setProperty с important
-      try {
-        (darkOverlayElement.style as any).setProperty('top', `${darkOverlayTop}px`, 'important');
-        (darkOverlayElement.style as any).setProperty('display', 'block', 'important');
-        (darkOverlayElement.style as any).setProperty('visibility', 'visible', 'important');
-      } catch (e) {
-        // Игнорируем ошибку, inline стили уже установлены
-      }
-    };
-
-    // Функция для обновления позиции с проверкой готовности элементов
-    const safeUpdatePosition = () => {
-      requestAnimationFrame(() => {
-        if (longQuoteTextRef.current && advantagesTitleRef.current && starImageRef.current && darkOverlayDuplicateRef.current) {
-          const longQuoteRect = longQuoteTextRef.current.getBoundingClientRect();
-          // Проверяем, что элемент виден и имеет размеры
-          if (longQuoteRect.height > 0 && longQuoteRect.width > 0) {
-            updatePosition();
-            
-            // Проверяем, что элементы действительно видимы после обновления позиции
-            const advantagesRect = advantagesTitleRef.current.getBoundingClientRect();
-            const starRect = starImageRef.current.getBoundingClientRect();
-            const darkOverlayRect = darkOverlayDuplicateRef.current.getBoundingClientRect();
-            if (advantagesRect.height === 0 || advantagesRect.width === 0 || starRect.height === 0 || starRect.width === 0 || darkOverlayRect.height === 0 || darkOverlayRect.width === 0) {
-              // Если элементы не видимы, повторяем попытку через небольшую задержку
-              setTimeout(updatePosition, 100);
-            }
-          }
-        }
-      });
-    };
-
-    // Инициализация - убеждаемся, что элементы видимы сразу
+    // Простое позиционирование элементов без сложных вычислений
+    // Используем CSS для позиционирования, а не JavaScript вычисления
+    
     if (advantagesTitleRef.current) {
       advantagesTitleRef.current.style.display = 'block';
       advantagesTitleRef.current.style.visibility = 'visible';
       advantagesTitleRef.current.style.opacity = '1';
     }
+    
     if (starImageRef.current) {
       starImageRef.current.style.display = 'block';
       starImageRef.current.style.visibility = 'visible';
       starImageRef.current.style.opacity = '1';
     }
+    
     if (darkOverlayDuplicateRef.current) {
       darkOverlayDuplicateRef.current.style.display = 'block';
       darkOverlayDuplicateRef.current.style.visibility = 'visible';
       darkOverlayDuplicateRef.current.style.opacity = '1';
     }
 
-    // Обновляем позицию после загрузки изображения
-    const imageElement = longQuoteTextRef.current?.querySelector('img');
-    if (imageElement) {
-      if (imageElement.complete && imageElement.naturalHeight > 0) {
-        // Изображение уже загружено
-        setTimeout(safeUpdatePosition, 100);
-        setTimeout(safeUpdatePosition, 500); // Дополнительная попытка
-      } else {
-        // Ждем загрузки изображения
-        imageElement.addEventListener('load', safeUpdatePosition, { once: true });
-        imageElement.addEventListener('load', () => setTimeout(safeUpdatePosition, 200), { once: true });
+    // ПРИНУДИТЕЛЬНОЕ позиционирование кнопки "Купить билет" и виджета адреса на мобильных
+    const updateButtonPositions = () => {
+      if (buyTicketButtonRef.current) {
+        // Кнопка должна быть ниже текста описания (200px), но над виджетом адреса
+        // Текст описания на 200px, кнопка на 320px (120px отступ для лучшей видимости), виджет на 400px (80px отступ от кнопки)
+        buyTicketButtonRef.current.style.position = 'absolute';
+        buyTicketButtonRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)';
+        buyTicketButtonRef.current.style.left = '50%';
+        buyTicketButtonRef.current.style.right = 'auto';
+        buyTicketButtonRef.current.style.transform = 'translateX(-50%)';
+        buyTicketButtonRef.current.style.zIndex = '10';
+        // Принудительно применяем стили с !important через setProperty для гарантии
+        try {
+          buyTicketButtonRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)', 'important');
+          buyTicketButtonRef.current.style.setProperty('left', '50%', 'important');
+          buyTicketButtonRef.current.style.setProperty('right', 'auto', 'important');
+          buyTicketButtonRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
+          buyTicketButtonRef.current.style.setProperty('position', 'absolute', 'important');
+        } catch (e) {
+          // Если setProperty не поддерживается, используем обычные стили
+        }
       }
-    } else {
-      // Если изображение еще не отрендерено, ждем немного
-      setTimeout(safeUpdatePosition, 300);
-      setTimeout(safeUpdatePosition, 600); // Дополнительная попытка
-      setTimeout(safeUpdatePosition, 1000); // Еще одна попытка
-    }
+      
+      if (venueWidgetRef.current) {
+        // Виджет адреса должен быть ниже кнопки (80px отступ)
+        venueWidgetRef.current.style.position = 'absolute';
+        venueWidgetRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)';
+        venueWidgetRef.current.style.left = '50%';
+        venueWidgetRef.current.style.right = 'auto';
+        venueWidgetRef.current.style.transform = 'translateX(-50%)';
+        venueWidgetRef.current.style.zIndex = '10';
+        // Принудительно применяем стили с !important через setProperty для гарантии
+        try {
+          venueWidgetRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)', 'important');
+          venueWidgetRef.current.style.setProperty('left', '50%', 'important');
+          venueWidgetRef.current.style.setProperty('right', 'auto', 'important');
+          venueWidgetRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
+          venueWidgetRef.current.style.setProperty('position', 'absolute', 'important');
+        } catch (e) {
+          // Если setProperty не поддерживается, используем обычные стили
+        }
+      }
+    };
 
-    // Обновляем позицию при изменении размера окна и скролле
-    window.addEventListener('resize', safeUpdatePosition);
-    window.addEventListener('scroll', safeUpdatePosition, { passive: true });
+    // Применяем стили сразу и после загрузки
+    updateButtonPositions();
+    setTimeout(updateButtonPositions, 100);
+    setTimeout(updateButtonPositions, 300);
+    setTimeout(updateButtonPositions, 500);
     
-    // Также обновляем периодически для надежности
-    const intervalId = setInterval(safeUpdatePosition, 1000);
+    // Также обновляем при изменении размера окна
+    window.addEventListener('resize', updateButtonPositions);
     
     return () => {
-      window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition);
-      clearInterval(intervalId);
-      const imageElement = longQuoteTextRef.current?.querySelector('img');
-      if (imageElement) {
-        imageElement.removeEventListener('load', updatePosition);
-      }
+      window.removeEventListener('resize', updateButtonPositions);
     };
   }, [isMobile]);
 
-  // Позиционирование раздела "Отзывы" сразу после фона в мобильной версии
+  // УПРОЩЕННОЕ позиционирование раздела "Отзывы" для мобильной версии - БЕЗ СЛОЖНЫХ ВЫЧИСЛЕНИЙ
   useEffect(() => {
-    if (!isMobile || !reviewsSectionRef.current || !containerRef.current) return;
+    if (!isMobile || !reviewsSectionRef.current) return;
 
-    const updateReviewsPosition = () => {
-      const reviewsElement = reviewsSectionRef.current;
-      const containerElement = containerRef.current;
-      
-      if (!reviewsElement || !containerElement) return;
-
-      // Вычисляем высоту фона в пикселях
-      // Фон заканчивается на clamp(290vh, 310vh, 330vh) в мобильной версии
-      // Используем среднее значение 310vh для расчета
-      const viewportHeight = window.innerHeight;
-      const backgroundHeightVh = 310; // Среднее значение из clamp(290vh, 310vh, 330vh)
-      const backgroundHeight = (backgroundHeightVh * viewportHeight) / 100; // Высота фона в пикселях
-
-      // Получаем текущую позицию раздела "Отзывы" относительно контейнера
-      const containerRect = containerElement.getBoundingClientRect();
-      const reviewsRect = reviewsElement.getBoundingClientRect();
-      const currentTop = reviewsRect.top - containerRect.top;
-      
-      // Целевая позиция - сразу после фона (максимально плотное прилегание)
-      // Опускаем раздел чуть ниже - уменьшаем отрицательный отступ
-      const targetTop = backgroundHeight - 1100; // Уменьшено с -1200px до -1100px для опускания раздела чуть ниже
-      
-      // Вычисляем отрицательный margin-top для "подтягивания" раздела вверх
-      // Используем очень агрессивный подход - подтягиваем раздел максимально вверх
-      const negativeMargin = currentTop - targetTop;
-
-      // Устанавливаем отрицательный margin-top, чтобы раздел начался сразу после фона
-      reviewsElement.style.position = 'relative';
-      // Всегда применяем отрицательный margin для максимального подтягивания вверх
-      if (negativeMargin > 0) {
-        // Применяем отрицательный margin для максимального подтягивания вверх
-        reviewsElement.style.setProperty('margin-top', `${-negativeMargin}px`, 'important');
-        reviewsElement.style.marginTop = `${-negativeMargin}px`;
-      } else {
-        // Если раздел уже выше целевой позиции, устанавливаем margin-top равным целевой позиции
-        reviewsElement.style.setProperty('margin-top', `${targetTop}px`, 'important');
-        reviewsElement.style.marginTop = `${targetTop}px`;
-      }
-      
-      // Убираем padding-top полностью для максимально плотного прилегания
-      reviewsElement.style.setProperty('padding-top', '0', 'important');
-      reviewsElement.style.paddingTop = '0';
-      reviewsElement.style.zIndex = '20';
-    };
-
-    // Обновляем позицию после загрузки
-    const safeUpdateReviewsPosition = () => {
-      requestAnimationFrame(() => {
-        updateReviewsPosition();
-      });
-    };
-
-    // Обновляем позицию при изменении размера окна и скролле
-    window.addEventListener('resize', safeUpdateReviewsPosition);
-    window.addEventListener('scroll', safeUpdateReviewsPosition, { passive: true });
+    // Простое и стабильное позиционирование без сложных вычислений
+    const reviewsElement = reviewsSectionRef.current;
     
-    // Обновляем позицию после загрузки
-    setTimeout(safeUpdateReviewsPosition, 100);
-    setTimeout(safeUpdateReviewsPosition, 500);
-    setTimeout(safeUpdateReviewsPosition, 1000);
+    // Устанавливаем фиксированный отрицательный margin-top для позиционирования сразу после фона
+    // Фон заканчивается примерно на 310vh, поэтому используем фиксированное значение
+    reviewsElement.style.position = 'relative';
+    reviewsElement.style.marginTop = 'calc(clamp(290vh, 310vh, 330vh) - 100vh)'; // Простое вычисление через CSS
+    reviewsElement.style.paddingTop = '0';
+    reviewsElement.style.zIndex = '20';
+    
+    // Убеждаемся, что элемент виден
+    reviewsElement.style.visibility = 'visible';
+    reviewsElement.style.opacity = '1';
+    reviewsElement.style.display = 'block';
+  }, [isMobile]);
+
+  // ПРИНУДИТЕЛЬНОЕ позиционирование блюра на мобильных - чтобы он был виден в нужном месте
+  useEffect(() => {
+    if (!isMobile || !mobileBlurOverlayRef.current) return;
+
+    const updateBlurPosition = () => {
+      if (mobileBlurOverlayRef.current) {
+        // Позиционируем блюр прямо перед разделом "ОТЗЫВЫ"
+        // Фон заканчивается на clamp(290vh, 310vh, 330vh)
+        // Блюр должен начинаться немного раньше и покрывать область перехода
+        const blurElement = mobileBlurOverlayRef.current;
+        blurElement.style.position = 'absolute';
+        blurElement.style.top = 'calc(clamp(290vh, 310vh, 330vh) - 200px)';
+        blurElement.style.left = '0';
+        blurElement.style.right = '0';
+        blurElement.style.width = '100%';
+        blurElement.style.height = '300px';
+        blurElement.style.zIndex = '12';
+        blurElement.style.display = 'block';
+        blurElement.style.visibility = 'visible';
+        blurElement.style.opacity = '1';
+        blurElement.style.background = 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)';
+        blurElement.style.backdropFilter = 'blur(80px)';
+        blurElement.style.setProperty('-webkit-backdrop-filter', 'blur(80px)');
+        blurElement.style.boxShadow = 'inset 0 0 300px rgba(0, 0, 0, 1)';
+        // Принудительно применяем стили
+        try {
+          blurElement.style.setProperty('top', 'calc(clamp(290vh, 310vh, 330vh) - 200px)', 'important');
+          blurElement.style.setProperty('z-index', '12', 'important');
+          blurElement.style.setProperty('display', 'block', 'important');
+          blurElement.style.setProperty('visibility', 'visible', 'important');
+          blurElement.style.setProperty('opacity', '1', 'important');
+        } catch (e) {
+          // Если setProperty не поддерживается
+        }
+      }
+    };
+
+    updateBlurPosition();
+    setTimeout(updateBlurPosition, 100);
+    setTimeout(updateBlurPosition, 300);
+    setTimeout(updateBlurPosition, 500);
+    
+    window.addEventListener('resize', updateBlurPosition);
     
     return () => {
-      window.removeEventListener('resize', safeUpdateReviewsPosition);
-      window.removeEventListener('scroll', safeUpdateReviewsPosition);
+      window.removeEventListener('resize', updateBlurPosition);
     };
   }, [isMobile]);
 
@@ -881,6 +790,17 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       />
       {/* Рамка - сначала на мобильных, потом на десктопе */}
       <div className={`frame-widget ${isMobile ? 'frame-widget-mobile-first' : ''}`}>
+        {/* Квадратное видео под рамкой */}
+        <video
+          src="/photo/babka.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          controls={false}
+          preload="auto"
+          className="frame-video"
+        />
         <Image 
           src="/photo/ramka.png" 
           alt="Декоративная рамка" 
@@ -953,13 +873,17 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         />
       </div>
       <button 
+        ref={buyTicketButtonRef}
         className="buy-ticket-button"
         onClick={handleBuyTicket}
         disabled={!buyTicketUrl}
       >
         Купить билет
       </button>
-      <div className="venue-widget">
+      <div 
+        ref={venueWidgetRef}
+        className="venue-widget"
+      >
         <svg 
           className="venue-icon" 
           width="24" 
@@ -1166,6 +1090,18 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         </button>
       </div>
 
+      {/* Градиент блюра между фоном section-34839282.png и черным фоном перед разделом актеров - только для ПК */}
+      {!isMobile && (
+        <div 
+          className="actors-blur-gradient-pc"
+          style={{
+            position: 'absolute',
+            pointerEvents: 'none',
+            zIndex: 19
+          }}
+        />
+      )}
+
       {/* Раздел "Актеры" - позиционируется после dark-overlay-duplicate */}
       <div 
         className="actors-section-details" 
@@ -1178,21 +1114,28 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         <ActorsSection />
       </div>
 
-      {/* Черный блюр-слой под раздел "Отзывы" на границе между фоном и черным экраном */}
+      {/* Черный блюр между текстовым блоком и разделом "ОТЗЫВЫ" на мобильных - скрывает стык между фонами */}
       {isMobile && (
         <div 
+          ref={mobileBlurOverlayRef}
+          className="mobile-content-blur-overlay"
           style={{
             position: 'absolute',
-            top: 'clamp(290vh, 310vh, 330vh)',
+            top: 'calc(clamp(290vh, 310vh, 330vh) - 200px)',
             left: 0,
             right: 0,
-            height: '150px',
+            height: '300px',
             width: '100%',
-            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.85) 60%, rgba(0, 0, 0, 1) 100%)',
-            backdropFilter: 'blur(25px)',
-            WebkitBackdropFilter: 'blur(25px)',
-            zIndex: 10, // Ниже раздела отзывы (zIndex: 20), но выше фонов
-            pointerEvents: 'none'
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)',
+            backdropFilter: 'blur(80px)',
+            WebkitBackdropFilter: 'blur(80px)',
+            zIndex: 12,
+            pointerEvents: 'none',
+            boxShadow: 'inset 0 0 300px rgba(0, 0, 0, 1)',
+            mixBlendMode: 'normal',
+            display: 'block',
+            visibility: 'visible',
+            opacity: '1'
           }}
         />
       )}
@@ -1206,6 +1149,24 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         paddingTop: isMobile ? '1.5rem' : 'clamp(3rem, 6vh, 5rem)', // Уменьшен padding-top на мобильной версии
         paddingBottom: 'clamp(2rem, 4vh, 3rem)'
       }}>
+        {/* Блюр перед разделом "ОТЗЫВЫ" на мобильных - скрывает стык */}
+        {isMobile && (
+          <div 
+            style={{
+              position: 'absolute',
+              top: '-200px',
+              left: 0,
+              right: 0,
+              height: '200px',
+              width: '100%',
+              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0.8) 60%, rgba(0, 0, 0, 0.95) 85%, rgba(0, 0, 0, 1) 100%)',
+              backdropFilter: 'blur(100px)',
+              WebkitBackdropFilter: 'blur(100px)',
+              zIndex: -1,
+              pointerEvents: 'none'
+            }}
+          />
+        )}
         <p 
           className="text-2xl md:text-3xl lg:text-4xl uppercase"
           style={{

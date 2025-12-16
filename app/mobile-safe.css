@@ -74,10 +74,18 @@
 @media (max-width: 768px), (pointer: coarse) {
   /* Only disable on transition/blur divs, not everywhere */
   .transition-gradient-blur,
-  .section3-blur-gradient,
-  [class*="blur"] {
+  [class*="blur"]:not(.mobile-section-transition):not(.section3-blur-gradient):not(.desktop-journey-blur-transition) {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Разрешаем backdrop-filter для улучшенного блюр-градиента между section-4-mobile и section-3-mobile */
+  .mobile-section-transition,
+  .section3-blur-gradient,
+  .desktop-journey-blur-transition,
+  .desktop-pc-blur-transition {
+    backdrop-filter: blur(50px) !important;
+    -webkit-backdrop-filter: blur(50px) !important;
   }
 }
 
@@ -409,11 +417,9 @@
     background-position: center center !important;
   }
   
-  /* vput3.png и vput4.png - сдвигаем вправо */
+  /* vput3.png - сдвигаем вправо */
   .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image,
-  .mobile-journey-section .mobile-scene-card:nth-child(4) .mobile-scene-image,
-  .mobile-scene-card:nth-child(3) .mobile-scene-image,
-  .mobile-scene-card:nth-child(4) .mobile-scene-image {
+  .mobile-scene-card:nth-child(3) .mobile-scene-image {
     height: clamp(200px, 35vh, 300px) !important;
     width: auto !important;
     max-width: 100% !important;
@@ -421,6 +427,22 @@
     margin-left: auto !important;
     margin-right: auto !important;
     transform: translateX(clamp(4rem, 9vw, 6rem)) !important;
+    background-size: contain !important;
+    background-position: center center !important;
+  }
+  
+  /* vput4.png с видео - используем те же размеры, что и vput.png с видео (idx === 0) */
+  .mobile-journey-section .mobile-scene-card:nth-child(4) .mobile-scene-image,
+  .mobile-scene-card:nth-child(4) .mobile-scene-image {
+    height: 0 !important;
+    padding-top: clamp(22%, 26%, 30%) !important;
+    min-width: clamp(200px, 60vw, 300px) !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    transform: none !important;
+    overflow: hidden !important;
     background-size: contain !important;
     background-position: center center !important;
   }

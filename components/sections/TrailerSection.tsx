@@ -17,10 +17,11 @@ interface TrailerSectionProps {
   reviewsSectionRef?: React.RefObject<HTMLDivElement>;
   contactsSectionRef?: React.RefObject<HTMLDivElement>;
   onViewSchedule?: () => void;
+  onGalleryClick?: () => void;
   ssrIsIOS?: boolean;
 }
 
-export default function TrailerSection({ gallerySectionRef, teamSectionRef, reviewsSectionRef, contactsSectionRef, onViewSchedule, ssrIsIOS = false }: TrailerSectionProps) {
+export default function TrailerSection({ gallerySectionRef, teamSectionRef, reviewsSectionRef, contactsSectionRef, onViewSchedule, onGalleryClick, ssrIsIOS = false }: TrailerSectionProps) {
   const router = useRouter();
   const [selectedScheduleUrl, setSelectedScheduleUrl] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -257,7 +258,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         </div>
 
         {/* Раздел "ГАЛЕРЕЯ" */}
-        <div ref={gallerySectionRef} className="text-center mb-8 md:mb-12 gallery-section-mobile">
+        <div ref={gallerySectionRef} data-gallery-section className="text-center mb-8 md:mb-12 gallery-section-mobile">
           <p
             className="uppercase mb-4 md:mb-6"
             style={{
@@ -289,10 +290,18 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
           </p>
         </div>
 
-        {/* Кнопка "ФОТО СО СПЕКТАКЛЯ" */}
-        <div className="flex justify-center mb-8 md:mb-12 gallery-button-mobile" style={{ marginTop: 'clamp(6rem, 10vh, 10rem)' }}>
+        {/* Кнопка "ФОТО СО СПЕКТАКЛЯ" - скрыта на мобильных */}
+        <div className="hidden md:flex justify-center mb-8 md:mb-12 gallery-button-mobile" style={{ marginTop: 'clamp(6rem, 10vh, 10rem)' }}>
           <button
-            onClick={() => router.push('/gallery')}
+            onClick={() => {
+              // На ПК версии открываем GalleryView через callback
+              if (onGalleryClick && !isMobile) {
+                onGalleryClick();
+              } else if (isMobile) {
+                // На мобильных - переход на страницу (хотя кнопка скрыта на мобильных)
+                router.push('/gallery');
+              }
+            }}
             className="rounded-lg border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             style={{
               fontFamily: "'Playfair Display SC', serif",
@@ -319,7 +328,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             width: '100vw', 
             marginLeft: 'calc(50% - 50vw)', 
             marginRight: 'calc(50% - 50vw)', 
-            marginTop: '-4rem',
+            marginTop: isMobile ? 'clamp(1rem, 2vh, 2rem)' : '-4rem',
             perspective: isMobile ? '1000px' : 'none',
             perspectiveOrigin: isMobile ? 'center center' : 'center',
             transformStyle: isMobile ? 'preserve-3d' : 'flat',
@@ -344,6 +353,9 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               transformStyle: isMobile ? 'preserve-3d' : 'flat',
               position: isMobile ? 'relative' : 'relative',
               zIndex: isMobile ? 10 : 'auto',
+              opacity: isMobile ? 1 : 1,
+              filter: isMobile ? 'brightness(1)' : 'none',
+              WebkitFilter: isMobile ? 'brightness(1)' : 'none',
             }}
             unoptimized
           />
@@ -356,7 +368,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             width: '100vw', 
             marginLeft: 'calc(50% - 50vw)', 
             marginRight: 'calc(50% - 50vw)', 
-            marginTop: '-12rem',
+            marginTop: isMobile ? 'clamp(-2rem, -3vh, -1rem)' : '-12rem',
             perspective: isMobile ? '1000px' : 'none',
             perspectiveOrigin: isMobile ? 'center center' : 'center',
             transformStyle: isMobile ? 'preserve-3d' : 'flat',
@@ -381,6 +393,9 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               transformStyle: isMobile ? 'preserve-3d' : 'flat',
               position: isMobile ? 'relative' : 'relative',
               zIndex: isMobile ? 10 : 'auto',
+              opacity: isMobile ? 1 : 1,
+              filter: isMobile ? 'brightness(1)' : 'none',
+              WebkitFilter: isMobile ? 'brightness(1)' : 'none',
             }}
             unoptimized
           />
@@ -1167,6 +1182,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   top: '50%',
                   transform: 'translateY(-50%)',
                   position: 'absolute',
+                  left: isMobile ? '-2.5rem' : undefined,
+                  right: isMobile ? undefined : undefined,
                   zIndex: 30,
                   width: 'clamp(2rem, 3vw, 3rem)',
                   height: 'clamp(2rem, 3vw, 3rem)'
@@ -1179,6 +1196,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   top: '50%',
                   transform: 'translateY(-50%)',
                   position: 'absolute',
+                  right: isMobile ? '-2.5rem' : undefined,
+                  left: isMobile ? undefined : undefined,
                   zIndex: 30,
                   width: 'clamp(2rem, 3vw, 3rem)',
                   height: 'clamp(2rem, 3vw, 3rem)'
@@ -1421,9 +1440,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
           <div
             className="relative bg-white rounded-lg overflow-hidden"
             style={{
-              width: '90vw',
+              width: isMobile ? '75vw' : '90vw',
               height: '85vh',
-              maxWidth: '1200px',
+              maxWidth: isMobile ? '350px' : '1200px',
+              margin: '0 auto',
               maxHeight: '800px',
               boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
               overflowY: 'auto',
