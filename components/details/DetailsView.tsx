@@ -794,7 +794,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     // Фон заканчивается примерно на 310vh, поэтому используем фиксированное значение
     reviewsElement.style.position = 'relative';
     reviewsElement.style.marginTop =
-      'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - calc(var(--vvh, 1vh) * 100))'; // stable on iOS
+      'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - calc(var(--vvh, 1vh) * 100) + clamp(2rem, 4vh, 3.5rem))'; // slightly lower on mobile, stable on iOS
     reviewsElement.style.paddingTop = '0';
     reviewsElement.style.zIndex = '20';
     
@@ -1303,6 +1303,10 @@ const DetailsView: React.FC<DetailsViewProps> = ({
             slidesPerGroup={1}
             centeredSlides={false}
             grabCursor={true}
+            // MOBILE: do not block vertical page scrolling (no "inner scroll" feeling)
+            touchStartPreventDefault={!isMobile}
+            touchMoveStopPropagation={false}
+            passiveListeners={true}
             navigation={{
               nextEl: '.swiper-button-next-reviews-details',
               prevEl: '.swiper-button-prev-reviews-details',

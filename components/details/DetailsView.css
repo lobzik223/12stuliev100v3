@@ -858,6 +858,9 @@ span.date-time-number {
     max-width: 90%;
     text-align: center !important;
     width: 90%;
+    /* MOBILE: this is a visual overlay, don't let it intercept scroll gestures */
+    pointer-events: none !important;
+    touch-action: pan-y !important;
   }
   
   .description-text {
@@ -869,6 +872,9 @@ span.date-time-number {
     width: 90%;
     line-height: 1.3;
     text-align: center !important;
+    /* MOBILE: this is a visual overlay, don't let it intercept scroll gestures */
+    pointer-events: none !important;
+    touch-action: pan-y !important;
   }
   
   .buy-ticket-button {

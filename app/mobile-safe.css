@@ -1403,7 +1403,7 @@
   .reviews-section-details {
     background-color: #000000 !important;
     /* Увеличиваем padding-bottom для визуального соединения с секцией ниже */
-    padding-bottom: clamp(3rem, 6vh, 4.5rem) !important;
+    padding-bottom: clamp(4rem, 8vh, 6rem) !important;
     /* Убираем margin-bottom чтобы избежать коллапса отступов */
     margin-bottom: 0 !important;
     /* Убеждаемся что фон распространяется на всю высоту секции */
@@ -1415,12 +1415,12 @@
   .reviews-section-details::after {
     content: '';
     position: absolute;
-    bottom: calc(-1 * clamp(3rem, 6vh, 4.5rem));
+    bottom: calc(-1 * clamp(4rem, 8vh, 6rem));
     left: 0;
     right: 0;
     /* Высота достаточна для покрытия возможных разрывов на реальных устройствах */
     /* Используем большую высоту для гарантированного покрытия viewport height различий */
-    height: clamp(3rem, 6vh, 4.5rem);
+    height: clamp(4rem, 8vh, 6rem);
     background-color: #000000 !important;
     z-index: 19; /* Ниже контента reviews (z-index: 20), но выше других элементов */
     pointer-events: none;
