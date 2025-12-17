@@ -822,9 +822,10 @@ span.date-time-number {
     background-attachment: scroll;
     /* Use --vvh to avoid iOS address-bar vh jumps */
     --details-bg-h: clamp(
-      calc(var(--vvh, 1vh) * 290),
-      calc(var(--vvh, 1vh) * 310),
-      calc(var(--vvh, 1vh) * 330)
+      /* Mobile: make section-34839282.png shorter (Y only) */
+      calc(var(--vvh, 1vh) * 240),
+      calc(var(--vvh, 1vh) * 260),
+      calc(var(--vvh, 1vh) * 280)
     );
 
     /* Replace expensive mask-image (can cause "blank" on reverse scroll in iOS)
