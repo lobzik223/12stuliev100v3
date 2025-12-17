@@ -106,54 +106,77 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       // На мобильных отключаем этот scroll-handler полностью и оставляем нативный скролл.
       if (isProbablyMobile()) return;
 
-      const handleScroll = () => {
-      if (!navPanelRef.current) return;
-        
-      const navPanelRect = navPanelRef.current.getBoundingClientRect();
-      const finalTextRect = finalTextRef.current?.getBoundingClientRect();
-        
-      // Когда навигационная панель из EventsSection достигает верха экрана - "подхватываем" её
-      if (navPanelRect.top <= 100) {
-        // Проверяем, прошли ли мы текст "ФИНАЛ ОХОТЫ"
-        const vh = window.visualViewport?.height ?? window.innerHeight;
-        if (finalTextRect && finalTextRect.top < vh * 0.3) {
-          // Прошли текст "ФИНАЛ ОХОТЫ" - возвращаем главную шапку
-          setIsMainHeaderVisible(true);
-        } else {
-          // Еще не прошли текст "ФИНАЛ ОХОТЫ" - показываем вторичную шапку (подхватываем навигационную панель)
-          setIsMainHeaderVisible(false);
-        }
-        } else {
-        // Навигационная панель еще не достигла верха - показываем главную шапку
-          setIsMainHeaderVisible(true);
-        }
-
-      // Определяем активную категорию на основе позиции объектов
-      // Объект считается активным, когда его верхняя часть достигает верхней трети экрана
-      const activationThreshold = (window.visualViewport?.height ?? window.innerHeight) * 0.3;
-      const refs = [
-        { ref: officeRef, index: 0 },
-        { ref: psychushkaRef, index: 1 },
-        { ref: kisaRef, index: 2 },
-        { ref: yaryginaRef, index: 3 }
-      ];
-
-      // Проверяем объекты сверху вниз, находим последний который прошел порог активации
-      let activeIndex = 0;
+      // PERFORMANCE: Используем requestAnimationFrame и debouncing для предотвращения layout thrashing
+      let rafId: number | null = null;
+      let lastScrollTime = 0;
+      const SCROLL_THROTTLE_MS = 16; // ~60fps
       
-      for (let i = refs.length - 1; i >= 0; i--) {
-        const { ref, index } = refs[i];
-        if (ref.current) {
-          const rect = ref.current.getBoundingClientRect();
-          // Если верх объекта достиг порога активации - это активный объект
-          if (rect.top <= activationThreshold && rect.bottom > 0) {
-            activeIndex = index;
-            break;
-          }
+      const handleScroll = () => {
+        // PERFORMANCE: Throttle scroll events для предотвращения избыточных вычислений
+        const now = Date.now();
+        if (now - lastScrollTime < SCROLL_THROTTLE_MS) {
+          return;
         }
-      }
+        lastScrollTime = now;
+        
+        // PERFORMANCE: Используем requestAnimationFrame для синхронизации с браузером
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+        }
+        
+        rafId = requestAnimationFrame(() => {
+          if (!navPanelRef.current) {
+            rafId = null;
+            return;
+          }
+            
+          const navPanelRect = navPanelRef.current.getBoundingClientRect();
+          const finalTextRect = finalTextRef.current?.getBoundingClientRect();
+            
+          // Когда навигационная панель из EventsSection достигает верха экрана - "подхватываем" её
+          if (navPanelRect.top <= 100) {
+            // Проверяем, прошли ли мы текст "ФИНАЛ ОХОТЫ"
+            const vh = window.visualViewport?.height ?? window.innerHeight;
+            if (finalTextRect && finalTextRect.top < vh * 0.3) {
+              // Прошли текст "ФИНАЛ ОХОТЫ" - возвращаем главную шапку
+              setIsMainHeaderVisible(true);
+            } else {
+              // Еще не прошли текст "ФИНАЛ ОХОТЫ" - показываем вторичную шапку (подхватываем навигационную панель)
+              setIsMainHeaderVisible(false);
+            }
+          } else {
+            // Навигационная панель еще не достигла верха - показываем главную шапку
+            setIsMainHeaderVisible(true);
+          }
 
-      setActiveCategory(activeIndex);
+          // Определяем активную категорию на основе позиции объектов
+          // Объект считается активным, когда его верхняя часть достигает верхней трети экрана
+          const activationThreshold = (window.visualViewport?.height ?? window.innerHeight) * 0.3;
+          const refs = [
+            { ref: officeRef, index: 0 },
+            { ref: psychushkaRef, index: 1 },
+            { ref: kisaRef, index: 2 },
+            { ref: yaryginaRef, index: 3 }
+          ];
+
+          // Проверяем объекты сверху вниз, находим последний который прошел порог активации
+          let activeIndex = 0;
+          
+          for (let i = refs.length - 1; i >= 0; i--) {
+            const { ref, index } = refs[i];
+            if (ref.current) {
+              const rect = ref.current.getBoundingClientRect();
+              // Если верх объекта достиг порога активации - это активный объект
+              if (rect.top <= activationThreshold && rect.bottom > 0) {
+                activeIndex = index;
+                break;
+              }
+            }
+          }
+
+          setActiveCategory(activeIndex);
+          rafId = null;
+        });
       };
 
       // MOBILE SCROLL FIX: На мобильных НЕ добавляем scroll/touchmove listeners - используем только нативный скролл
@@ -199,6 +222,11 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           window.removeEventListener('scroll', handleScroll);
           // touchmove listener не добавлялся, поэтому не удаляем
           window.removeEventListener('app-ready', handleAppReady);
+          // PERFORMANCE: Отменяем pending requestAnimationFrame
+          if (rafId !== null) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+          }
         }
       };
   }, []);

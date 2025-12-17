@@ -293,19 +293,28 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
     };
 
     // Ждем полной загрузки DOM
+    // MOBILE SCROLL FIX: На мобильных НЕ добавляем touchmove listeners - они мешают нативному скроллу
     const initScroll = () => {
+      const isMobile = isProbablyMobile();
+      
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => {
             window.addEventListener('scroll', handleScroll, { passive: true });
-            window.addEventListener('touchmove', handleScroll, { passive: true });
+            // MOBILE SCROLL FIX: touchmove listener мешает нативному скроллу на мобильных
+            if (!isMobile) {
+              window.addEventListener('touchmove', handleScroll, { passive: true });
+            }
             handleScroll();
           }, 200);
         });
       } else {
         setTimeout(() => {
           window.addEventListener('scroll', handleScroll, { passive: true });
-          window.addEventListener('touchmove', handleScroll, { passive: true });
+          // MOBILE SCROLL FIX: touchmove listener мешает нативному скроллу на мобильных
+          if (!isMobile) {
+            window.addEventListener('touchmove', handleScroll, { passive: true });
+          }
           handleScroll();
         }, 200);
       }
@@ -316,7 +325,11 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('scroll', handleScroll);
-        window.removeEventListener('touchmove', handleScroll);
+        // MOBILE SCROLL FIX: touchmove listener не добавлялся на мобильных, поэтому не удаляем
+        const isMobile = isProbablyMobile();
+        if (!isMobile) {
+          window.removeEventListener('touchmove', handleScroll);
+        }
       }
     };
   }, [navPanelRef]);

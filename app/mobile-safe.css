@@ -901,6 +901,68 @@
   /* НЕ используем: content-visibility, contain, transform: translateZ(0), will-change */
   /* Используем только нативный скролл браузера */
   
+  /* PERFORMANCE: Оптимизация для предотвращения layout thrashing при скролле */
+  /* Используем только безопасные оптимизации которые не влияют на layout */
+  * {
+    /* Отключаем will-change для всех элементов - это может вызывать проблемы */
+    will-change: auto !important;
+  }
+  
+  /* PERFORMANCE: Оптимизация для изображений - предотвращаем рефлоу при загрузке */
+  img {
+    /* Используем object-fit для предотвращения layout shift */
+    object-fit: contain;
+    /* Отключаем GPU ускорение для статических изображений */
+    transform: none !important;
+    -webkit-transform: none !important;
+  }
+  
+  /* PERFORMANCE: Оптимизация для фоновых изображений */
+  [style*="backgroundImage"],
+  [style*="background-image"] {
+    /* Используем scroll attachment для плавного скролла */
+    background-attachment: scroll !important;
+    /* Отключаем GPU ускорение которое может вызывать проблемы */
+    transform: none !important;
+    -webkit-transform: none !important;
+  }
+  
+  /* MOBILE SCROLL FIX: Исправление проблем с 100vh на мобильных браузерах */
+  /* На мобильных браузерах 100vh может быть проблематичным из-за адресной строки */
+  /* Используем CSS переменную для безопасного viewport height */
+  :root {
+    --mobile-vh: 100vh;
+  }
+  
+  @supports (height: 100dvh) {
+    :root {
+      --mobile-vh: 100dvh;
+    }
+  }
+  
+  /* Заменяем проблемные 100vh только в модальных окнах и критичных местах */
+  .employee-tickets-modal-bg,
+  [class*="modal"][style*="100vh"] {
+    height: var(--mobile-vh) !important;
+    min-height: var(--mobile-vh) !important;
+    max-height: var(--mobile-vh) !important;
+  }
+  
+  /* PERFORMANCE: Оптимизация для предотвращения layout thrashing при скролле */
+  /* Отключаем сложные вычисления во время скролла */
+  section,
+  div[class*="section"],
+  main > section {
+    /* Убеждаемся что секции не вызывают рефлоу при скролле */
+    contain: layout style !important;
+  }
+  
+  /* PERFORMANCE: Оптимизация для изображений - предотвращаем layout shift */
+  img[loading="lazy"] {
+    /* Используем aspect-ratio для предотвращения layout shift */
+    aspect-ratio: attr(width) / attr(height);
+  }
+  
   /* Убеждаемся что все секции не блокируют скролл */
   section {
     overflow: visible !important;
@@ -975,13 +1037,13 @@
     /* Только для элементов которые должны быть кликабельными */
   }
   
-  /* Слегка увеличиваем размер шрифта для текстов "ТЕАТРАЛЬНОЕ ПУТЕШЕСТВИЕ ИЛЬФА И ПЕТРОВА" и "СЛЕДУЙ ЗА БЕНДЕРОМ!" на мобильных */
+  /* Увеличиваем размер шрифта примерно в 3 раза для текстов "ТЕАТРАЛЬНОЕ ПУТЕШЕСТВИЕ ИЛЬФА И ПЕТРОВА" и "СЛЕДУЙ ЗА БЕНДЕРОМ!" на мобильных */
   .hero-text-subtitle {
-    font-size: clamp(0.4rem, 1.35vw, 0.65rem) !important;
+    font-size: clamp(1.2rem, 4.05vw, 1.95rem) !important;
   }
   
   .hero-text-cta {
-    font-size: clamp(0.37rem, 1.25vw, 0.6rem) !important;
+    font-size: clamp(1.11rem, 3.75vw, 1.8rem) !important;
   }
   
   /* Слегка увеличиваем размер логотипа на мобильных */
