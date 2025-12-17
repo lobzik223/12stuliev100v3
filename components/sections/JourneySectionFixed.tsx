@@ -92,8 +92,81 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     };
   }, [isClient]);
 
+  // CRITICAL FIX: Ensure videos are always visible on mobile, regardless of observer state
+  useEffect(() => {
+    if (!isClient || !isMobileDevice) return;
+    
+    // Ensure all videos are visible immediately on mount and load first frame
+    const ensureVideosVisible = () => {
+      const videos = [
+        mobileVideoRef.current,
+        mobilePsihuskaVideoRef.current,
+        mobileKvartiraVideoRef.current,
+        mobileBabkaVideoRef.current,
+      ].filter(Boolean) as HTMLVideoElement[];
+      
+      videos.forEach(video => {
+        if (video) {
+          // CRITICAL: Force visibility
+          video.style.display = 'block';
+          video.style.visibility = 'visible';
+          video.style.opacity = '1';
+          video.style.backgroundColor = '#000';
+          
+          // CRITICAL: Load first frame so video is visible even when paused
+          // This ensures videos show their first frame immediately
+          if (video.readyState === 0) {
+            video.load();
+          }
+          
+          // Force video to show first frame by seeking to 0
+          if (video.readyState >= 2) {
+            video.currentTime = 0;
+          }
+        }
+      });
+    };
+    
+    // Run immediately and after delays to ensure visibility
+    ensureVideosVisible();
+    const timeoutId1 = setTimeout(ensureVideosVisible, 100);
+    const timeoutId2 = setTimeout(ensureVideosVisible, 500);
+    
+    // Also listen for video loadedmetadata events
+    const videos = [
+      mobileVideoRef.current,
+      mobilePsihuskaVideoRef.current,
+      mobileKvartiraVideoRef.current,
+      mobileBabkaVideoRef.current,
+    ].filter(Boolean) as HTMLVideoElement[];
+    
+    const handleLoadedMetadata = (e: Event) => {
+      const video = e.target as HTMLVideoElement;
+      video.style.display = 'block';
+      video.style.visibility = 'visible';
+      video.style.opacity = '1';
+      video.currentTime = 0; // Show first frame
+    };
+    
+    videos.forEach(video => {
+      if (video) {
+        video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      }
+    });
+    
+    return () => {
+      clearTimeout(timeoutId1);
+      clearTimeout(timeoutId2);
+      videos.forEach(video => {
+        if (video) {
+          video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+        }
+      });
+    };
+  }, [isClient, isMobileDevice]);
+
   // CRITICAL PERFORMANCE FIX: Optimized IntersectionObserver for mobile videos
-  // Consolidated observer with debouncing to prevent scroll freeze
+  // Immediate pause when scrolled away to prevent scroll freeze
   useEffect(() => {
     if (!isClient || !isMobileDevice) return;
     
@@ -106,59 +179,111 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
     if (videos.length === 0) return;
 
-    // Debounce play/pause to prevent performance issues
-    let playTimeout: NodeJS.Timeout | null = null;
-    let pauseTimeout: NodeJS.Timeout | null = null;
-    const DEBOUNCE_MS = 150;
-
+    // CRITICAL: Pause immediately when scrolled away, but play immediately when scrolled into view
     const handlePlay = (video: HTMLVideoElement) => {
-      if (playTimeout) clearTimeout(playTimeout);
-      playTimeout = setTimeout(() => {
-        video.play().catch(() => {
-          // Silently fail - autoplay may be blocked
+      // Play immediately when video comes into view - no debouncing
+      // This ensures videos start playing as soon as user scrolls to them
+      if (video.paused) {
+        video.play().catch((err) => {
+          // Silently fail - autoplay may be blocked, but don't log errors
+          console.log('Video autoplay prevented:', err);
         });
-      }, DEBOUNCE_MS);
+      }
     };
 
     const handlePause = (video: HTMLVideoElement) => {
-      if (pauseTimeout) clearTimeout(pauseTimeout);
-      pauseTimeout = setTimeout(() => {
+      // CRITICAL: Pause immediately - no debouncing
+      // This prevents videos from continuing to play when scrolled away, which causes lag
+      if (!video.paused) {
         video.pause();
-      }, DEBOUNCE_MS);
+        // Don't reset currentTime - let video continue from where it was when scrolled back
+        // video.currentTime = 0;
+      }
     };
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          const video = entry.target as HTMLVideoElement;
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
-            handlePlay(video);
-          } else {
-            handlePause(video);
-          }
+        // Use requestAnimationFrame to batch updates and prevent blocking scroll
+        requestAnimationFrame(() => {
+          entries.forEach((entry) => {
+            const video = entry.target as HTMLVideoElement;
+            
+            // CRITICAL: Play when video is at least 30% visible (lower threshold for better UX)
+            // This ensures videos start playing as soon as user scrolls them into view
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
+              handlePlay(video);
+            } else {
+              // Pause when video is less than 30% visible or out of view
+              handlePause(video);
+            }
+          });
         });
       },
       {
-        threshold: [0, 0.3, 0.5, 1],
-        rootMargin: '50px', // Start loading slightly before visible
+        // Use multiple thresholds to catch when video enters/exits viewport
+        threshold: [0, 0.3, 0.5, 0.7, 1.0],
+        // Small rootMargin to start playing slightly before fully visible
+        rootMargin: '20px',
       }
     );
 
+    // Store event handlers for proper cleanup
+    const videoHandlers = new Map<HTMLVideoElement, () => void>();
+    
     videos.forEach(video => {
+      // CRITICAL: Ensure videos are always visible, regardless of observer state
+      video.style.display = 'block';
+      video.style.visibility = 'visible';
+      video.style.opacity = '1';
       // Ensure videos are muted and have playsInline
       video.muted = true;
       video.setAttribute('playsinline', 'true');
       video.setAttribute('webkit-playsinline', 'true');
       video.controls = false;
-      // Remove autoPlay - let IntersectionObserver control it
+      // CRITICAL: Use preload="metadata" to show first frame, but don't auto-play
+      // This ensures videos are visible even when paused
+      video.preload = 'metadata';
+      // Force load first frame
+      if (video.readyState === 0) {
+        video.load();
+      }
       video.removeAttribute('autoplay');
+      
+      // CRITICAL: Add event listeners to ensure video plays when ready
+      const handleCanPlay = () => {
+        // Video is ready to play - check if it should be playing
+        const rect = video.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+        const isEnoughVisible = visibleHeight / window.innerHeight >= 0.3;
+        
+        if (isVisible && isEnoughVisible && video.paused) {
+          video.play().catch(() => {
+            // Autoplay may be blocked, that's okay
+          });
+        }
+      };
+      
+      // Store handler for cleanup
+      videoHandlers.set(video, handleCanPlay);
+      
+      video.addEventListener('loadedmetadata', handleCanPlay);
+      video.addEventListener('canplay', handleCanPlay);
+      
       observer.observe(video);
     });
 
     return () => {
-      if (playTimeout) clearTimeout(playTimeout);
-      if (pauseTimeout) clearTimeout(pauseTimeout);
       observer.disconnect();
+      // Ensure all videos are paused on cleanup and remove event listeners
+      videos.forEach(video => {
+        video.pause();
+        const handler = videoHandlers.get(video);
+        if (handler) {
+          video.removeEventListener('loadedmetadata', handler);
+          video.removeEventListener('canplay', handler);
+        }
+      });
     };
   }, [isClient, isMobileDevice]);
 
@@ -427,7 +552,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         outline: 'none',
                         display: 'block',
                         visibility: 'visible',
-                        opacity: 1
+                        opacity: 1,
+                        backgroundColor: '#000'
                       }}
                     />
                     {/* Рамка поверх видео */}
@@ -489,7 +615,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         outline: 'none',
                         display: 'block',
                         visibility: 'visible',
-                        opacity: 1
+                        opacity: 1,
+                        backgroundColor: '#000'
                       }}
                     />
                     {/* Рамка поверх видео */}
@@ -551,7 +678,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         outline: 'none',
                         display: 'block',
                         visibility: 'visible',
-                        opacity: 1
+                        opacity: 1,
+                        backgroundColor: '#000'
                       }}
                     />
                     {/* Рамка поверх видео */}
@@ -610,7 +738,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         outline: 'none',
                         display: 'block',
                         visibility: 'visible',
-                        opacity: 1
+                        opacity: 1,
+                        backgroundColor: '#000'
                       }}
                     />
                     {/* Рамка поверх видео */}

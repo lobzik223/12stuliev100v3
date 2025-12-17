@@ -105,6 +105,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       // (адресная строка), что ломает любые \"секционные\" расчёты на базе innerHeight/getBoundingClientRect.
       // На мобильных отключаем этот scroll-handler полностью и оставляем нативный скролл.
       // CRITICAL: Early return - NO scroll listeners on mobile to prevent freeze
+      // CRITICAL: NO state updates during scroll on mobile - they cause re-renders and scroll lag
       if (isProbablyMobile()) {
         // Ensure body/html are never locked on mobile
         if (typeof document !== 'undefined') {
@@ -118,6 +119,8 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           document.documentElement.style.height = '';
           document.documentElement.style.maxHeight = '';
         }
+        // CRITICAL: On mobile, don't update state during scroll to prevent re-render storms
+        // Keep default values (isMainHeaderVisible=true, activeCategory=0) and don't change them
         return;
       }
 
@@ -287,14 +290,15 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
         ) : (
           <>
             {/* CRITICAL PERFORMANCE FIX: Optimized loading strategy for mobile */}
-            {/* Preload section-4 (Journey section) as it appears early */}
+            {/* Preload section-4 (Journey section) as it appears early - CRITICAL for smooth scroll */}
             <img src="/backgrounds/sections/mobile/section-4-mobile.png" alt="" loading="eager" fetchPriority="high" />
             {/* Preload plitkanovosti (Events cards) as it's above the fold */}
             <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="eager" fetchPriority="high" />
+            {/* Preload first Journey scene image (vput.png) - appears early in Journey section */}
+            <img src="/backgrounds/sections/vput.png?v=2.0" alt="" loading="eager" fetchPriority="high" />
             {/* Lazy load section-3 (appears later, after Journey) */}
             <img src="/backgrounds/sections/mobile/section-3-mobile.png" alt="" loading="lazy" />
-            {/* Lazy load Journey section images (vput series) - they appear in Journey section */}
-            <img src="/backgrounds/sections/vput.png?v=2.0" alt="" loading="lazy" />
+            {/* Lazy load remaining Journey section images - load as user approaches */}
             <img src="/backgrounds/sections/vput2.png?v=2.0" alt="" loading="lazy" />
             <img src="/backgrounds/sections/vput3.png?v=2.0" alt="" loading="lazy" />
             <img src="/backgrounds/sections/vput4.png?v=2.0" alt="" loading="lazy" />

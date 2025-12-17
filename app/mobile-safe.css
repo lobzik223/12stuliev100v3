@@ -601,6 +601,53 @@
     overflow: visible !important;
   }
   
+  /* CRITICAL FIX: Ensure videos inside mobile-scene-image are always visible */
+  .mobile-scene-image video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    /* Ensure video is not clipped by parent */
+    z-index: 1 !important;
+    /* Ensure video container doesn't clip it */
+    overflow: visible !important;
+  }
+  
+  /* CRITICAL FIX: Ensure video containers don't clip videos */
+  .mobile-scene-image {
+    overflow: hidden !important; /* Keep hidden for proper video frame clipping */
+    position: relative !important;
+  }
+  
+  /* CRITICAL FIX: Ensure all 4 Journey videos are visible */
+  .mobile-journey-section .mobile-scene-card:nth-child(1) video,
+  .mobile-journey-section .mobile-scene-card:nth-child(2) video,
+  .mobile-journey-section .mobile-scene-card:nth-child(3) video,
+  .mobile-journey-section .mobile-scene-card:nth-child(4) video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    z-index: 1 !important;
+    /* Ensure videos have background and are visible even before loading */
+    background-color: #000 !important;
+    /* Force video to show first frame */
+    object-fit: cover !important;
+  }
+  
+  /* CRITICAL FIX: Ensure video elements are not hidden by any means */
+  .mobile-journey-section video[src*="bimbom.mp4"],
+  .mobile-journey-section video[src*="psihuska.mp4"],
+  .mobile-journey-section video[src*="kvartira.mp4"],
+  .mobile-journey-section video[src*="babka.mp4"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    z-index: 1 !important;
+    background-color: #000 !important;
+  }
+  
   /* КРИТИЧНО: Для первой сцены убираем ВСЕ ограничения ширины - МАКСИМАЛЬНАЯ СПЕЦИФИЧНОСТЬ */
   /* Это правило должно переопределить ВСЕ предыдущие ограничения */
   .mobile-journey-section .mobile-scene-card:first-child > div:first-child .mobile-scene-image,
@@ -719,9 +766,16 @@
     animation: none !important;
     -webkit-animation: none !important;
     /* Фиксируем высоту элемента на основе initial viewport, чтобы cover не пересчитывался */
-    min-height: 100vh !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
+    /* CRITICAL: Use 100dvh/100svh instead of 100vh to fix iOS Safari address bar issues */
+    min-height: 100dvh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    /* Fallback for browsers that don't support dvh */
+    @supports not (height: 100dvh) {
+      min-height: -webkit-fill-available !important;
+      height: -webkit-fill-available !important;
+      max-height: -webkit-fill-available !important;
+    }
     /* Фиксируем background-size - используем cover, но зафиксируем через JS */
     background-size: cover !important;
     /* Фиксируем background-position - НИКОГДА не меняется */
@@ -743,8 +797,13 @@
     overflow: hidden !important;
     overflow-x: hidden !important;
     overflow-y: hidden !important;
-    max-height: 100vh !important;
-    height: 100vh !important;
+    max-height: 100dvh !important;
+    height: 100dvh !important;
+    /* Fallback for browsers that don't support dvh */
+    @supports not (height: 100dvh) {
+      max-height: -webkit-fill-available !important;
+      height: -webkit-fill-available !important;
+    }
   }
   
   /* Запрещаем движение элементов hero section при скролле - блокируем все GSAP анимации */
@@ -1016,19 +1075,52 @@
   
   /* CRITICAL FIX: Ensure videos don't block scroll or touch events */
   video {
+    /* CRITICAL: Ensure videos are always visible */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     pointer-events: none !important;
     touch-action: none !important;
     -webkit-touch-callout: none !important;
     -webkit-user-select: none !important;
     user-select: none !important;
+    /* Prevent video from blocking scroll performance */
+    will-change: auto !important;
+    /* REMOVED: transform override was conflicting with inline styles */
+    /* transform: translateZ(0) !important; */
+    /* -webkit-transform: translateZ(0) !important; */
   }
   
   /* CRITICAL FIX: Prevent video containers from blocking scroll */
   .mobile-scene-image,
   .mobile-scene-image video,
-  [class*="video"] {
+  [class*="video"],
+  .journey-section-container video {
+    /* CRITICAL: Ensure video containers and videos are visible */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     pointer-events: none !important;
     touch-action: none !important;
+    /* Ensure video containers don't create scroll blocking layers */
+    isolation: isolate !important;
+  }
+  
+  /* CRITICAL FIX: Ensure Journey section videos don't cause scroll lag */
+  .mobile-journey-section video,
+  .journey-section-container .mobile-scene-image video {
+    /* CRITICAL: Ensure videos are always visible */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    /* Force hardware acceleration without blocking scroll */
+    /* Note: Don't override inline transform styles - let component handle positioning */
+    /* transform: translateZ(0) !important; - REMOVED: was overriding inline styles */
+    /* -webkit-transform: translateZ(0) !important; - REMOVED: was overriding inline styles */
+    /* Prevent video decode during scroll */
+    will-change: auto !important;
+    /* REMOVED: contain property was causing videos to not render */
+    /* contain: layout style paint !important; */
   }
   
   /* PERFORMANCE: Оптимизация для предотвращения layout thrashing при скролле */
@@ -1055,6 +1147,26 @@
     position: relative !important;
     height: auto !important;
     max-height: none !important;
+    /* CRITICAL: Ensure sections don't create scroll blocking layers */
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* CRITICAL FIX: Prevent fixed position elements from blocking scroll on mobile */
+  [style*="position: fixed"],
+  [style*="position:fixed"] {
+    /* Ensure fixed elements don't intercept touch events during scroll */
+    touch-action: pan-y !important;
+    pointer-events: auto !important;
+  }
+  
+  /* CRITICAL FIX: Ensure Journey section doesn't block scroll */
+  .journey-section-container,
+  .mobile-journey-section {
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+    /* Prevent any scroll blocking */
+    overscroll-behavior: contain !important;
   }
   
   /* CRITICAL FIX: Ensure all MainScreen sections are always visible and rendered on mobile */
