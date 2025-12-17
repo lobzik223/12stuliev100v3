@@ -320,6 +320,14 @@ span.date-time-number {
   box-shadow: 0 0 3rem rgba(251, 198, 50, 1);
 }
 
+@media (max-width: 768px) {
+  /* Mobile: square trailer should fit inside the existing top widget area */
+  .details-trailer-square {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 /* Видео под рамкой для ПК - меньше ширина, больше высота */
 .frame-video {
   position: absolute;
