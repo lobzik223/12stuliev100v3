@@ -148,10 +148,6 @@
   img.kinolenta-animation,
   img.kinolenta2-animation {
     will-change: transform !important;
-    animation: inherit !important;
-    -webkit-animation: inherit !important;
-    transform: inherit !important;
-    -webkit-transform: inherit !important;
   }
 }
 
@@ -975,21 +971,6 @@
     touch-action: manipulation !important;
   }
 
-  /* Mobile-only: remove SMALL Swiper nav arrows in:
-     - "Команда" (team carousels)
-     - "Расписание спектакля" (schedule carousel)
-     Keep other/larger arrows unchanged. */
-  .swiper-button-prev-team-section,
-  .swiper-button-next-team-section,
-  .swiper-button-prev-team,
-  .swiper-button-next-team,
-  .schedule-nav-arrow-mobile {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-  
   /* CRITICAL: Prevent fixed elements from blocking scroll */
   [style*="position: fixed"],
   [style*="position:fixed"],
@@ -1022,26 +1003,15 @@
   .kinolenta-container-mobile .kinolenta-animation,
   .kinolenta2-container-mobile .kinolenta2-animation {
     will-change: transform !important;
-    animation: inherit !important;
-    -webkit-animation: inherit !important;
   }
   
   /* PERFORMANCE: Оптимизация для изображений - предотвращаем рефлоу при загрузке */
-  img {
+  img:not(.kinolenta-animation):not(.kinolenta2-animation) {
     /* Используем object-fit для предотвращения layout shift */
     object-fit: contain;
     /* Отключаем GPU ускорение для статических изображений */
     transform: none !important;
     -webkit-transform: none !important;
-  }
-  
-  /* CRITICAL FIX: Allow film strip images to animate on mobile */
-  .kinolenta-animation,
-  .kinolenta2-animation,
-  img.kinolenta-animation,
-  img.kinolenta2-animation {
-    transform: inherit !important;
-    -webkit-transform: inherit !important;
   }
   
   /* PERFORMANCE: Оптимизация для фоновых изображений */
