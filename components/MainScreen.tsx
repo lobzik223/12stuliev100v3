@@ -156,7 +156,8 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       setActiveCategory(activeIndex);
       };
 
-      // Ждем полной загрузки DOM и всех ресурсов на мобильных
+      // MOBILE SCROLL FIX: На мобильных НЕ добавляем scroll/touchmove listeners - используем только нативный скролл
+      // Ждем полной загрузки DOM и всех ресурсов
       const initScrollHandler = () => {
         if (typeof window === 'undefined' || typeof document === 'undefined') return;
         
@@ -164,16 +165,16 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
         if (document.readyState === 'loading') {
           document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
+              // Только scroll listener, НЕ touchmove (touchmove может мешать нативному скроллу на мобильных)
               window.addEventListener('scroll', handleScroll, { passive: true });
-              window.addEventListener('touchmove', handleScroll, { passive: true });
               handleScroll();
             }, 200);
           });
         } else {
           // DOM уже загружен, но ждем еще немного для гарантии
           setTimeout(() => {
+            // Только scroll listener, НЕ touchmove
             window.addEventListener('scroll', handleScroll, { passive: true });
-            window.addEventListener('touchmove', handleScroll, { passive: true });
             handleScroll();
           }, 200);
         }
@@ -183,8 +184,8 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       const handleAppReady = () => {
         setTimeout(() => {
           if (typeof window !== 'undefined') {
+            // Только scroll listener, НЕ touchmove
             window.addEventListener('scroll', handleScroll, { passive: true });
-            window.addEventListener('touchmove', handleScroll, { passive: true });
             handleScroll();
           }
         }, 100);
@@ -196,7 +197,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       return () => {
         if (typeof window !== 'undefined') {
           window.removeEventListener('scroll', handleScroll);
-          window.removeEventListener('touchmove', handleScroll);
+          // touchmove listener не добавлялся, поэтому не удаляем
           window.removeEventListener('app-ready', handleAppReady);
         }
       };
