@@ -1473,6 +1473,34 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
   .yarygina-text-desktop-mobile-adjust {
     top: clamp(365vh, 425vh, 390vh) !important;
   }
+
+  /* DetailsView: ensure header & mobile menu are always above absolute layers */
+  .details-container header {
+    z-index: 2147483646 !important;
+  }
+  .details-container .mobile-hamburger-button {
+    z-index: 2147483647 !important;
+  }
+  .details-container .mobile-menu-overlay {
+    z-index: 2147483646 !important;
+  }
+
+  /* DetailsView: decorative frame/video must not intercept scroll/taps */
+  .details-container .frame-widget,
+  .details-container .frame-image,
+  .details-container .frame-video {
+    pointer-events: none !important;
+  }
+
+  /* Reviews: prevent any "inner scroll" feel – allow vertical page scroll while keeping horizontal swipe */
+  .reviews-section-details,
+  .reviews-section-details .swiper,
+  .reviews-section-details .swiper-wrapper,
+  .reviews-section-details .swiper-slide {
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: auto !important;
+  }
 }
 
 .force-mobile .journey-section-container .computer-mobile {

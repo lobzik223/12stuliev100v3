@@ -977,7 +977,8 @@ span.date-time-number {
     aspect-ratio: auto !important;
     object-fit: cover !important;
     object-position: center bottom !important;
-    transform: translate(-50%, -50%) scaleX(0.97) !important;
+    /* Mobile-only: make babka.mp4 just a bit wider (X only) */
+    transform: translate(-50%, -50%) scaleX(1.005) !important;
   }
   
   .dark-overlay {

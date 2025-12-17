@@ -376,7 +376,9 @@ export default function Header({ isVisible = true, onTicketsClick, onAboutClick,
           paddingBottom: '2rem',
           paddingRight: 'max(1rem, env(safe-area-inset-right, 0px) + 1rem)',
           paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px) + 1rem)',
-          minHeight: '100vh',
+          // Mobile reliability: avoid iOS 100vh bugs (address bar)
+          minHeight: 'calc(var(--vvh, 1vh) * 100)',
+          maxHeight: 'calc(var(--vvh, 1vh) * 100)',
           overflowY: 'auto'
         }}
       >
