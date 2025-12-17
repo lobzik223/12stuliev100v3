@@ -139,6 +139,20 @@
   .animating {
     will-change: transform !important;
   }
+  
+  /* CRITICAL FIX: Allow film strip animations to work on mobile */
+  .kinolenta-animation,
+  .kinolenta2-animation,
+  .kinolenta-container-mobile .kinolenta-animation,
+  .kinolenta2-container-mobile .kinolenta2-animation,
+  img.kinolenta-animation,
+  img.kinolenta2-animation {
+    will-change: transform !important;
+    animation: inherit !important;
+    -webkit-animation: inherit !important;
+    transform: inherit !important;
+    -webkit-transform: inherit !important;
+  }
 }
 
 /* Fix 100vh issues on iOS Safari */
@@ -908,6 +922,16 @@
     will-change: auto !important;
   }
   
+  /* CRITICAL FIX: Allow film strip animations to work on mobile */
+  .kinolenta-animation,
+  .kinolenta2-animation,
+  .kinolenta-container-mobile .kinolenta-animation,
+  .kinolenta2-container-mobile .kinolenta2-animation {
+    will-change: transform !important;
+    animation: inherit !important;
+    -webkit-animation: inherit !important;
+  }
+  
   /* PERFORMANCE: Оптимизация для изображений - предотвращаем рефлоу при загрузке */
   img {
     /* Используем object-fit для предотвращения layout shift */
@@ -915,6 +939,15 @@
     /* Отключаем GPU ускорение для статических изображений */
     transform: none !important;
     -webkit-transform: none !important;
+  }
+  
+  /* CRITICAL FIX: Allow film strip images to animate on mobile */
+  .kinolenta-animation,
+  .kinolenta2-animation,
+  img.kinolenta-animation,
+  img.kinolenta2-animation {
+    transform: inherit !important;
+    -webkit-transform: inherit !important;
   }
   
   /* PERFORMANCE: Оптимизация для фоновых изображений */
@@ -961,6 +994,41 @@
     height: auto !important;
     display: block !important;
     visibility: visible !important;
+  }
+  
+  /* CRITICAL PERFORMANCE FIX: Replace 100vh with safe alternatives on mobile */
+  /* 100vh causes issues on iOS Safari due to address bar */
+  main,
+  main > div,
+  section,
+  .min-h-screen {
+    min-height: auto !important;
+  }
+  
+  /* Use content-based height instead of viewport-based */
+  @supports (height: 100dvh) {
+    /* Use dynamic viewport height if available */
+    main,
+    main > div {
+      min-height: 100dvh !important;
+    }
+  }
+  
+  /* CRITICAL FIX: Ensure videos don't block scroll or touch events */
+  video {
+    pointer-events: none !important;
+    touch-action: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+  }
+  
+  /* CRITICAL FIX: Prevent video containers from blocking scroll */
+  .mobile-scene-image,
+  .mobile-scene-image video,
+  [class*="video"] {
+    pointer-events: none !important;
+    touch-action: none !important;
   }
   
   /* PERFORMANCE: Оптимизация для предотвращения layout thrashing при скролле */

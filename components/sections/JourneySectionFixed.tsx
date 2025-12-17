@@ -92,45 +92,75 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     };
   }, [isClient]);
 
-  // IntersectionObserver для автоплея видео при скролле (mobile)
+  // CRITICAL PERFORMANCE FIX: Optimized IntersectionObserver for mobile videos
+  // Consolidated observer with debouncing to prevent scroll freeze
   useEffect(() => {
-    if (!isClient || !mobileVideoRef.current) return;
+    if (!isClient || !isMobileDevice) return;
+    
+    const videos = [
+      mobileVideoRef.current,
+      mobilePsihuskaVideoRef.current,
+      mobileKvartiraVideoRef.current,
+      mobileBabkaVideoRef.current,
+    ].filter(Boolean) as HTMLVideoElement[];
 
-    const video = mobileVideoRef.current;
-    
-    // Обработчик загрузки видео
-    video.addEventListener('loadeddata', () => {
-      console.log('Mobile video loaded');
-    });
-    
-    video.addEventListener('error', (e) => {
-      console.error('Mobile video error:', e);
-    });
+    if (videos.length === 0) return;
+
+    // Debounce play/pause to prevent performance issues
+    let playTimeout: NodeJS.Timeout | null = null;
+    let pauseTimeout: NodeJS.Timeout | null = null;
+    const DEBOUNCE_MS = 150;
+
+    const handlePlay = (video: HTMLVideoElement) => {
+      if (playTimeout) clearTimeout(playTimeout);
+      playTimeout = setTimeout(() => {
+        video.play().catch(() => {
+          // Silently fail - autoplay may be blocked
+        });
+      }, DEBOUNCE_MS);
+    };
+
+    const handlePause = (video: HTMLVideoElement) => {
+      if (pauseTimeout) clearTimeout(pauseTimeout);
+      pauseTimeout = setTimeout(() => {
+        video.pause();
+      }, DEBOUNCE_MS);
+    };
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            video.play().catch((err) => {
-              console.log('Mobile video autoplay failed:', err);
-            });
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
+            handlePlay(video);
           } else {
-            video.pause();
+            handlePause(video);
           }
         });
       },
       {
-        threshold: 0.3,
-        rootMargin: '0px',
+        threshold: [0, 0.3, 0.5, 1],
+        rootMargin: '50px', // Start loading slightly before visible
       }
     );
 
-    observer.observe(video);
+    videos.forEach(video => {
+      // Ensure videos are muted and have playsInline
+      video.muted = true;
+      video.setAttribute('playsinline', 'true');
+      video.setAttribute('webkit-playsinline', 'true');
+      video.controls = false;
+      // Remove autoPlay - let IntersectionObserver control it
+      video.removeAttribute('autoplay');
+      observer.observe(video);
+    });
 
     return () => {
+      if (playTimeout) clearTimeout(playTimeout);
+      if (pauseTimeout) clearTimeout(pauseTimeout);
       observer.disconnect();
     };
-  }, [isClient]);
+  }, [isClient, isMobileDevice]);
 
   // IntersectionObserver для автоплея видео psihuska.mp4 при скролле (desktop)
   useEffect(() => {
@@ -172,45 +202,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     };
   }, [isClient]);
 
-  // IntersectionObserver для автоплея видео psihuska.mp4 при скролле (mobile)
-  useEffect(() => {
-    if (!isClient || !mobilePsihuskaVideoRef.current) return;
-
-    const video = mobilePsihuskaVideoRef.current;
-    
-    // Обработчик загрузки видео
-    video.addEventListener('loadeddata', () => {
-      console.log('Mobile psihuska video loaded');
-    });
-    
-    video.addEventListener('error', (e) => {
-      console.error('Mobile psihuska video error:', e);
-    });
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            video.play().catch((err) => {
-              console.log('Mobile psihuska video autoplay failed:', err);
-            });
-          } else {
-            video.pause();
-          }
-        });
-      },
-      {
-        threshold: 0.3,
-        rootMargin: '0px',
-      }
-    );
-
-    observer.observe(video);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isClient]);
+  // Removed - now handled by consolidated mobile video observer above
 
   // IntersectionObserver для автоплея видео kvartira.mp4 при скролле (desktop)
   useEffect(() => {
@@ -251,44 +243,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     };
   }, [isClient]);
 
-  // IntersectionObserver для автоплея видео kvartira.mp4 при скролле (mobile)
-  useEffect(() => {
-    if (!isClient || !mobileKvartiraVideoRef.current) return;
-
-    const video = mobileKvartiraVideoRef.current;
-    
-    video.addEventListener('loadeddata', () => {
-      console.log('Mobile kvartira video loaded');
-    });
-    
-    video.addEventListener('error', (e) => {
-      console.error('Mobile kvartira video error:', e);
-    });
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            video.play().catch((err) => {
-              console.log('Mobile kvartira video autoplay failed:', err);
-            });
-          } else {
-            video.pause();
-          }
-        });
-      },
-      {
-        threshold: 0.3,
-        rootMargin: '0px',
-      }
-    );
-
-    observer.observe(video);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isClient]);
+  // Removed - now handled by consolidated mobile video observer above
 
   // IntersectionObserver для автоплея видео babka.mp4 при скролле (desktop)
   useEffect(() => {
@@ -329,44 +284,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     };
   }, [isClient]);
 
-  // IntersectionObserver для автоплея видео babka.mp4 при скролле (mobile)
-  useEffect(() => {
-    if (!isClient || !mobileBabkaVideoRef.current) return;
-
-    const video = mobileBabkaVideoRef.current;
-    
-    video.addEventListener('loadeddata', () => {
-      console.log('Mobile babka video loaded');
-    });
-    
-    video.addEventListener('error', (e) => {
-      console.error('Mobile babka video error:', e);
-    });
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            video.play().catch((err) => {
-              console.log('Mobile babka video autoplay failed:', err);
-            });
-          } else {
-            video.pause();
-          }
-        });
-      },
-      {
-        threshold: 0.3,
-        rootMargin: '0px',
-      }
-    );
-
-    observer.observe(video);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [isClient]);
+  // Removed - now handled by consolidated mobile video observer above
 
   // Mobile-only version - simple, no parallax, no 400vh containers
   const MobileJourney = () => {
@@ -491,12 +409,11 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     <video
                       ref={mobileVideoRef}
                       src="/backgrounds/sections/bimbom.mp4"
-                      autoPlay
                       muted
                       loop
                       playsInline
                       controls={false}
-                      preload="auto"
+                      preload="metadata"
                       style={{
                         position: 'absolute',
                         top: '50%',
@@ -554,12 +471,11 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     <video
                       ref={mobilePsihuskaVideoRef}
                       src="/photo/psihuska.mp4"
-                      autoPlay
                       muted
                       loop
                       playsInline
                       controls={false}
-                      preload="auto"
+                      preload="metadata"
                       style={{
                         position: 'absolute',
                         top: '50%',
@@ -617,12 +533,11 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     <video
                       ref={mobileKvartiraVideoRef}
                       src="/photo/kvartira.mp4"
-                      autoPlay
                       muted
                       loop
                       playsInline
                       controls={false}
-                      preload="auto"
+                      preload="metadata"
                       style={{
                         position: 'absolute',
                         top: '47%',
@@ -677,12 +592,11 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     <video
                       ref={mobileBabkaVideoRef}
                       src="/photo/babka.mp4"
-                      autoPlay
                       muted
                       loop
                       playsInline
                       controls={false}
-                      preload="auto"
+                      preload="metadata"
                       style={{
                         position: 'absolute',
                         top: '50%',

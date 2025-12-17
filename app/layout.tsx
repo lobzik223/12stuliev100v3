@@ -186,22 +186,9 @@ export default function RootLayout({
                         
                         observer.observe(heroBg, { attributes: true, attributeFilter: ['style'] });
                         
-                        // Также блокируем изменения при каждом скролле/resize
-                        var lockStyles = function() {
-                          if (heroBg) {
-                            heroBg.style.backgroundSize = fixedBgSize;
-                            heroBg.style.backgroundPosition = '70% center';
-                            heroBg.style.transform = 'none';
-                            heroBg.style.webkitTransform = 'none';
-                          }
-                        };
-                        
-                        window.addEventListener('scroll', lockStyles, { passive: true });
-                        window.addEventListener('resize', lockStyles, { passive: true });
-                        if (window.visualViewport) {
-                          window.visualViewport.addEventListener('resize', lockStyles, { passive: true });
-                          window.visualViewport.addEventListener('scroll', lockStyles, { passive: true });
-                        }
+                        // CRITICAL PERFORMANCE FIX: Removed scroll listeners that cause performance issues
+                        // MutationObserver already handles style changes, no need for scroll listeners
+                        // Scroll listeners on mobile can cause freeze when user stops scrolling
                       };
                       
                       // Запускаем проверку после небольшой задержки

@@ -286,14 +286,19 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           </>
         ) : (
           <>
-            {/* На мобильных используем lazy loading для не-критичных изображений */}
+            {/* CRITICAL PERFORMANCE FIX: Optimized loading strategy for mobile */}
+            {/* Preload section-4 (Journey section) as it appears early */}
+            <img src="/backgrounds/sections/mobile/section-4-mobile.png" alt="" loading="eager" fetchPriority="high" />
+            {/* Preload plitkanovosti (Events cards) as it's above the fold */}
+            <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="eager" fetchPriority="high" />
+            {/* Lazy load section-3 (appears later, after Journey) */}
             <img src="/backgrounds/sections/mobile/section-3-mobile.png" alt="" loading="lazy" />
-            <img src="/backgrounds/sections/mobile/section-4-mobile.png" alt="" loading="lazy" />
-            <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="lazy" />
+            {/* Lazy load Journey section images (vput series) - they appear in Journey section */}
             <img src="/backgrounds/sections/vput.png?v=2.0" alt="" loading="lazy" />
             <img src="/backgrounds/sections/vput2.png?v=2.0" alt="" loading="lazy" />
             <img src="/backgrounds/sections/vput3.png?v=2.0" alt="" loading="lazy" />
             <img src="/backgrounds/sections/vput4.png?v=2.0" alt="" loading="lazy" />
+            {/* Lazy load decorative images (appear later) */}
             <img src="/backgrounds/sections/tiraj.png" alt="" loading="lazy" />
             <img src="/backgrounds/sections/flash.png" alt="" loading="lazy" />
             <img src="/backgrounds/sections/stul100let.png" alt="" loading="lazy" />
