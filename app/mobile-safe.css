@@ -1471,6 +1471,16 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
     -webkit-overflow-scrolling: touch !important;
     overscroll-behavior: auto !important;
   }
+
+  /* Team section: hide only the SMALL inner arrow glyphs on mobile
+     (keep the large arrows/containers unchanged). */
+  .team-carousel .swiper-button-prev-team::after,
+  .team-carousel .swiper-button-next-team::after,
+  .team-section-carousel .swiper-button-prev-team-section::after,
+  .team-section-carousel .swiper-button-next-team-section::after {
+    content: '' !important;
+    display: none !important;
+  }
 }
 
 .force-mobile .journey-section-container .computer-mobile {
