@@ -1563,7 +1563,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               height: '250px',
               width: '100%',
               backgroundImage: 'url(/photo/section-34839282.png)',
-              backgroundSize: '100% 52%',
+              backgroundSize: '100% auto',
               backgroundPosition: 'center calc(100% - 250px)',
               backgroundRepeat: 'no-repeat',
               transform: 'scaleX(-1)',

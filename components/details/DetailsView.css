@@ -838,8 +838,8 @@ span.date-time-number {
         rgba(0, 0, 0, 1) 100%
       ),
       url(/photo/section-34839282.png) !important;
-    /* Mobile: keep width, reduce Y scale to avoid "stretched" look */
-    background-size: 100% 100%, 100% 52% !important;
+    /* Mobile: keep width 100%, preserve image aspect ratio (no vertical stretching) */
+    background-size: 100% 100%, 100% auto !important;
     background-position: 0 0, center top !important;
     background-repeat: no-repeat, no-repeat !important;
 
