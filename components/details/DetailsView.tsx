@@ -1560,7 +1560,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           <div 
             style={{
               position: 'absolute',
-              top: 'calc(clamp(290vh, 310vh, 330vh) - 250px)',
+              // Keep in sync with mobile background height defined in CSS (--details-bg-h)
+              top: 'calc(var(--details-bg-h) - 250px)',
               left: 0,
               right: 0,
               height: '250px',
@@ -1582,7 +1583,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
             className="mobile-background-blur-overlay"
             style={{
               position: 'absolute',
-              top: 'calc(clamp(290vh, 310vh, 330vh) - 250px)',
+              // Keep in sync with mobile background height defined in CSS (--details-bg-h)
+              top: 'calc(var(--details-bg-h) - 250px)',
               left: 0,
               right: 0,
               height: '300px',
