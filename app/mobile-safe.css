@@ -1370,7 +1370,14 @@
 
   /* Actors cards: slightly stretch photos vertically on mobile to remove top/bottom gaps */
   .actors-section-mobile .actor-card-image img {
+    /* Mobile-only override: global img rule forces object-fit: contain (creates top/bottom gaps).
+       For actor photos we must fill the frame like before. */
+    object-fit: cover !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
     transform: scaleY(1.06) !important;
+    -webkit-transform: scaleY(1.06) !important;
     transform-origin: center center !important;
   }
   
