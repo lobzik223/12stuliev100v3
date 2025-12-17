@@ -918,13 +918,47 @@
     overflow-y: visible !important;
   }
   
-  /* Слегка уменьшаем размер шрифта для текстов "ТЕАТРАЛЬНОЕ ПУТЕШЕСТВИЕ ИЛЬФА И ПЕТРОВА" и "СЛЕДУЙ ЗА БЕНДЕРОМ!" на мобильных */
+  /* КРИТИЧНО: Исправление скролла для DetailsView на мобильных */
+  .details-container {
+    /* Убираем все ограничения высоты - контейнер должен расти естественно с контентом */
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    /* Убираем overflow: hidden - он блокирует скролл */
+    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    /* Убеждаемся что контейнер не имеет position: fixed */
+    position: relative !important;
+    /* Контейнер должен расти естественно */
+    display: block !important;
+  }
+  
+  /* Убеждаемся что родительские контейнеры DetailsView не блокируют скролл */
+  main:has(.details-container),
+  body:has(.details-container),
+  div:has(.details-container) {
+    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  
+  /* Слегка увеличиваем размер шрифта для текстов "ТЕАТРАЛЬНОЕ ПУТЕШЕСТВИЕ ИЛЬФА И ПЕТРОВА" и "СЛЕДУЙ ЗА БЕНДЕРОМ!" на мобильных */
   .hero-text-subtitle {
-    font-size: clamp(0.32rem, 1.1vw, 0.5rem) !important;
+    font-size: clamp(0.37rem, 1.25vw, 0.6rem) !important;
   }
   
   .hero-text-cta {
-    font-size: clamp(0.29rem, 1vw, 0.45rem) !important;
+    font-size: clamp(0.34rem, 1.15vw, 0.55rem) !important;
+  }
+  
+  /* Слегка увеличиваем размер логотипа на мобильных */
+  .hero-logo-image,
+  .hero-logo-container img {
+    width: clamp(30rem, 98vw, 48rem) !important;
+    max-width: 98vw !important;
   }
   
   /* Увеличиваем ширину видео psihuska.mp4 и babka.mp4 в Journey section на мобильных */

@@ -122,6 +122,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       // КРИТИЧНО: Восстанавливаем нормальный скролл на мобильных при каждом рендере
       // Это гарантирует что никакие стили не блокируют скролл
       const restoreNativeScroll = () => {
+        // Восстанавливаем body и html
         if (document.body && document.documentElement) {
           document.body.style.height = '';
           document.body.style.maxHeight = '';
@@ -129,27 +130,55 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           document.body.style.overflow = '';
           document.body.style.position = '';
           document.body.style.top = '';
+          document.body.style.width = '';
           document.documentElement.style.height = '';
           document.documentElement.style.maxHeight = '';
           document.documentElement.style.overflowY = '';
           document.documentElement.style.overflow = '';
         }
+        
+        // Восстанавливаем details-container
         if (containerRef.current) {
           containerRef.current.style.height = '';
           containerRef.current.style.maxHeight = '';
+          containerRef.current.style.minHeight = '';
           containerRef.current.style.overflow = '';
           containerRef.current.style.overflowY = '';
+          containerRef.current.style.overflowX = '';
+          containerRef.current.style.position = '';
+          // Убеждаемся что контейнер растет естественно
+          containerRef.current.style.display = 'block';
+        }
+        
+        // Также проверяем родительские контейнеры (main, div)
+        const mainElement = document.querySelector('main');
+        if (mainElement) {
+          (mainElement as HTMLElement).style.height = '';
+          (mainElement as HTMLElement).style.maxHeight = '';
+          (mainElement as HTMLElement).style.overflow = '';
+          (mainElement as HTMLElement).style.overflowY = '';
         }
       };
       
       // Восстанавливаем сразу
       restoreNativeScroll();
       
-      // Также восстанавливаем после небольшой задержки (на случай если другие скрипты меняют стили)
-      const timeoutId = setTimeout(restoreNativeScroll, 100);
+      // Также восстанавливаем после небольших задержек (на случай если другие скрипты меняют стили)
+      const timeoutId1 = setTimeout(restoreNativeScroll, 100);
+      const timeoutId2 = setTimeout(restoreNativeScroll, 300);
+      const timeoutId3 = setTimeout(restoreNativeScroll, 600);
+      
+      // Также восстанавливаем при изменении размера окна
+      const handleResize = () => {
+        restoreNativeScroll();
+      };
+      window.addEventListener('resize', handleResize, { passive: true });
       
       return () => {
-        clearTimeout(timeoutId);
+        clearTimeout(timeoutId1);
+        clearTimeout(timeoutId2);
+        clearTimeout(timeoutId3);
+        window.removeEventListener('resize', handleResize);
         restoreNativeScroll();
       };
     }
