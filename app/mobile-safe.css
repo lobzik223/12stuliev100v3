@@ -948,6 +948,21 @@
     max-height: var(--mobile-vh) !important;
   }
   
+  /* CRITICAL FIX: Ensure main container and content wrapper grow with content on mobile */
+  main > div.min-h-screen {
+    min-height: auto !important;
+    height: auto !important;
+  }
+  
+  /* CRITICAL FIX: Ensure all section containers are visible and have proper height */
+  main > div > div[ref],
+  main > div > section {
+    min-height: auto !important;
+    height: auto !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  
   /* PERFORMANCE: Оптимизация для предотвращения layout thrashing при скролле */
   /* CRITICAL FIX: Removed contain property as it can cause scroll blocking issues on mobile */
   /* Отключаем сложные вычисления во время скролла */
@@ -972,6 +987,30 @@
     position: relative !important;
     height: auto !important;
     max-height: none !important;
+  }
+  
+  /* CRITICAL FIX: Ensure all MainScreen sections are always visible and rendered on mobile */
+  main > section,
+  main > div > section,
+  main section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: auto !important;
+    height: auto !important;
+  }
+  
+  /* CRITICAL FIX: Ensure section containers are always visible */
+  main > div[ref],
+  main > div > div[ref],
+  .actors-section-wrapper-mobile,
+  .trailer-section-wrapper-mobile,
+  .journey-section-container {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: auto !important;
+    height: auto !important;
   }
   
   /* CRITICAL FIX: Ensure section with section-3 background doesn't block scroll on mobile */

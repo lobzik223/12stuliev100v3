@@ -50,6 +50,22 @@
     filter: none !important;
     transition: none !important;
   }
+  
+  /* CRITICAL FIX: Ensure all sections in MainScreen are always visible on mobile */
+  main section,
+  main > div > section,
+  main > div > div > section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* CRITICAL FIX: Prevent any conditional hiding of section containers */
+  main > div[style*="position"],
+  main > div > div[style*="position"] {
+    display: block !important;
+    visibility: visible !important;
+  }
 
   .md\:hidden { display: block !important; }
   .md\:block { display: none !important; }

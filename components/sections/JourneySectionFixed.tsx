@@ -34,12 +34,21 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
   const mobileKvartiraVideoRef = useRef<HTMLVideoElement>(null);
   const babkaVideoRef = useRef<HTMLVideoElement>(null);
   const mobileBabkaVideoRef = useRef<HTMLVideoElement>(null);
-  const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(null);
-  const [isClient, setIsClient] = useState(false);
+  // CRITICAL FIX: Initialize with mobile detection for SSR-safe rendering
+  // On mobile, we default to mobile=true to ensure content always renders
+  const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(() => {
+    if (typeof window === 'undefined') {
+      // SSR: Default to mobile to ensure content renders
+      return true;
+    }
+    return isProbablyMobile();
+  });
+  const [isClient, setIsClient] = useState(() => typeof window !== 'undefined');
 
   // Client-side only rendering to prevent SSR/hydration mismatches
   useEffect(() => {
     setIsClient(true);
+    // Update mobile detection on client, but don't block rendering
     setIsMobileDevice(isProbablyMobile());
   }, []);
 
@@ -1003,17 +1012,12 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     };
   }, [isClient, isMobileDevice]);
 
-  // Loading state - show nothing until we know device type
-  if (!isClient || isMobileDevice === null) {
-    return (
-      <section className="relative w-full" style={{ minHeight: '100vh', backgroundColor: '#000' }}>
-        {/* Placeholder to prevent layout shift */}
-      </section>
-    );
-  }
-
-  // Mobile device - simple layout
-  if (isMobileDevice) {
+  // CRITICAL FIX: Always render content, never show empty placeholder
+  // Default to mobile layout if detection hasn't completed yet (prevents blank sections)
+  const shouldRenderMobile = isMobileDevice !== false; // true or null -> render mobile
+  
+  // Mobile device - simple layout (or fallback if detection pending)
+  if (shouldRenderMobile) {
     return (
       <section 
         ref={vputSectionRef}
