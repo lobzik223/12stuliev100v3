@@ -718,18 +718,19 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     // ПРИНУДИТЕЛЬНОЕ позиционирование кнопки "Купить билет" и виджета адреса на мобильных
     // MOBILE SCROLL FIX: Упрощенная версия без requestAnimationFrame для стабильности
     const updateButtonPositions = () => {
+      const vvhClamp = 'clamp(calc(var(--vvh, 1vh) * 45), calc(var(--vvh, 1vh) * 50), calc(var(--vvh, 1vh) * 55))';
       if (buyTicketButtonRef.current) {
         // Кнопка должна быть ниже текста описания (200px), но над виджетом адреса
         // Текст описания на 200px, кнопка на 320px (120px отступ для лучшей видимости), виджет на 400px (80px отступ от кнопки)
         buyTicketButtonRef.current.style.position = 'absolute';
-        buyTicketButtonRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)';
+        buyTicketButtonRef.current.style.top = `calc(${vvhClamp} + 0.5% + 1rem + 320px)`;
         buyTicketButtonRef.current.style.left = '50%';
         buyTicketButtonRef.current.style.right = 'auto';
         buyTicketButtonRef.current.style.transform = 'translateX(-50%)';
         buyTicketButtonRef.current.style.zIndex = '10';
         // Принудительно применяем стили с !important через setProperty для гарантии
         try {
-          buyTicketButtonRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)', 'important');
+          buyTicketButtonRef.current.style.setProperty('top', `calc(${vvhClamp} + 0.5% + 1rem + 320px)`, 'important');
           buyTicketButtonRef.current.style.setProperty('left', '50%', 'important');
           buyTicketButtonRef.current.style.setProperty('right', 'auto', 'important');
           buyTicketButtonRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
@@ -742,14 +743,14 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       if (venueWidgetRef.current) {
         // Виджет адреса должен быть ниже кнопки (80px отступ)
         venueWidgetRef.current.style.position = 'absolute';
-        venueWidgetRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)';
+        venueWidgetRef.current.style.top = `calc(${vvhClamp} + 0.5% + 1rem + 400px)`;
         venueWidgetRef.current.style.left = '50%';
         venueWidgetRef.current.style.right = 'auto';
         venueWidgetRef.current.style.transform = 'translateX(-50%)';
         venueWidgetRef.current.style.zIndex = '10';
         // Принудительно применяем стили с !important через setProperty для гарантии
         try {
-          venueWidgetRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)', 'important');
+          venueWidgetRef.current.style.setProperty('top', `calc(${vvhClamp} + 0.5% + 1rem + 400px)`, 'important');
           venueWidgetRef.current.style.setProperty('left', '50%', 'important');
           venueWidgetRef.current.style.setProperty('right', 'auto', 'important');
           venueWidgetRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
@@ -792,7 +793,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     // Устанавливаем фиксированный отрицательный margin-top для позиционирования сразу после фона
     // Фон заканчивается примерно на 310vh, поэтому используем фиксированное значение
     reviewsElement.style.position = 'relative';
-    reviewsElement.style.marginTop = 'calc(clamp(290vh, 310vh, 330vh) - 100vh)'; // Простое вычисление через CSS
+    reviewsElement.style.marginTop =
+      'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - calc(var(--vvh, 1vh) * 100))'; // stable on iOS
     reviewsElement.style.paddingTop = '0';
     reviewsElement.style.zIndex = '20';
     
@@ -814,7 +816,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         // Блюр должен начинаться немного раньше и покрывать область перехода
         const blurElement = mobileBlurOverlayRef.current;
         blurElement.style.position = 'absolute';
-        blurElement.style.top = 'calc(clamp(290vh, 310vh, 330vh) - 200px)';
+        blurElement.style.top =
+          'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - 200px)';
         blurElement.style.left = '0';
         blurElement.style.right = '0';
         blurElement.style.width = '100%';
@@ -829,7 +832,11 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         blurElement.style.boxShadow = 'inset 0 0 300px rgba(0, 0, 0, 1)';
         // Принудительно применяем стили
         try {
-          blurElement.style.setProperty('top', 'calc(clamp(290vh, 310vh, 330vh) - 200px)', 'important');
+          blurElement.style.setProperty(
+            'top',
+            'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - 200px)',
+            'important'
+          );
           blurElement.style.setProperty('z-index', '12', 'important');
           blurElement.style.setProperty('display', 'block', 'important');
           blurElement.style.setProperty('visibility', 'visible', 'important');

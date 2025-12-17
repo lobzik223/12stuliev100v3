@@ -1349,12 +1349,9 @@
     overflow-y: visible !important;
   }
   
-  /* Убеждаемся что абсолютно позиционированные элементы не блокируют скролл */
-  .details-container [style*="position: absolute"],
-  .details-container [style*="position:fixed"] {
-    pointer-events: auto !important;
-    /* Только для элементов которые должны быть кликабельными */
-  }
+  /* CRITICAL: Do NOT force pointer-events on absolutely positioned layers in DetailsView.
+     Some mobile overlays are positioned absolutely and must remain non-interactive, otherwise they
+     intercept touch/scroll and feel like "separate scrolling" or blocked scroll areas. */
   
   /* Увеличиваем размер шрифта примерно в 3 раза для текстов "ТЕАТРАЛЬНОЕ ПУТЕШЕСТВИЕ ИЛЬФА И ПЕТРОВА" и "СЛЕДУЙ ЗА БЕНДЕРОМ!" на мобильных */
   .hero-text-subtitle {
