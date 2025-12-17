@@ -871,6 +871,9 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     <div ref={containerRef} className="details-container">
       <Header 
         isVisible={true}
+        // Mobile: Header уже показывает крестик внутри кнопки-бургера при открытом меню.
+        // Убираем второй крестик (кнопку закрытия) внутри overlay, чтобы не было дублей.
+        hideCloseButton={true}
         onTicketsClick={() => {
           router.push('/');
         }}
