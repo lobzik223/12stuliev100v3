@@ -923,10 +923,11 @@
   .mobile-journey-section video[src*="psihuska.mp4"],
   .journey-section-container video[src="/photo/psihuska.mp4"],
   .journey-section-container video[src*="psihuska.mp4"] {
-    width: calc(100% - clamp(2rem, 5vw, 3.5rem)) !important;
-    /* Увеличиваем scaleX для дополнительного увеличения ширины (было 0.94, стало 0.97) */
-    transform: translate(-50%, -50%) scaleX(0.97) !important;
-    -webkit-transform: translate(-50%, -50%) scaleX(0.97) !important;
+    /* Увеличиваем ширину: уменьшаем вычитаемое значение (было clamp(2.5rem, 6vw, 4rem), стало clamp(1.5rem, 4vw, 3rem)) */
+    width: calc(100% - clamp(1.5rem, 4vw, 3rem)) !important;
+    /* Увеличиваем scaleX для дополнительного увеличения ширины (было 0.94, стало 0.99) */
+    transform: translate(-50%, -50%) scaleX(0.99) !important;
+    -webkit-transform: translate(-50%, -50%) scaleX(0.99) !important;
     /* Высота остается без изменений */
     height: calc(100% - clamp(5rem, 11vw, 7.5rem)) !important;
   }
@@ -935,10 +936,11 @@
   .mobile-journey-section video[src*="babka.mp4"],
   .journey-section-container video[src="/photo/babka.mp4"],
   .journey-section-container video[src*="babka.mp4"] {
-    width: calc(100% - clamp(2rem, 5vw, 3.5rem)) !important;
-    /* Увеличиваем scaleX для дополнительного увеличения ширины (было 0.94, стало 0.97) */
-    transform: translate(-50%, -50%) scaleX(0.97) !important;
-    -webkit-transform: translate(-50%, -50%) scaleX(0.97) !important;
+    /* Увеличиваем ширину: уменьшаем вычитаемое значение (было clamp(2.5rem, 6vw, 4rem), стало clamp(1.5rem, 4vw, 3rem)) */
+    width: calc(100% - clamp(1.5rem, 4vw, 3rem)) !important;
+    /* Увеличиваем scaleX для дополнительного увеличения ширины (было 0.94, стало 0.99) */
+    transform: translate(-50%, -50%) scaleX(0.99) !important;
+    -webkit-transform: translate(-50%, -50%) scaleX(0.99) !important;
     /* Высота остается без изменений */
     height: calc(100% - clamp(5rem, 11vw, 7.5rem)) !important;
   }
@@ -980,6 +982,38 @@
     margin-top: 0 !important;
     /* Убираем верхний отступ для плотного соединения */
     padding-top: clamp(1.5rem, 3vh, 2rem) !important;
+  }
+  
+  /* MOBILE SCROLL FIX: Оптимизация Details section для предотвращения проблем со скроллом */
+  .details-container {
+    /* Улучшаем производительность скролла */
+    will-change: auto !important;
+    /* Предотвращаем layout thrashing */
+    contain: layout style paint !important;
+  }
+  
+  /* Оптимизация для фонового изображения - предотвращаем рефлоу при скролле */
+  .details-container::before {
+    /* Используем GPU ускорение только для фона */
+    transform: translateZ(0) scaleX(-1) !important;
+    -webkit-transform: translateZ(0) scaleX(-1) !important;
+    /* Предотвращаем рефлоу */
+    contain: layout style paint !important;
+    /* Оптимизация загрузки */
+    content-visibility: auto !important;
+  }
+  
+  /* Оптимизация для абсолютно позиционированных элементов */
+  .details-container > [style*="position: absolute"] {
+    /* Используем GPU ускорение для плавного скролла */
+    will-change: transform !important;
+    transform: translateZ(0) !important;
+    -webkit-transform: translateZ(0) !important;
+  }
+  
+  /* Отключаем will-change для статических элементов */
+  .details-container > *:not([style*="position: absolute"]) {
+    will-change: auto !important;
   }
 }
 

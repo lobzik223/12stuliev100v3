@@ -6,6 +6,18 @@
   overflow: hidden; /* Возвращено для правильного позиционирования абсолютных элементов */
 }
 
+/* MOBILE SCROLL FIX: Убираем overflow: hidden на мобильных для предотвращения проблем со скроллом */
+@media (max-width: 768px), (pointer: coarse) {
+  .details-container {
+    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    /* Улучшаем touch scrolling на мобильных */
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+  }
+}
+
 /* Псевдоэлемент для отзеркаленного фона */
 .details-container::before {
   content: '';

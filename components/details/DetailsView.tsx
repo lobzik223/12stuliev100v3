@@ -320,6 +320,13 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         }
       });
       
+      // КРИТИЧНО: Отключаем ScrollTrigger полностью на мобильных для предотвращения проблем со скроллом
+      if (typeof window !== 'undefined' && ScrollTrigger) {
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+        // Отключаем обновления ScrollTrigger на мобильных
+        ScrollTrigger.config({ autoRefreshEvents: 'none' });
+      }
+      
       return;
     }
 
@@ -650,129 +657,156 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     }
 
     // ПРИНУДИТЕЛЬНОЕ позиционирование кнопки "Купить билет" и виджета адреса на мобильных
+    // MOBILE SCROLL FIX: Используем requestAnimationFrame для предотвращения layout thrashing
     const updateButtonPositions = () => {
-      if (buyTicketButtonRef.current) {
-        // Кнопка должна быть ниже текста описания (200px), но над виджетом адреса
-        // Текст описания на 200px, кнопка на 320px (120px отступ для лучшей видимости), виджет на 400px (80px отступ от кнопки)
-        buyTicketButtonRef.current.style.position = 'absolute';
-        buyTicketButtonRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)';
-        buyTicketButtonRef.current.style.left = '50%';
-        buyTicketButtonRef.current.style.right = 'auto';
-        buyTicketButtonRef.current.style.transform = 'translateX(-50%)';
-        buyTicketButtonRef.current.style.zIndex = '10';
-        // Принудительно применяем стили с !important через setProperty для гарантии
-        try {
-          buyTicketButtonRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)', 'important');
-          buyTicketButtonRef.current.style.setProperty('left', '50%', 'important');
-          buyTicketButtonRef.current.style.setProperty('right', 'auto', 'important');
-          buyTicketButtonRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
-          buyTicketButtonRef.current.style.setProperty('position', 'absolute', 'important');
-        } catch (e) {
-          // Если setProperty не поддерживается, используем обычные стили
+      requestAnimationFrame(() => {
+        if (buyTicketButtonRef.current) {
+          // Кнопка должна быть ниже текста описания (200px), но над виджетом адреса
+          // Текст описания на 200px, кнопка на 320px (120px отступ для лучшей видимости), виджет на 400px (80px отступ от кнопки)
+          buyTicketButtonRef.current.style.position = 'absolute';
+          buyTicketButtonRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)';
+          buyTicketButtonRef.current.style.left = '50%';
+          buyTicketButtonRef.current.style.right = 'auto';
+          buyTicketButtonRef.current.style.transform = 'translateX(-50%)';
+          buyTicketButtonRef.current.style.zIndex = '10';
+          // Принудительно применяем стили с !important через setProperty для гарантии
+          try {
+            buyTicketButtonRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px)', 'important');
+            buyTicketButtonRef.current.style.setProperty('left', '50%', 'important');
+            buyTicketButtonRef.current.style.setProperty('right', 'auto', 'important');
+            buyTicketButtonRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
+            buyTicketButtonRef.current.style.setProperty('position', 'absolute', 'important');
+          } catch (e) {
+            // Если setProperty не поддерживается, используем обычные стили
+          }
         }
-      }
-      
-      if (venueWidgetRef.current) {
-        // Виджет адреса должен быть ниже кнопки (80px отступ)
-        venueWidgetRef.current.style.position = 'absolute';
-        venueWidgetRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)';
-        venueWidgetRef.current.style.left = '50%';
-        venueWidgetRef.current.style.right = 'auto';
-        venueWidgetRef.current.style.transform = 'translateX(-50%)';
-        venueWidgetRef.current.style.zIndex = '10';
-        // Принудительно применяем стили с !important через setProperty для гарантии
-        try {
-          venueWidgetRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)', 'important');
-          venueWidgetRef.current.style.setProperty('left', '50%', 'important');
-          venueWidgetRef.current.style.setProperty('right', 'auto', 'important');
-          venueWidgetRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
-          venueWidgetRef.current.style.setProperty('position', 'absolute', 'important');
-        } catch (e) {
-          // Если setProperty не поддерживается, используем обычные стили
+        
+        if (venueWidgetRef.current) {
+          // Виджет адреса должен быть ниже кнопки (80px отступ)
+          venueWidgetRef.current.style.position = 'absolute';
+          venueWidgetRef.current.style.top = 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)';
+          venueWidgetRef.current.style.left = '50%';
+          venueWidgetRef.current.style.right = 'auto';
+          venueWidgetRef.current.style.transform = 'translateX(-50%)';
+          venueWidgetRef.current.style.zIndex = '10';
+          // Принудительно применяем стили с !important через setProperty для гарантии
+          try {
+            venueWidgetRef.current.style.setProperty('top', 'calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px)', 'important');
+            venueWidgetRef.current.style.setProperty('left', '50%', 'important');
+            venueWidgetRef.current.style.setProperty('right', 'auto', 'important');
+            venueWidgetRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
+            venueWidgetRef.current.style.setProperty('position', 'absolute', 'important');
+          } catch (e) {
+            // Если setProperty не поддерживается, используем обычные стили
+          }
         }
-      }
+      });
     };
 
-    // Применяем стили сразу и после загрузки
+    // MOBILE SCROLL FIX: Уменьшаем количество setTimeout вызовов для предотвращения layout thrashing
     updateButtonPositions();
-    setTimeout(updateButtonPositions, 100);
-    setTimeout(updateButtonPositions, 300);
-    setTimeout(updateButtonPositions, 500);
+    // Используем только один setTimeout вместо нескольких
+    const timeoutId = setTimeout(updateButtonPositions, 200);
     
-    // Также обновляем при изменении размера окна
-    window.addEventListener('resize', updateButtonPositions);
+    // Используем debounce для resize для предотвращения частых обновлений
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(updateButtonPositions, 150);
+    };
+    
+    window.addEventListener('resize', handleResize, { passive: true });
     
     return () => {
-      window.removeEventListener('resize', updateButtonPositions);
+      clearTimeout(timeoutId);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', handleResize);
     };
   }, [isMobile]);
 
   // УПРОЩЕННОЕ позиционирование раздела "Отзывы" для мобильной версии - БЕЗ СЛОЖНЫХ ВЫЧИСЛЕНИЙ
+  // MOBILE SCROLL FIX: Используем requestAnimationFrame для предотвращения layout thrashing
   useEffect(() => {
     if (!isMobile || !reviewsSectionRef.current) return;
 
     // Простое и стабильное позиционирование без сложных вычислений
     const reviewsElement = reviewsSectionRef.current;
     
-    // Устанавливаем фиксированный отрицательный margin-top для позиционирования сразу после фона
-    // Фон заканчивается примерно на 310vh, поэтому используем фиксированное значение
-    reviewsElement.style.position = 'relative';
-    reviewsElement.style.marginTop = 'calc(clamp(290vh, 310vh, 330vh) - 100vh)'; // Простое вычисление через CSS
-    reviewsElement.style.paddingTop = '0';
-    reviewsElement.style.zIndex = '20';
-    
-    // Убеждаемся, что элемент виден
-    reviewsElement.style.visibility = 'visible';
-    reviewsElement.style.opacity = '1';
-    reviewsElement.style.display = 'block';
+    // MOBILE SCROLL FIX: Используем requestAnimationFrame для предотвращения layout thrashing
+    requestAnimationFrame(() => {
+      // Устанавливаем фиксированный отрицательный margin-top для позиционирования сразу после фона
+      // Фон заканчивается примерно на 310vh, поэтому используем фиксированное значение
+      reviewsElement.style.position = 'relative';
+      // Используем более стабильное значение для мобильных (избегаем сложных vh вычислений)
+      reviewsElement.style.marginTop = 'clamp(190vh, 210vh, 230vh)'; // Упрощенное значение для стабильности
+      reviewsElement.style.paddingTop = '0';
+      reviewsElement.style.zIndex = '20';
+      
+      // Убеждаемся, что элемент виден
+      reviewsElement.style.visibility = 'visible';
+      reviewsElement.style.opacity = '1';
+      reviewsElement.style.display = 'block';
+    });
   }, [isMobile]);
 
   // ПРИНУДИТЕЛЬНОЕ позиционирование блюра на мобильных - чтобы он был виден в нужном месте
+  // MOBILE SCROLL FIX: Используем requestAnimationFrame для предотвращения layout thrashing
   useEffect(() => {
     if (!isMobile || !mobileBlurOverlayRef.current) return;
 
     const updateBlurPosition = () => {
-      if (mobileBlurOverlayRef.current) {
-        // Позиционируем блюр прямо перед разделом "ОТЗЫВЫ"
-        // Фон заканчивается на clamp(290vh, 310vh, 330vh)
-        // Блюр должен начинаться немного раньше и покрывать область перехода
-        const blurElement = mobileBlurOverlayRef.current;
-        blurElement.style.position = 'absolute';
-        blurElement.style.top = 'calc(clamp(290vh, 310vh, 330vh) - 200px)';
-        blurElement.style.left = '0';
-        blurElement.style.right = '0';
-        blurElement.style.width = '100%';
-        blurElement.style.height = '300px';
-        blurElement.style.zIndex = '12';
-        blurElement.style.display = 'block';
-        blurElement.style.visibility = 'visible';
-        blurElement.style.opacity = '1';
-        blurElement.style.background = 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)';
-        blurElement.style.backdropFilter = 'none';
-        blurElement.style.setProperty('-webkit-backdrop-filter', 'none');
-        blurElement.style.boxShadow = 'inset 0 0 300px rgba(0, 0, 0, 1)';
-        // Принудительно применяем стили
-        try {
-          blurElement.style.setProperty('top', 'calc(clamp(290vh, 310vh, 330vh) - 200px)', 'important');
-          blurElement.style.setProperty('z-index', '12', 'important');
-          blurElement.style.setProperty('display', 'block', 'important');
-          blurElement.style.setProperty('visibility', 'visible', 'important');
-          blurElement.style.setProperty('opacity', '1', 'important');
-        } catch (e) {
-          // Если setProperty не поддерживается
+      requestAnimationFrame(() => {
+        if (mobileBlurOverlayRef.current) {
+          // Позиционируем блюр прямо перед разделом "ОТЗЫВЫ"
+          // Фон заканчивается на clamp(290vh, 310vh, 330vh)
+          // Блюр должен начинаться немного раньше и покрывать область перехода
+          const blurElement = mobileBlurOverlayRef.current;
+          blurElement.style.position = 'absolute';
+          blurElement.style.top = 'calc(clamp(190vh, 210vh, 230vh) - 200px)'; // Используем упрощенное значение
+          blurElement.style.left = '0';
+          blurElement.style.right = '0';
+          blurElement.style.width = '100%';
+          blurElement.style.height = '300px';
+          blurElement.style.zIndex = '12';
+          blurElement.style.display = 'block';
+          blurElement.style.visibility = 'visible';
+          blurElement.style.opacity = '1';
+          blurElement.style.background = 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)';
+          blurElement.style.backdropFilter = 'none';
+          blurElement.style.setProperty('-webkit-backdrop-filter', 'none');
+          blurElement.style.boxShadow = 'inset 0 0 300px rgba(0, 0, 0, 1)';
+          // Принудительно применяем стили
+          try {
+            blurElement.style.setProperty('top', 'calc(clamp(190vh, 210vh, 230vh) - 200px)', 'important');
+            blurElement.style.setProperty('z-index', '12', 'important');
+            blurElement.style.setProperty('display', 'block', 'important');
+            blurElement.style.setProperty('visibility', 'visible', 'important');
+            blurElement.style.setProperty('opacity', '1', 'important');
+          } catch (e) {
+            // Если setProperty не поддерживается
+          }
         }
-      }
+      });
     };
 
+    // MOBILE SCROLL FIX: Уменьшаем количество setTimeout вызовов для предотвращения layout thrashing
     updateBlurPosition();
-    setTimeout(updateBlurPosition, 100);
-    setTimeout(updateBlurPosition, 300);
-    setTimeout(updateBlurPosition, 500);
+    // Используем только один setTimeout вместо нескольких
+    const timeoutId = setTimeout(updateBlurPosition, 200);
     
-    window.addEventListener('resize', updateBlurPosition);
+    // Используем debounce для resize для предотвращения частых обновлений
+    let resizeTimeout: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(updateBlurPosition, 150);
+    };
+    
+    window.addEventListener('resize', handleResize, { passive: true });
     
     return () => {
-      window.removeEventListener('resize', updateBlurPosition);
+      clearTimeout(timeoutId);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', handleResize);
     };
   }, [isMobile]);
 
