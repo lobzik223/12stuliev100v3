@@ -786,10 +786,10 @@ span.date-time-number {
     height: var(--details-bg-h) !important;
     max-height: var(--details-bg-h) !important;
 
-    /* Rendering stability on iOS Safari (prevents disappearing background on reverse scroll) */
-    -webkit-backface-visibility: hidden !important;
-    backface-visibility: hidden !important;
-    will-change: transform !important;
+    /* Mobile: keep background behaving like a normal background layer (avoid separate compositing). */
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+    will-change: auto !important;
     box-shadow: none !important;
   }
   
@@ -977,8 +977,8 @@ span.date-time-number {
     aspect-ratio: auto !important;
     object-fit: cover !important;
     object-position: center bottom !important;
-    /* Mobile-only: make babka.mp4 just a bit wider (X only) */
-    transform: translate(-50%, -50%) scaleX(1.005) !important;
+    /* Mobile-only: make babka.mp4 a bit narrower (X only) */
+    transform: translate(-50%, -50%) scaleX(0.985) !important;
   }
   
   .dark-overlay {

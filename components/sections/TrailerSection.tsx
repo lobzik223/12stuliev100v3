@@ -48,6 +48,19 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
     }
   }, [mounted]);
 
+  // Mobile: tap-to-toggle should pause/play immediately (no nested controls interaction)
+  const toggleTrailerPlayback = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) {
+      v.play().catch(() => {
+        // Autoplay/tap restrictions are OK to ignore silently
+      });
+    } else {
+      v.pause();
+    }
+  };
+
   const handleBuyTicket = (url: string | undefined) => {
     if (url) {
       setSelectedScheduleUrl(url);
@@ -152,6 +165,18 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               aspectRatio: '16 / 9',
               cursor: isVideoPlaying ? 'default' : 'pointer',
             }}
+            onClick={(e) => {
+              if (!isMobile) return;
+              e.preventDefault();
+              e.stopPropagation();
+              toggleTrailerPlayback();
+            }}
+            onTouchEnd={(e) => {
+              if (!isMobile) return;
+              e.preventDefault();
+              e.stopPropagation();
+              toggleTrailerPlayback();
+            }}
           >
             <video
               ref={videoRef}
@@ -163,7 +188,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 borderRadius: '8px',
                 backgroundColor: '#000',
               }}
-              controls={isVideoPlaying}
+              // Desktop unchanged; mobile should not rely on native pause button (tap-to-toggle)
+              controls={isVideoPlaying && !isMobile}
               preload="metadata"
               playsInline
               onPlay={() => {

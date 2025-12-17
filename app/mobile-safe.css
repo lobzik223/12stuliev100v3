@@ -1361,11 +1361,10 @@
   .mobile-journey-section video[src*="babka.mp4"],
   .journey-section-container video[src="/photo/babka.mp4"],
   .journey-section-container video[src*="babka.mp4"] {
-    /* Увеличиваем ширину: уменьшаем вычитаемое значение для большей ширины */
-    width: calc(100% - clamp(0.5rem, 2vw, 1.5rem)) !important;
-    /* Увеличиваем scaleX для дополнительного увеличения ширины */
-    transform: translate(-50%, -50%) scaleX(1.02) !important;
-    -webkit-transform: translate(-50%, -50%) scaleX(1.02) !important;
+    /* Make babka.mp4 slightly narrower on mobile (X only) */
+    width: calc(100% - clamp(1.2rem, 4vw, 2rem)) !important;
+    transform: translate(-50%, -50%) scaleX(0.985) !important;
+    -webkit-transform: translate(-50%, -50%) scaleX(0.985) !important;
     /* Высота остается без изменений */
     height: calc(100% - clamp(5rem, 11vw, 7.5rem)) !important;
   }
@@ -1476,12 +1475,57 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
     overscroll-behavior: auto !important;
   }
 
+  /* DetailsView: enforce ONE global scroll on mobile.
+     Remove only explicit nested scroll containers (overflow:auto/scroll). */
+  .details-container [style*="overflow: auto"],
+  .details-container [style*="overflow:auto"],
+  .details-container [style*="overflow: scroll"],
+  .details-container [style*="overflow:scroll"],
+  .details-container [style*="overflow-y: auto"],
+  .details-container [style*="overflow-y:auto"],
+  .details-container [style*="overflow-y: scroll"],
+  .details-container [style*="overflow-y:scroll"],
+  .details-container [style*="overflowY: 'auto'"],
+  .details-container [style*="overflowY: \"auto\""],
+  .details-container [style*="overflowY: 'scroll'"],
+  .details-container [style*="overflowY: \"scroll\""] {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    -webkit-overflow-scrolling: auto !important;
+  }
+
+  /* Extra safeguards for reported sections */
+  .details-container .reviews-section-details,
+  .details-container .reviews-carousel,
+  .details-container .reviews-carousel-mobile-wrapper,
+  .details-container .team-carousel-mobile-wrapper {
+    overflow: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
   /* Team section: hide only the SMALL inner arrow glyphs on mobile
      (keep the large arrows/containers unchanged). */
   .team-carousel .swiper-button-prev-team::after,
   .team-carousel .swiper-button-next-team::after,
   .team-section-carousel .swiper-button-prev-team-section::after,
   .team-section-carousel .swiper-button-next-team-section::after {
+    content: '' !important;
+    display: none !important;
+  }
+
+  /* Schedule section: hide only the SMALL inner arrow glyphs on mobile
+     (keep the large arrows/containers unchanged). */
+  .schedule-carousel .swiper-button-prev-schedule::after,
+  .schedule-carousel .swiper-button-next-schedule::after,
+  .schedule-carousel-wrapper .swiper-button-prev-schedule::after,
+  .schedule-carousel-wrapper .swiper-button-next-schedule::after,
+  .schedule-nav-arrow-mobile.swiper-button-prev-schedule::after,
+  .schedule-nav-arrow-mobile.swiper-button-next-schedule::after {
     content: '' !important;
     display: none !important;
   }
