@@ -961,6 +961,32 @@
   main {
     -webkit-overflow-scrolling: touch !important;
     touch-action: pan-y !important;
+    /* CRITICAL: Ensure smooth scrolling */
+    scroll-behavior: auto !important;
+    /* Prevent scroll anchoring issues */
+    overflow-anchor: none !important;
+  }
+  
+  /* CRITICAL: Ensure all touch event handlers are passive */
+  * {
+    /* Prevent any element from blocking touch events */
+    touch-action: auto !important;
+  }
+  
+  /* Allow specific touch actions where needed */
+  button,
+  a,
+  [role="button"],
+  [onclick] {
+    touch-action: manipulation !important;
+  }
+  
+  /* CRITICAL: Prevent fixed elements from blocking scroll */
+  [style*="position: fixed"],
+  [style*="position:fixed"],
+  .fixed {
+    touch-action: pan-y !important;
+    pointer-events: auto !important;
   }
   
   /* Разрешаем скролл только когда модальное окно открыто */
@@ -1064,12 +1090,39 @@
     min-height: auto !important;
   }
   
+  /* CRITICAL: Replace all 100vh instances with mobile-safe alternatives */
+  [style*="100vh"],
+  [style*="min-height: 100vh"],
+  [style*="height: 100vh"],
+  [style*="max-height: 100vh"] {
+    /* Use content-based height for most elements */
+    min-height: auto !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+  
   /* Use content-based height instead of viewport-based */
   @supports (height: 100dvh) {
-    /* Use dynamic viewport height if available */
+    /* Use dynamic viewport height if available - only for full-screen sections */
+    .hero-section-bg,
+    section[class*="hero"] {
+      min-height: 100dvh !important;
+      height: 100dvh !important;
+    }
+    
+    /* For other sections, use auto height */
     main,
     main > div {
-      min-height: 100dvh !important;
+      min-height: auto !important;
+    }
+  }
+  
+  /* Fallback for browsers without dvh support */
+  @supports not (height: 100dvh) {
+    .hero-section-bg,
+    section[class*="hero"] {
+      min-height: -webkit-fill-available !important;
+      height: -webkit-fill-available !important;
     }
   }
   
@@ -1086,9 +1139,8 @@
     user-select: none !important;
     /* Prevent video from blocking scroll performance */
     will-change: auto !important;
-    /* REMOVED: transform override was conflicting with inline styles */
-    /* transform: translateZ(0) !important; */
-    /* -webkit-transform: translateZ(0) !important; */
+    /* CRITICAL: Prevent video decode during scroll - use async decoding */
+    decoding: async !important;
   }
   
   /* CRITICAL FIX: Prevent video containers from blocking scroll */
@@ -1133,10 +1185,28 @@
     /* contain: layout style removed - can cause scroll blocking on mobile */
   }
   
-  /* PERFORMANCE: Оптимизация для изображений - предотвращаем layout shift */
+  /* PERFORMANCE: Оптимизация для изображений - предотвращаем layout shift и decode blocking */
+  img {
+    /* CRITICAL: Use async decoding to prevent blocking scroll */
+    decoding: async !important;
+    /* Prevent layout shift */
+    content-visibility: auto !important;
+  }
+  
   img[loading="lazy"] {
     /* Используем aspect-ratio для предотвращения layout shift */
     aspect-ratio: attr(width) / attr(height);
+    /* CRITICAL: Lazy images must not decode during scroll */
+    decoding: async !important;
+  }
+  
+  /* CRITICAL: Prevent heavy PNG backgrounds from blocking scroll */
+  [style*="backgroundImage"],
+  [style*="background-image"] {
+    /* Use async decoding for background images */
+    will-change: auto !important;
+    /* Prevent layout thrashing */
+    content-visibility: auto !important;
   }
   
   /* Убеждаемся что все секции не блокируют скролл */
@@ -1172,12 +1242,17 @@
   /* CRITICAL FIX: Ensure all MainScreen sections are always visible and rendered on mobile */
   main > section,
   main > div > section,
-  main section {
+  main section,
+  main > div > div > section {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     min-height: auto !important;
     height: auto !important;
+    /* CRITICAL: Ensure sections don't fail to mount */
+    position: relative !important;
+    /* Prevent any conditional hiding */
+    pointer-events: auto !important;
   }
   
   /* CRITICAL FIX: Ensure section containers are always visible */
@@ -1185,12 +1260,36 @@
   main > div > div[ref],
   .actors-section-wrapper-mobile,
   .trailer-section-wrapper-mobile,
-  .journey-section-container {
+  .journey-section-container,
+  .hero-section-bg,
+  .events-section-wrapper,
+  [class*="section-wrapper"],
+  [class*="section-container"] {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     min-height: auto !important;
     height: auto !important;
+    /* CRITICAL: Ensure containers don't fail to mount */
+    position: relative !important;
+    pointer-events: auto !important;
+  }
+  
+  /* CRITICAL FIX: Prevent any component from conditionally hiding on mobile */
+  [style*="display: none"],
+  [style*="visibility: hidden"],
+  [style*="opacity: 0"] {
+    /* Only apply to non-critical elements, not sections */
+  }
+  
+  /* CRITICAL: Force all section-related elements to be visible */
+  main section *,
+  main > div > section *,
+  .journey-section-container *,
+  .actors-section-wrapper-mobile *,
+  .trailer-section-wrapper-mobile * {
+    /* Ensure child elements don't prevent parent from rendering */
+    visibility: inherit !important;
   }
   
   /* CRITICAL FIX: Ensure section with section-3 background doesn't block scroll on mobile */

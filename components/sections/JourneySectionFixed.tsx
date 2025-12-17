@@ -201,29 +201,60 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       }
     };
 
+    // CRITICAL: Track if user is actively scrolling to prevent video operations during scroll
+    // This prevents scroll freezes when user stops near videos
+    let isUserScrolling = false;
+    let scrollEndTimeout: NodeJS.Timeout | null = null;
+    
+    const handleScrollStart = () => {
+      isUserScrolling = true;
+      if (scrollEndTimeout) clearTimeout(scrollEndTimeout);
+      scrollEndTimeout = setTimeout(() => {
+        isUserScrolling = false;
+      }, 200); // Consider scroll ended after 200ms of no scroll
+    };
+    
+    // Listen for scroll events to detect when user is actively scrolling
+    window.addEventListener('scroll', handleScrollStart, { passive: true });
+    
     const observer = new IntersectionObserver(
       (entries) => {
-        // Use requestAnimationFrame to batch updates and prevent blocking scroll
+        // CRITICAL: Don't process video operations during active scrolling
+        // This prevents scroll freezes and lag
+        if (isUserScrolling) {
+          // During scroll, only pause videos that are clearly out of view
+          entries.forEach((entry) => {
+            const video = entry.target as HTMLVideoElement;
+            if (!entry.isIntersecting || entry.intersectionRatio < 0.1) {
+              handlePause(video);
+            }
+          });
+          return;
+        }
+        
+        // Only process play/pause when user has stopped scrolling
+        // Use requestAnimationFrame to batch updates
         requestAnimationFrame(() => {
           entries.forEach((entry) => {
             const video = entry.target as HTMLVideoElement;
             
-            // CRITICAL: Play when video is at least 30% visible (lower threshold for better UX)
-            // This ensures videos start playing as soon as user scrolls them into view
-            if (entry.isIntersecting && entry.intersectionRatio >= 0.3) {
+            // CRITICAL: Play when video is at least 40% visible
+            // Higher threshold reduces play/pause cycles
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
               handlePlay(video);
             } else {
-              // Pause when video is less than 30% visible or out of view
+              // Pause when video is less than 40% visible or out of view
               handlePause(video);
             }
           });
         });
       },
       {
-        // Use multiple thresholds to catch when video enters/exits viewport
-        threshold: [0, 0.3, 0.5, 0.7, 1.0],
-        // Small rootMargin to start playing slightly before fully visible
-        rootMargin: '20px',
+        // CRITICAL: Use single threshold to reduce callback frequency
+        // Multiple thresholds cause too many callbacks and performance issues
+        threshold: 0.4,
+        // Remove rootMargin - don't preload, only play when actually visible
+        rootMargin: '0px',
       }
     );
 
@@ -249,38 +280,34 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       }
       video.removeAttribute('autoplay');
       
-      // CRITICAL: Add event listeners to ensure video plays when ready
+      // CRITICAL: Add lightweight event listeners - NO getBoundingClientRect() calls
+      // getBoundingClientRect() causes layout thrashing and scroll lag
       const handleCanPlay = () => {
-        // Video is ready to play - check if it should be playing
-        const rect = video.getBoundingClientRect();
-        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-        const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
-        const isEnoughVisible = visibleHeight / window.innerHeight >= 0.3;
-        
-        if (isVisible && isEnoughVisible && video.paused) {
-          video.play().catch(() => {
-            // Autoplay may be blocked, that's okay
-          });
-        }
+        // Video is ready - let IntersectionObserver handle play/pause
+        // Don't call getBoundingClientRect() here as it causes performance issues
+        // IntersectionObserver will handle visibility detection
       };
       
       // Store handler for cleanup
       videoHandlers.set(video, handleCanPlay);
       
-      video.addEventListener('loadedmetadata', handleCanPlay);
+      // Only listen to canplay - loadedmetadata is not needed
       video.addEventListener('canplay', handleCanPlay);
       
       observer.observe(video);
     });
 
     return () => {
+      // Cleanup scroll listener
+      window.removeEventListener('scroll', handleScrollStart);
+      if (scrollEndTimeout) clearTimeout(scrollEndTimeout);
+      
       observer.disconnect();
       // Ensure all videos are paused on cleanup and remove event listeners
       videos.forEach(video => {
         video.pause();
         const handler = videoHandlers.get(video);
         if (handler) {
-          video.removeEventListener('loadedmetadata', handler);
           video.removeEventListener('canplay', handler);
         }
       });
