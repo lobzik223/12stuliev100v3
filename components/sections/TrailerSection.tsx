@@ -29,6 +29,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
   const [mounted, setMounted] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const lastMobileTouchTsRef = useRef(0);
   const isMobile = typeof window !== 'undefined' ? isProbablyMobile() : false;
 
   useEffect(() => {
@@ -167,12 +168,15 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             }}
             onClick={(e) => {
               if (!isMobile) return;
+              // iOS: touchend triggers a synthetic click — avoid double toggles.
+              if (Date.now() - lastMobileTouchTsRef.current < 500) return;
               e.preventDefault();
               e.stopPropagation();
               toggleTrailerPlayback();
             }}
             onTouchEnd={(e) => {
               if (!isMobile) return;
+              lastMobileTouchTsRef.current = Date.now();
               e.preventDefault();
               e.stopPropagation();
               toggleTrailerPlayback();
@@ -215,7 +219,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   borderRadius: '8px',
                   cursor: 'pointer',
                   transition: 'background-color 0.3s ease',
-                  pointerEvents: 'auto',
+                  // Mobile uses container tap-to-toggle; prevent overlay from causing double events
+                  pointerEvents: isMobile ? 'none' : 'auto',
                 }}
                 onMouseEnter={(e) => {
                   if (!isMobile) {
@@ -228,6 +233,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   }
                 }}
                 onClick={(e) => {
+                  if (isMobile) return;
                   e.stopPropagation();
                   if (videoRef.current) {
                     videoRef.current.play().catch((error) => {
@@ -237,6 +243,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   }
                 }}
                 onTouchStart={(e) => {
+                  if (isMobile) return;
                   e.stopPropagation();
                   if (videoRef.current && !isVideoPlaying) {
                     videoRef.current.play().catch((error) => {
