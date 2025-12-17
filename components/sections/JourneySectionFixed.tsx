@@ -200,72 +200,31 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       }
     };
 
-    // CRITICAL: Track if user is actively scrolling to prevent video operations during scroll
-    // This prevents scroll freezes when user stops near videos
-    let isUserScrolling = false;
-    let scrollEndTimeout: NodeJS.Timeout | null = null;
-    // Track last intersection ratios even during scroll (lightweight)
+    // Track last intersection ratios (4 videos only; cheap) and decide play/pause from that.
     const lastRatio = new Map<HTMLVideoElement, number>();
-    
-    const handleScrollStart = () => {
-      isUserScrolling = true;
-      if (scrollEndTimeout) clearTimeout(scrollEndTimeout);
-      scrollEndTimeout = setTimeout(() => {
-        isUserScrolling = false;
-        // After scroll ends, quickly start any videos that are already visible enough
-        requestAnimationFrame(() => {
-          videos.forEach((v) => {
-            const r = lastRatio.get(v) ?? 0;
-            if (r >= 0.4) handlePlay(v);
-          });
-        });
-      }, 200); // Consider scroll ended after 200ms of no scroll
-    };
-    
-    // Listen for scroll events to detect when user is actively scrolling
-    window.addEventListener('scroll', handleScrollStart, { passive: true });
+    const PLAY_THRESHOLD = 0.35; // start as soon as user scrolls to the video
     
     const observer = new IntersectionObserver(
       (entries) => {
-        // Always update last ratios (cheap) so scroll-end can act immediately
         entries.forEach((entry) => {
           lastRatio.set(entry.target as HTMLVideoElement, entry.intersectionRatio);
         });
-        // CRITICAL: Don't process video operations during active scrolling
-        // This prevents scroll freezes and lag
-        if (isUserScrolling) {
-          // During scroll, only pause videos that are clearly out of view
-          entries.forEach((entry) => {
-            const video = entry.target as HTMLVideoElement;
-            if (!entry.isIntersecting || entry.intersectionRatio < 0.1) {
-              handlePause(video);
-            }
-          });
-          return;
-        }
-        
-        // Only process play/pause when user has stopped scrolling
-        // Use requestAnimationFrame to batch updates
+
+        // Always react immediately (user requested immediate start on scroll-to-video).
         requestAnimationFrame(() => {
-          entries.forEach((entry) => {
-            const video = entry.target as HTMLVideoElement;
-            
-            // CRITICAL: Play when video is at least 40% visible
-            // Higher threshold reduces play/pause cycles
-            if (entry.isIntersecting && entry.intersectionRatio >= 0.4) {
+          videos.forEach((video) => {
+            const r = lastRatio.get(video) ?? 0;
+            if (r >= PLAY_THRESHOLD) {
               handlePlay(video);
             } else {
-              // Pause when video is less than 40% visible or out of view
               handlePause(video);
             }
           });
         });
       },
       {
-        // CRITICAL: Use single threshold to reduce callback frequency
-        // Multiple thresholds cause too many callbacks and performance issues
-        threshold: 0.4,
-        // Remove rootMargin - don't preload, only play when actually visible
+        // Keep callback frequency reasonable; ratios are tracked in a map anyway
+        threshold: [0, 0.15, 0.35, 0.6, 1],
         rootMargin: '0px',
       }
     );
@@ -310,10 +269,6 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     });
 
     return () => {
-      // Cleanup scroll listener
-      window.removeEventListener('scroll', handleScrollStart);
-      if (scrollEndTimeout) clearTimeout(scrollEndTimeout);
-      
       observer.disconnect();
       // Ensure all videos are paused on cleanup and remove event listeners
       videos.forEach(video => {

@@ -49,17 +49,13 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
     }
   }, [mounted]);
 
-  // Mobile: tap-to-toggle should pause/play immediately (no nested controls interaction)
-  const toggleTrailerPlayback = () => {
+  // Mobile: behave as a normal player (controls + fullscreen), but avoid touch->click double fire.
+  const playTrailer = () => {
     const v = videoRef.current;
     if (!v) return;
-    if (v.paused) {
-      v.play().catch(() => {
-        // Autoplay/tap restrictions are OK to ignore silently
-      });
-    } else {
-      v.pause();
-    }
+    v.play().catch(() => {
+      // Autoplay/tap restrictions are OK to ignore silently
+    });
   };
 
   const handleBuyTicket = (url: string | undefined) => {
@@ -166,21 +162,6 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               aspectRatio: '16 / 9',
               cursor: isVideoPlaying ? 'default' : 'pointer',
             }}
-            onClick={(e) => {
-              if (!isMobile) return;
-              // iOS: touchend triggers a synthetic click — avoid double toggles.
-              if (Date.now() - lastMobileTouchTsRef.current < 500) return;
-              e.preventDefault();
-              e.stopPropagation();
-              toggleTrailerPlayback();
-            }}
-            onTouchEnd={(e) => {
-              if (!isMobile) return;
-              lastMobileTouchTsRef.current = Date.now();
-              e.preventDefault();
-              e.stopPropagation();
-              toggleTrailerPlayback();
-            }}
           >
             <video
               ref={videoRef}
@@ -192,8 +173,8 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 borderRadius: '8px',
                 backgroundColor: '#000',
               }}
-              // Desktop unchanged; mobile should not rely on native pause button (tap-to-toggle)
-              controls={isVideoPlaying && !isMobile}
+              // Mobile: normal player with fullscreen; Desktop unchanged behavior (controls only while playing)
+              controls={isMobile ? true : isVideoPlaying}
               preload="metadata"
               playsInline
               onPlay={() => {
@@ -219,8 +200,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   borderRadius: '8px',
                   cursor: 'pointer',
                   transition: 'background-color 0.3s ease',
-                  // Mobile uses container tap-to-toggle; prevent overlay from causing double events
-                  pointerEvents: isMobile ? 'none' : 'auto',
+                  pointerEvents: 'auto',
                 }}
                 onMouseEnter={(e) => {
                   if (!isMobile) {
@@ -233,24 +213,15 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   }
                 }}
                 onClick={(e) => {
-                  if (isMobile) return;
                   e.stopPropagation();
-                  if (videoRef.current) {
-                    videoRef.current.play().catch((error) => {
-                      console.error('Ошибка воспроизведения видео:', error);
-                    });
-                    setIsVideoPlaying(true);
-                  }
+                  if (isMobile && Date.now() - lastMobileTouchTsRef.current < 500) return;
+                  playTrailer();
                 }}
-                onTouchStart={(e) => {
-                  if (isMobile) return;
+                onTouchEnd={(e) => {
+                  if (!isMobile) return;
                   e.stopPropagation();
-                  if (videoRef.current && !isVideoPlaying) {
-                    videoRef.current.play().catch((error) => {
-                      console.error('Ошибка воспроизведения видео:', error);
-                    });
-                    setIsVideoPlaying(true);
-                  }
+                  lastMobileTouchTsRef.current = Date.now();
+                  playTrailer();
                 }}
               >
                 <div

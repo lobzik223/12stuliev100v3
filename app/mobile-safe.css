@@ -1509,6 +1509,10 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
 
   /* Team section: hide only the SMALL inner arrow glyphs on mobile
      (keep the large arrows/containers unchanged). */
+  .swiper-button-prev-team::after,
+  .swiper-button-next-team::after,
+  .swiper-button-prev-team-section::after,
+  .swiper-button-next-team-section::after,
   .team-carousel .swiper-button-prev-team::after,
   .team-carousel .swiper-button-next-team::after,
   .team-section-carousel .swiper-button-prev-team-section::after,
@@ -1519,6 +1523,8 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
 
   /* Schedule section: hide only the SMALL inner arrow glyphs on mobile
      (keep the large arrows/containers unchanged). */
+  .swiper-button-prev-schedule::after,
+  .swiper-button-next-schedule::after,
   .schedule-carousel .swiper-button-prev-schedule::after,
   .schedule-carousel .swiper-button-next-schedule::after,
   .schedule-carousel-wrapper .swiper-button-prev-schedule::after,
