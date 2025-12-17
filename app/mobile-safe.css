@@ -415,13 +415,14 @@
   .mobile-scene-card:nth-child(2) .mobile-scene-image {
     height: 0 !important;
     padding-top: clamp(22%, 26%, 30%) !important;
-    min-width: clamp(200px, 60vw, 300px) !important;
+    /* Match vput.png sizing (scene 1) on mobile */
+    min-width: clamp(280px, 80vw, 400px) !important;
     width: auto !important;
     max-width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     transform: none !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     background-size: contain !important;
     background-position: center center !important;
   }
@@ -445,13 +446,14 @@
   .mobile-scene-card:nth-child(4) .mobile-scene-image {
     height: 0 !important;
     padding-top: clamp(22%, 26%, 30%) !important;
-    min-width: clamp(200px, 60vw, 300px) !important;
+    /* Match vput.png sizing (scene 1) on mobile */
+    min-width: clamp(280px, 80vw, 400px) !important;
     width: auto !important;
     max-width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     transform: none !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     background-size: contain !important;
     background-position: center center !important;
   }
