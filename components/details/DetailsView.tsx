@@ -115,12 +115,11 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   }, [isTicketModalOpen, isMobile]);
 
   // УПРОЩЕННАЯ логика скролла - на мобильных используем нативный скролл без ограничений
-  // MOBILE SCROLL FIX: Полностью отключаем любую логику скролла на мобильных
+  // MOBILE SCROLL FIX: Полностью отключаем любую логику скролла на мобильных и обеспечиваем правильную высоту
   useEffect(() => {
     // На мобильных отключаем все ограничения скролла - используем нативный скролл
     if (isMobile) {
-      // КРИТИЧНО: Восстанавливаем нормальный скролл на мобильных при каждом рендере
-      // Это гарантирует что никакие стили не блокируют скролл
+      // КРИТИЧНО: Восстанавливаем нормальный скролл на мобильных и устанавливаем правильную высоту контейнера
       const restoreNativeScroll = () => {
         // Восстанавливаем body и html
         if (document.body && document.documentElement) {
@@ -137,7 +136,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           document.documentElement.style.overflow = '';
         }
         
-        // Восстанавливаем details-container
+        // Восстанавливаем details-container и устанавливаем правильную высоту
         if (containerRef.current) {
           containerRef.current.style.height = '';
           containerRef.current.style.maxHeight = '';
@@ -146,8 +145,56 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           containerRef.current.style.overflowY = '';
           containerRef.current.style.overflowX = '';
           containerRef.current.style.position = '';
-          // Убеждаемся что контейнер растет естественно
           containerRef.current.style.display = 'block';
+          
+          // КРИТИЧНО: Вычисляем реальную высоту контента включая ::after pseudo-element
+          // Это гарантирует что контейнер растет до полной высоты контента и скролл доходит до конца
+          const calculateFullHeight = () => {
+            if (!containerRef.current) return;
+            
+            // Используем scrollHeight для получения полной высоты контента
+            const scrollHeight = containerRef.current.scrollHeight;
+            
+            // Также учитываем ::after pseudo-element (черный фон)
+            // На мобильных ::after начинается примерно на clamp(290vh, 310vh, 330vh) и имеет высоту var(--after-height, 200vh) + 100px
+            const vh = window.innerHeight;
+            // Используем среднее значение из clamp(290vh, 310vh, 330vh) = 310vh
+            const afterStart = 310 * vh / 100;
+            // var(--after-height, 200vh) + 100px
+            const afterHeight = 200 * vh / 100 + 100;
+            const afterBottom = afterStart + afterHeight;
+            
+            // Также проверяем самый нижний дочерний элемент
+            const children = Array.from(containerRef.current.children);
+            let maxChildBottom = 0;
+            children.forEach((child) => {
+              const rect = (child as HTMLElement).getBoundingClientRect();
+              const bottom = window.scrollY + rect.bottom;
+              if (bottom > maxChildBottom) {
+                maxChildBottom = bottom;
+              }
+            });
+            
+            // Берем максимальное значение из всех источников
+            const fullHeight = Math.max(
+              scrollHeight,
+              afterBottom,
+              maxChildBottom,
+              containerRef.current.offsetHeight
+            );
+            
+            // Устанавливаем min-height чтобы контейнер был достаточно высоким для полного скролла
+            // Добавляем небольшой запас (50px) для гарантии что скролл доходит до конца
+            if (fullHeight > 0) {
+              containerRef.current.style.minHeight = `${fullHeight + 50}px`;
+            }
+          };
+          
+          // Вычисляем высоту после небольших задержек (когда все элементы отрендерены)
+          setTimeout(calculateFullHeight, 100);
+          setTimeout(calculateFullHeight, 500);
+          setTimeout(calculateFullHeight, 1000);
+          setTimeout(calculateFullHeight, 2000);
         }
         
         // Также проверяем родительские контейнеры (main, div)
@@ -167,6 +214,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       const timeoutId1 = setTimeout(restoreNativeScroll, 100);
       const timeoutId2 = setTimeout(restoreNativeScroll, 300);
       const timeoutId3 = setTimeout(restoreNativeScroll, 600);
+      const timeoutId4 = setTimeout(restoreNativeScroll, 1000);
       
       // Также восстанавливаем при изменении размера окна
       const handleResize = () => {
@@ -174,11 +222,25 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       };
       window.addEventListener('resize', handleResize, { passive: true });
       
+      // Также восстанавливаем при скролле (на случай если что-то меняет стили во время скролла)
+      const handleScroll = () => {
+        // Только проверяем и восстанавливаем, не блокируем скролл
+        if (containerRef.current) {
+          const container = containerRef.current;
+          if (container.style.height || container.style.maxHeight || container.style.overflow === 'hidden') {
+            restoreNativeScroll();
+          }
+        }
+      };
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      
       return () => {
         clearTimeout(timeoutId1);
         clearTimeout(timeoutId2);
         clearTimeout(timeoutId3);
+        clearTimeout(timeoutId4);
         window.removeEventListener('resize', handleResize);
+        window.removeEventListener('scroll', handleScroll);
         restoreNativeScroll();
       };
     }

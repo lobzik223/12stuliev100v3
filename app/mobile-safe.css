@@ -932,6 +932,19 @@
     position: relative !important;
     /* Контейнер должен расти естественно */
     display: block !important;
+    /* iOS Safari scrolling support */
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+    /* Убеждаемся что контейнер учитывает весь контент включая ::after */
+    box-sizing: border-box !important;
+  }
+  
+  /* Убеждаемся что ::after pseudo-element не блокирует скролл */
+  .details-container::after {
+    /* Убеждаемся что ::after не создает проблем со скроллом */
+    pointer-events: none !important;
+    /* Убеждаемся что высота правильно вычисляется */
+    box-sizing: border-box !important;
   }
   
   /* Убеждаемся что родительские контейнеры DetailsView не блокируют скролл */
@@ -943,15 +956,32 @@
     overflow-y: visible !important;
     height: auto !important;
     max-height: none !important;
+    /* iOS Safari scrolling support */
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-y !important;
+  }
+  
+  /* КРИТИЧНО: Убеждаемся что нет вложенных scroll контейнеров */
+  .details-container > * {
+    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+  
+  /* Убеждаемся что абсолютно позиционированные элементы не блокируют скролл */
+  .details-container [style*="position: absolute"],
+  .details-container [style*="position:fixed"] {
+    pointer-events: auto !important;
+    /* Только для элементов которые должны быть кликабельными */
   }
   
   /* Слегка увеличиваем размер шрифта для текстов "ТЕАТРАЛЬНОЕ ПУТЕШЕСТВИЕ ИЛЬФА И ПЕТРОВА" и "СЛЕДУЙ ЗА БЕНДЕРОМ!" на мобильных */
   .hero-text-subtitle {
-    font-size: clamp(0.37rem, 1.25vw, 0.6rem) !important;
+    font-size: clamp(0.4rem, 1.35vw, 0.65rem) !important;
   }
   
   .hero-text-cta {
-    font-size: clamp(0.34rem, 1.15vw, 0.55rem) !important;
+    font-size: clamp(0.37rem, 1.25vw, 0.6rem) !important;
   }
   
   /* Слегка увеличиваем размер логотипа на мобильных */
