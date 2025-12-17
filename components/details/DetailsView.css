@@ -271,6 +271,52 @@ span.date-time-number {
   justify-content: center;
 }
 
+/* Desktop: square trailer in place of ramka.png (match MainScreen Trailer style) */
+.details-trailer-square {
+  width: min(60vh, 32vw, 650px);
+  aspect-ratio: 1 / 1;
+  position: relative;
+  display: block;
+}
+
+.details-trailer-video {
+  display: block;
+}
+
+.details-trailer-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.details-trailer-overlay:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.details-trailer-play {
+  width: clamp(5rem, 8vw, 7rem);
+  height: clamp(5rem, 8vw, 7rem);
+  background-color: rgba(251, 198, 50, 0.9);
+  border: 3px solid #FBC632;
+  box-shadow: 0 0 2rem rgba(251, 198, 50, 0.8);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.details-trailer-play:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 3rem rgba(251, 198, 50, 1);
+}
+
 /* Видео под рамкой для ПК - меньше ширина, больше высота */
 .frame-video {
   position: absolute;

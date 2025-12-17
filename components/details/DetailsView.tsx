@@ -42,11 +42,22 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     if (typeof window === 'undefined') return false;
     return window.innerWidth <= 768;
   });
+  // Desktop-only trailer (to match MainScreen Trailer section)
+  const desktopTrailerRef = useRef<HTMLVideoElement>(null);
+  const [isDesktopTrailerPlaying, setIsDesktopTrailerPlaying] = useState(false);
 
   const handleBuyTicket = () => {
     if (buyTicketUrl) {
       setIsTicketModalOpen(true);
     }
+  };
+
+  const playDesktopTrailer = () => {
+    const v = desktopTrailerRef.current;
+    if (!v) return;
+    v.play().catch(() => {
+      // Desktop autoplay restrictions are OK to ignore silently
+    });
   };
 
   const closeTicketModal = () => {
@@ -898,28 +909,72 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       />
       {/* Рамка - сначала на мобильных, потом на десктопе */}
       <div className={`frame-widget ${isMobile ? 'frame-widget-mobile-first' : ''}`}>
-        {/* Квадратное видео под рамкой */}
-        <video
-          src="/photo/babka.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          controls={false}
-          preload="auto"
-          className="frame-video"
-        />
-        <Image 
-          src="/photo/ramka.png" 
-          alt="Декоративная рамка" 
-          width={700}
-          height={800}
-          className="frame-image"
-          priority
-          quality={85}
-          loading="eager"
-          unoptimized
-        />
+        {isMobile ? (
+          <>
+            {/* Mobile: keep existing framed video */}
+            <video
+              src="/photo/babka.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls={false}
+              preload="auto"
+              className="frame-video"
+            />
+            <Image
+              src="/photo/ramka.png"
+              alt="Декоративная рамка"
+              width={700}
+              height={800}
+              className="frame-image"
+              priority
+              quality={85}
+              loading="eager"
+              unoptimized
+            />
+          </>
+        ) : (
+          // Desktop: remove ramka.png and show square treiler.mp4 like MainScreen Trailer section
+          <div className="details-trailer-square">
+            <video
+              ref={desktopTrailerRef}
+              className="details-trailer-video"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                borderRadius: '8px',
+                backgroundColor: '#000',
+              }}
+              controls={isDesktopTrailerPlaying}
+              preload="metadata"
+              playsInline
+              onPlay={() => setIsDesktopTrailerPlaying(true)}
+              onPause={() => setIsDesktopTrailerPlaying(false)}
+              onEnded={() => setIsDesktopTrailerPlaying(false)}
+            >
+              <source src="/backgrounds/sections/treiler.mp4" type="video/mp4" />
+              Ваш браузер не поддерживает воспроизведение видео.
+            </video>
+
+            {!isDesktopTrailerPlaying && (
+              <div
+                className="details-trailer-overlay"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  playDesktopTrailer();
+                }}
+              >
+                <div className="details-trailer-play">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 5v14l11-7z" fill="#682302" stroke="#682302" strokeWidth="1" />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <div className="date-time-box">
         <svg 
