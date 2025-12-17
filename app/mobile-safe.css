@@ -1285,10 +1285,7 @@
   }
   
   /* CRITICAL FIX: Ensure section with section-3 background doesn't block scroll on mobile */
-  section[style*="section-3"],
-  /* Avoid :has() selector on mobile (performance); target class directly */
-  section .mobile-section-3-background,
-  section .mobile-section-3-bg {
+  .section-3-wrapper {
     overflow: visible !important;
     overflow-x: hidden !important;
     overflow-y: visible !important;

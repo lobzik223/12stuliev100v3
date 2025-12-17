@@ -485,6 +485,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               slidesPerGroup={1}
               centeredSlides={false}
               grabCursor={true}
+              // Mobile stability: allow vertical scroll even on Swiper areas
+              touchStartPreventDefault={!isMobile}
+              touchMoveStopPropagation={false}
+              passiveListeners={true}
               navigation={{
                 nextEl: '.swiper-button-next-team',
                 prevEl: '.swiper-button-prev-team',
@@ -744,6 +748,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 slidesPerGroup={1}
                 centeredSlides={false}
                 grabCursor={true}
+                // Mobile stability: allow vertical scroll even on Swiper areas
+                touchStartPreventDefault={!isMobile}
+                touchMoveStopPropagation={false}
+                passiveListeners={true}
                 navigation={{
                   nextEl: '.swiper-button-next-reviews',
                   prevEl: '.swiper-button-prev-reviews',
@@ -983,6 +991,10 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 centeredSlides={false}
                 grabCursor={true}
                 watchOverflow={true}
+                // Mobile stability: allow vertical scroll even on Swiper areas
+                touchStartPreventDefault={!isMobile}
+                touchMoveStopPropagation={false}
+                passiveListeners={true}
                 navigation={{
                   nextEl: '.swiper-button-next-schedule',
                   prevEl: '.swiper-button-prev-schedule',

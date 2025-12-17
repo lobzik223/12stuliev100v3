@@ -296,8 +296,9 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
             <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="eager" fetchPriority="high" />
             {/* Preload first Journey scene image (vput.png) - appears early in Journey section */}
             <img src="/backgrounds/sections/vput.png?v=2.0" alt="" loading="eager" fetchPriority="high" />
-            {/* Lazy load section-3 (appears later, after Journey) */}
-            <img src="/backgrounds/sections/mobile/section-3-mobile.png" alt="" loading="lazy" />
+            {/* IMPORTANT: section-3-mobile is the large background after "Актёры".
+                Load it eagerly on mobile to avoid decode/jank spikes when reaching Actors/Trailer. */}
+            <img src="/backgrounds/sections/mobile/section-3-mobile.png" alt="" loading="eager" fetchPriority="high" />
             {/* Lazy load remaining Journey section images - load as user approaches */}
             <img src="/backgrounds/sections/vput2.png?v=2.0" alt="" loading="lazy" />
             <img src="/backgrounds/sections/vput3.png?v=2.0" alt="" loading="lazy" />
@@ -504,7 +505,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
 
         {/* Раздел с фоном section-3.png */}
         <section 
-          className="relative w-full"
+          className="relative w-full section-3-wrapper"
           style={{
             width: '100%',
             position: 'relative',
@@ -517,7 +518,10 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
             <div
               className="mobile-section-3-background"
               style={{
-                backgroundImage: 'url(/backgrounds/sections/section-3.png)',
+                // Mobile-only: ensure the correct mobile background is used even if CSS media queries fail on real devices
+                backgroundImage: isMobile
+                  ? 'url(/backgrounds/sections/mobile/section-3-mobile.png)'
+                  : 'url(/backgrounds/sections/section-3.png)',
                 backgroundSize: '100% 100%',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',

@@ -224,6 +224,10 @@ export default function ActorsSection() {
             slidesPerGroup={1}
             centeredSlides={true}
             grabCursor={true}
+            // Mobile stability: do not block vertical page scroll with non-passive touch handlers
+            touchStartPreventDefault={!isMobile}
+            touchMoveStopPropagation={false}
+            passiveListeners={true}
             navigation={{
               nextEl: '.swiper-button-next-actors',
               prevEl: '.swiper-button-prev-actors',
