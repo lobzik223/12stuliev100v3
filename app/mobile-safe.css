@@ -949,12 +949,13 @@
   }
   
   /* PERFORMANCE: Оптимизация для предотвращения layout thrashing при скролле */
+  /* CRITICAL FIX: Removed contain property as it can cause scroll blocking issues on mobile */
   /* Отключаем сложные вычисления во время скролла */
   section,
   div[class*="section"],
   main > section {
     /* Убеждаемся что секции не вызывают рефлоу при скролле */
-    contain: layout style !important;
+    /* contain: layout style removed - can cause scroll blocking on mobile */
   }
   
   /* PERFORMANCE: Оптимизация для изображений - предотвращаем layout shift */
@@ -971,6 +972,26 @@
     position: relative !important;
     height: auto !important;
     max-height: none !important;
+  }
+  
+  /* CRITICAL FIX: Ensure section with section-3 background doesn't block scroll on mobile */
+  section[style*="section-3"],
+  section:has(.mobile-section-3-background) {
+    overflow: visible !important;
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    position: relative !important;
+    height: auto !important;
+    max-height: none !important;
+    touch-action: pan-y !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* CRITICAL FIX: Ensure mobile-section-3-bg doesn't block touch events */
+  .mobile-section-3-bg,
+  .mobile-section-3-background {
+    pointer-events: none !important;
+    touch-action: none !important;
   }
   
   /* Убеждаемся что контейнеры не блокируют скролл */

@@ -1582,16 +1582,31 @@ div.swiper-button-next.swiper-button-next-actors {
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     pointer-events: none !important;
+    /* CRITICAL FIX: Ensure blur gradient is below Actors title on mobile */
+    z-index: 5 !important;
+    position: relative !important;
   }
 
   .actors-section-wrapper-mobile {
     margin-top: clamp(-4rem, -6vh, -2rem) !important;
+    /* CRITICAL FIX: Ensure wrapper has high z-index on mobile to be above background/blur */
+    z-index: 25 !important;
+    position: relative !important;
   }
 
   .actors-section-mobile {
     margin-top: clamp(-3rem, -5vh, -1rem) !important;
     /* Добавляем padding-top чтобы заголовок и подзаголовок были полностью видны */
     padding-top: clamp(3.5rem, 6vh, 5rem) !important;
+    /* CRITICAL FIX: Ensure section has high z-index on mobile to be above background/blur */
+    z-index: 25 !important;
+    position: relative !important;
+  }
+
+  /* CRITICAL FIX: Ensure Actors title is above all background/blur elements on mobile */
+  .actors-section-mobile .text-center {
+    position: relative !important;
+    z-index: 30 !important;
   }
 
   /* Уменьшаем размер текста "АКТЕРЫ" на мобильных */
@@ -1599,6 +1614,9 @@ div.swiper-button-next.swiper-button-next-actors {
     font-size: clamp(1.1rem, 1.5vw, 1.3rem) !important;
     /* Дополнительный отступ сверху для полной видимости */
     margin-top: clamp(0.5rem, 1vh, 1rem) !important;
+    /* CRITICAL FIX: Ensure title text is above all background/blur */
+    position: relative !important;
+    z-index: 30 !important;
   }
 
   /* Уменьшаем размер подзаголовка "ТАЛАНТЛИВЫЕ АКТЁРЫ..." на мобильных */
@@ -2996,6 +3014,15 @@ body.employee-tickets-modal-open .secondary-nav {
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
+    /* CRITICAL FIX: Ensure background is below Actors content on mobile */
+    z-index: 0 !important;
+    position: absolute !important;
+  }
+  
+  /* CRITICAL FIX: Ensure mobile-section-3-bg container is below Actors content */
+  .mobile-section-3-bg {
+    z-index: 0 !important;
+    position: absolute !important;
   }
   
   /* Улучшенный блюр-градиент для плавного перехода между section-4-mobile и section-3-mobile */

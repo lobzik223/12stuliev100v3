@@ -104,7 +104,22 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
       // На реальных мобильных браузерах (iOS Safari / Android Chrome) viewport height меняется во время скролла
       // (адресная строка), что ломает любые \"секционные\" расчёты на базе innerHeight/getBoundingClientRect.
       // На мобильных отключаем этот scroll-handler полностью и оставляем нативный скролл.
-      if (isProbablyMobile()) return;
+      // CRITICAL: Early return - NO scroll listeners on mobile to prevent freeze
+      if (isProbablyMobile()) {
+        // Ensure body/html are never locked on mobile
+        if (typeof document !== 'undefined') {
+          document.body.style.overflow = '';
+          document.body.style.overflowY = '';
+          document.body.style.position = '';
+          document.body.style.height = '';
+          document.body.style.maxHeight = '';
+          document.documentElement.style.overflow = '';
+          document.documentElement.style.overflowY = '';
+          document.documentElement.style.height = '';
+          document.documentElement.style.maxHeight = '';
+        }
+        return;
+      }
 
       // PERFORMANCE: Используем requestAnimationFrame и debouncing для предотвращения layout thrashing
       let rafId: number | null = null;
@@ -232,7 +247,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
   }, []);
 
   return (
-    <main className="relative min-h-screen w-full bg-black" style={{ overflowX: 'hidden' }}>
+    <main className="relative min-h-screen w-full bg-black" style={{ overflowX: 'hidden', overflowY: 'visible' }}>
       {debugEnabled && (
         <pre
           className="fixed bottom-2 left-2 right-2 z-[99999] max-h-[45vh] overflow-auto rounded-md border border-yellow-400/60 bg-black/80 p-2 text-[10px] leading-snug text-yellow-200"
