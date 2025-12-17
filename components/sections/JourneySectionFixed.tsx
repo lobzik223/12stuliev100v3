@@ -722,10 +722,10 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       style={{
                         position: 'absolute',
                         top: '50%',
-                        left: 'calc(50% - clamp(0.3rem, 1vw, 0.5rem))',
-                        // Mobile-only: make babka.mp4 slightly narrower (X only) to stay inside the frame
-                        transform: 'translate(-50%, -50%) scaleX(0.90)',
-                        width: 'calc(100% - clamp(3.2rem, 8vw, 5.2rem))',
+                        // Match psihuska.mp4 sizing/centering on mobile
+                        left: 'calc(50% + clamp(0.2rem, 0.8vw, 0.5rem))',
+                        transform: 'translate(-50%, -50%) scaleX(0.94)',
+                        width: 'calc(100% - clamp(2.5rem, 6vw, 4rem))',
                         height: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
                         objectFit: 'cover',
                         zIndex: 1,
