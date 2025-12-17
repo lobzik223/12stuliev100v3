@@ -184,9 +184,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       // Play immediately when video comes into view - no debouncing
       // This ensures videos start playing as soon as user scrolls to them
       if (video.paused) {
-        video.play().catch((err) => {
-          // Silently fail - autoplay may be blocked, but don't log errors
-          console.log('Video autoplay prevented:', err);
+        video.play().catch(() => {
+          // Silently fail - autoplay may be blocked
         });
       }
     };
@@ -205,12 +204,21 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     // This prevents scroll freezes when user stops near videos
     let isUserScrolling = false;
     let scrollEndTimeout: NodeJS.Timeout | null = null;
+    // Track last intersection ratios even during scroll (lightweight)
+    const lastRatio = new Map<HTMLVideoElement, number>();
     
     const handleScrollStart = () => {
       isUserScrolling = true;
       if (scrollEndTimeout) clearTimeout(scrollEndTimeout);
       scrollEndTimeout = setTimeout(() => {
         isUserScrolling = false;
+        // After scroll ends, quickly start any videos that are already visible enough
+        requestAnimationFrame(() => {
+          videos.forEach((v) => {
+            const r = lastRatio.get(v) ?? 0;
+            if (r >= 0.4) handlePlay(v);
+          });
+        });
       }, 200); // Consider scroll ended after 200ms of no scroll
     };
     
@@ -219,6 +227,10 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     
     const observer = new IntersectionObserver(
       (entries) => {
+        // Always update last ratios (cheap) so scroll-end can act immediately
+        entries.forEach((entry) => {
+          lastRatio.set(entry.target as HTMLVideoElement, entry.intersectionRatio);
+        });
         // CRITICAL: Don't process video operations during active scrolling
         // This prevents scroll freezes and lag
         if (isUserScrolling) {

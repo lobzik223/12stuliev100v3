@@ -11,6 +11,21 @@
   'use strict';
   
   if (typeof window === 'undefined') return;
+  
+  // IMPORTANT: This script is for debugging only.
+  // On real mobile devices it can cause jank/freezes because it performs expensive DOM scans.
+  // Enable only with ?debug=1 or localStorage DEBUG=1.
+  try {
+    var params = new URLSearchParams(window.location.search || '');
+    var debugParam = params.get('debug');
+    var debugStorage = null;
+    try { debugStorage = localStorage.getItem('DEBUG'); } catch (e) {}
+    var enabled = (debugParam === '1' || debugStorage === '1');
+    if (!enabled) return;
+  } catch (e) {
+    // If anything fails, do not run diagnostics.
+    return;
+  }
 
   const diagnostics = {
     deviceInfo: {},

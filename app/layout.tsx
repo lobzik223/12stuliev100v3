@@ -123,80 +123,38 @@ export default function RootLayout({
             __html: `
               (function() {
                 if (typeof window === 'undefined') return;
+                // Guard: init only once (prevents duplicated observers/listeners on mobile)
+                if (window.__APP_INITED__) return;
+                window.__APP_INITED__ = true;
                 
                 // Функция инициализации
                 function initApp() {
+                  // Guard: fire once (DOMContentLoaded + load both call init)
+                  if (window.__APP_READY_FIRED__) return;
+                  window.__APP_READY_FIRED__ = true;
+
                   // Триггерим событие для инициализации клиентских компонентов
                   window.dispatchEvent(new Event('app-ready'));
-                  
-                  // Принудительно загружаем критические изображения
-                  const criticalImages = [
-                    '/backgrounds/sections/section-1.png',
-                    '/backgrounds/sections/section-2.png',
-                    '/backgrounds/sections/section-3.png',
-                    '/backgrounds/sections/section-4.png',
-                    '/backgrounds/sections/logo100let.png',
-                    '/backgrounds/sections/plitkanovosti.png'
-                  ];
-                  
-                  criticalImages.forEach(src => {
-                    const img = new Image();
-                    img.src = src;
-                  });
-                  
-                  // MOBILE FIX: Блокируем изменения стилей hero-section-bg при скролле
-                  // (убираем zoom анимацию фона на главном экране)
+                  // NOTE: Critical images are already preloaded via <link rel="preload"> above.
+                  // Avoid extra JS Image() preloads on mobile (can trigger main-thread decode bursts).
+
+                  // MOBILE: Apply a one-time hero background stabilization without MutationObserver.
+                  // Persistent MutationObserver on style attribute can cause jank on real phones.
                   try {
-                    var isMobile = window.innerWidth < 768 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+                    var isMobile = document.documentElement.classList.contains('force-mobile');
                     if (isMobile) {
-                      // Ждем появления hero-section-bg в DOM
-                      var checkHeroBg = function() {
-                        var heroBg = document.querySelector('.hero-section-bg');
-                        if (!heroBg) {
-                          setTimeout(checkHeroBg, 100);
-                          return;
-                        }
-                        
-                        // Сохраняем начальный размер viewport для фиксации background-size
+                      var heroBg = document.querySelector('.hero-section-bg');
+                      if (heroBg) {
                         var initialVw = window.innerWidth;
-                        var initialVh = window.innerHeight || (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-                        
-                        // Фиксируем background-size на основе начального viewport
+                        var initialVh = (window.visualViewport && window.visualViewport.height) ? window.visualViewport.height : window.innerHeight;
                         var fixedBgSize = initialVw + 'px ' + initialVh + 'px';
                         heroBg.style.backgroundSize = fixedBgSize;
                         heroBg.style.backgroundPosition = '70% center';
                         heroBg.style.transform = 'none';
                         heroBg.style.webkitTransform = 'none';
-                        
-                        // Блокируем изменения через MutationObserver
-                        var observer = new MutationObserver(function(mutations) {
-                          mutations.forEach(function(mutation) {
-                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                              var el = mutation.target;
-                              if (el.classList && el.classList.contains('hero-section-bg')) {
-                                // Восстанавливаем фиксированные значения
-                                el.style.backgroundSize = fixedBgSize;
-                                el.style.backgroundPosition = '70% center';
-                                el.style.transform = 'none';
-                                el.style.webkitTransform = 'none';
-                              }
-                            }
-                          });
-                        });
-                        
-                        observer.observe(heroBg, { attributes: true, attributeFilter: ['style'] });
-                        
-                        // CRITICAL PERFORMANCE FIX: Removed scroll listeners that cause performance issues
-                        // MutationObserver already handles style changes, no need for scroll listeners
-                        // Scroll listeners on mobile can cause freeze when user stops scrolling
-                      };
-                      
-                      // Запускаем проверку после небольшой задержки
-                      setTimeout(checkHeroBg, 300);
+                      }
                     }
-                  } catch (e) {
-                    console.warn('Hero background lock failed:', e);
-                  }
+                  } catch (e) {}
                 }
                 
                 // Гарантируем что DOM полностью загружен
