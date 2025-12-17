@@ -810,11 +810,10 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     // Простое и стабильное позиционирование без сложных вычислений
     const reviewsElement = reviewsSectionRef.current;
     
-    // Устанавливаем фиксированный отрицательный margin-top для позиционирования сразу после фона
-    // Фон заканчивается примерно на 310vh, поэтому используем фиксированное значение
+    // Position relative to the mobile background height (CSS variable --details-bg-h)
     reviewsElement.style.position = 'relative';
     reviewsElement.style.marginTop =
-      'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - calc(var(--vvh, 1vh) * 100) + clamp(2rem, 4vh, 3.5rem))'; // slightly lower on mobile, stable on iOS
+      'calc(var(--details-bg-h) - calc(var(--vvh, 1vh) * 100) + clamp(2rem, 4vh, 3.5rem))';
     reviewsElement.style.paddingTop = '0';
     reviewsElement.style.zIndex = '20';
     
@@ -831,13 +830,10 @@ const DetailsView: React.FC<DetailsViewProps> = ({
 
     const updateBlurPosition = () => {
       if (mobileBlurOverlayRef.current) {
-        // Позиционируем блюр прямо перед разделом "ОТЗЫВЫ"
-        // Фон заканчивается на clamp(290vh, 310vh, 330vh)
-        // Блюр должен начинаться немного раньше и покрывать область перехода
+        // Position blur relative to the mobile background height (CSS variable --details-bg-h)
         const blurElement = mobileBlurOverlayRef.current;
         blurElement.style.position = 'absolute';
-        blurElement.style.top =
-          'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - 200px)';
+        blurElement.style.top = 'calc(var(--details-bg-h) - 200px)';
         blurElement.style.left = '0';
         blurElement.style.right = '0';
         blurElement.style.width = '100%';
@@ -854,7 +850,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         try {
           blurElement.style.setProperty(
             'top',
-            'calc(clamp(calc(var(--vvh, 1vh) * 290), calc(var(--vvh, 1vh) * 310), calc(var(--vvh, 1vh) * 330)) - 200px)',
+            'calc(var(--details-bg-h) - 200px)',
             'important'
           );
           blurElement.style.setProperty('z-index', '12', 'important');
@@ -1275,7 +1271,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           className="mobile-content-blur-overlay"
           style={{
             position: 'absolute',
-            top: 'calc(clamp(290vh, 310vh, 330vh) - 200px)',
+            top: 'calc(var(--details-bg-h) - 200px)',
             left: 0,
             right: 0,
             height: '300px',
