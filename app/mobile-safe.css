@@ -1447,6 +1447,8 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
   /* DetailsView: ensure header & mobile menu are always above absolute layers */
   .details-container header {
     z-index: 2147483646 !important;
+    /* CRITICAL: prevent clipping of fixed hamburger/menu inside DetailsView */
+    overflow: visible !important;
   }
   .details-container .mobile-hamburger-button {
     z-index: 2147483647 !important;
