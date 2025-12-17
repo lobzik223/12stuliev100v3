@@ -21,13 +21,13 @@
      Use --vvh (set in <head>) instead of raw vh so iOS address-bar changes don't cut backgrounds early. */
   .details-container::before {
     /* Mobile: make section-34839282.png a bit shorter (Y only) */
-    height: calc(var(--vvh, 1vh) * 430) !important;
-    background-size: 100% calc(var(--vvh, 1vh) * 430) !important;
+    height: calc(var(--vvh, 1vh) * 400) !important;
+    background-size: 100% calc(var(--vvh, 1vh) * 400) !important;
   }
 
   /* Ensure the black background continues all the way to the bottom on mobile. */
   .details-container::after {
-    top: calc(var(--vvh, 1vh) * 430) !important;
+    top: calc(var(--vvh, 1vh) * 400) !important;
     bottom: 0 !important;
     height: auto !important;
     background-color: #000000 !important;
