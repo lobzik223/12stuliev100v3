@@ -153,13 +153,40 @@ const DetailsView: React.FC<DetailsViewProps> = ({
 
       restoreNativeScroll();
 
+      // CRITICAL: Ensure the page is scrollable to the very bottom on mobile.
+      // A lot of DetailsView content is absolutely positioned, so it may not contribute to document height.
+      // We set a min-height based on the bottom-most anchor (contacts/legal block) with minimal layout reads.
+      const ensureScrollableHeight = () => {
+        if (document.body?.classList.contains('modal-scroll-locked')) return;
+        const container = containerRef.current;
+        const anchor = contactsSectionRef.current || legalInfoRef.current;
+        if (!container || !anchor) return;
+
+        const rect = anchor.getBoundingClientRect();
+        const bottom = window.scrollY + rect.bottom;
+        const minHeight = Math.ceil(bottom + 120); // small safe buffer
+        if (minHeight > 0) {
+          container.style.minHeight = `${minHeight}px`;
+        }
+      };
+
+      // Run a few times during initial load (images/fonts) without attaching scroll listeners.
+      ensureScrollableHeight();
+      const t1 = window.setTimeout(ensureScrollableHeight, 200);
+      const t2 = window.setTimeout(ensureScrollableHeight, 600);
+      const t3 = window.setTimeout(ensureScrollableHeight, 1200);
+
       const handleResize = () => restoreNativeScroll();
       window.addEventListener('resize', handleResize, { passive: true });
       window.addEventListener('orientationchange', handleResize, { passive: true });
 
       return () => {
+        window.clearTimeout(t1);
+        window.clearTimeout(t2);
+        window.clearTimeout(t3);
         window.removeEventListener('resize', handleResize);
         window.removeEventListener('orientationchange', handleResize);
+        ensureScrollableHeight();
         restoreNativeScroll();
       };
     }

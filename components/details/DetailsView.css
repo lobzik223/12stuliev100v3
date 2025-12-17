@@ -16,6 +16,40 @@
     -webkit-overflow-scrolling: touch !important;
     touch-action: pan-y !important;
   }
+
+  /* Mobile viewport reliability:
+     Use --vvh (set in <head>) instead of raw vh so iOS address-bar changes don't cut backgrounds early. */
+  .details-container::before {
+    height: calc(var(--vvh, 1vh) * 500) !important;
+    background-size: 100% calc(var(--vvh, 1vh) * 500) !important;
+  }
+
+  /* Ensure the black background continues all the way to the bottom on mobile. */
+  .details-container::after {
+    top: calc(var(--vvh, 1vh) * 500) !important;
+    bottom: 0 !important;
+    height: auto !important;
+    background-color: #000000 !important;
+  }
+
+  /* Reviews section black background continuation (mobile only). */
+  .reviews-section-details {
+    background-color: #000000 !important;
+    margin-bottom: 0 !important;
+    padding-bottom: clamp(3rem, 6vh, 4.5rem) !important;
+  }
+
+  .reviews-section-details::after {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: calc(-1 * clamp(3rem, 6vh, 4.5rem)) !important;
+    height: clamp(3rem, 6vh, 4.5rem) !important;
+    background-color: #000000 !important;
+    pointer-events: none !important;
+    z-index: 19 !important;
+  }
 }
 
 /* Псевдоэлемент для отзеркаленного фона */
