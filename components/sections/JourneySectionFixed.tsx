@@ -725,8 +725,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         // Match psihuska.mp4 sizing/centering on mobile
                         left: 'calc(50% + clamp(0.2rem, 0.8vw, 0.5rem))',
                         // Slightly narrower than psihuska.mp4 (X only)
-                        transform: 'translate(-50%, -50%) scaleX(0.92)',
-                        width: 'calc(100% - clamp(2.9rem, 7vw, 4.6rem))',
+                        transform: 'translate(-50%, -50%) scaleX(0.91)',
+                        width: 'calc(100% - clamp(3.05rem, 7.4vw, 4.85rem))',
                         height: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
                         objectFit: 'cover',
                         zIndex: 1,

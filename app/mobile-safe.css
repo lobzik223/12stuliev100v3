@@ -1361,9 +1361,9 @@
   .journey-section-container video[src="/photo/babka.mp4"],
   .journey-section-container video[src*="babka.mp4"] {
     /* Mobile: slightly narrower than psihuska.mp4 (X only) */
-    width: calc(100% - clamp(2.9rem, 7vw, 4.6rem)) !important;
-    transform: translate(-50%, -50%) scaleX(0.92) !important;
-    -webkit-transform: translate(-50%, -50%) scaleX(0.92) !important;
+    width: calc(100% - clamp(3.05rem, 7.4vw, 4.85rem)) !important;
+    transform: translate(-50%, -50%) scaleX(0.91) !important;
+    -webkit-transform: translate(-50%, -50%) scaleX(0.91) !important;
     /* Высота остается без изменений */
     height: calc(100% - clamp(5rem, 11vw, 7.5rem)) !important;
   }
