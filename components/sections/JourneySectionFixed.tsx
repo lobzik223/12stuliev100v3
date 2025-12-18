@@ -526,7 +526,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       overflow: 'visible',
                       boxSizing: 'border-box',
                       margin: '0 auto',
-                      transform: 'translateX(clamp(0.5rem, 1vw, 1rem)) translateY(clamp(-2rem, -3vh, -1.5rem))',
+                      transform: 'translateX(clamp(1.5rem, 3vw, 2.5rem)) translateY(clamp(-3.5rem, -5vh, -3rem))',
                     }}
                   >
                     {/* Видео внутри рамки для мобильной версии */}
@@ -542,10 +542,11 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         position: 'absolute',
                         top: 'calc(50% + clamp(1rem, 2vh, 1.5rem))',
                         left: 'calc(50% - clamp(0.5rem, 1vw, 0.8rem))',
-                        transform: 'translate(-50%, -50%) scaleX(0.6)',
-                        width: 'calc(100% - clamp(20rem, 40vw, 30rem))',
-                        height: 'calc(100% - clamp(2rem, 4vw, 3rem))',
-                        objectFit: 'cover',
+                        transform: 'translate(-50%, -50%) scale(0.78) scaleY(0.92)',
+                        width: 'calc(100% - clamp(26rem, 52vw, 38rem))',
+                        height: 'auto',
+                        aspectRatio: '16 / 9',
+                        objectFit: 'contain',
                         zIndex: 1,
                         pointerEvents: 'none',
                         outline: 'none',
@@ -605,11 +606,12 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       style={{
                         position: 'absolute',
                         top: 'calc(50% + clamp(1rem, 2vh, 1.5rem))',
-                        left: 'calc(50% - clamp(0.5rem, 1vw, 0.8rem))',
-                        transform: 'translate(-50%, -50%) scaleX(0.6)',
-                        width: 'calc(100% - clamp(20rem, 40vw, 30rem))',
-                        height: 'calc(100% - clamp(2rem, 4vw, 3rem))',
-                        objectFit: 'cover',
+                        left: 'calc(50% - clamp(0.3rem, 0.8vw, 0.6rem))',
+                        transform: 'translate(calc(-50% + clamp(0.5rem, 1.5vw, 1rem)), -50%) scale(0.76)',
+                        width: 'calc(100% - clamp(26rem, 52vw, 38rem))',
+                        height: 'auto',
+                        aspectRatio: '16 / 9',
+                        objectFit: 'contain',
                         zIndex: 1,
                         pointerEvents: 'none',
                         outline: 'none',
@@ -818,10 +820,10 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                   {/* Text on the right */}
                   <div style={{ 
                     flex: '1 1 auto',
-                    textAlign: 'right',
-                    paddingLeft: idx === 1 ? 'clamp(2rem, 5vw, 3rem)' : 'clamp(1rem, 3vw, 2rem)',
-                    paddingRight: '0',
-                    marginLeft: idx === 1 ? 'clamp(1rem, 3vw, 2rem)' : '0',
+                    textAlign: idx === 1 && isMobileDevice ? 'center' : 'right',
+                    paddingLeft: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : idx === 1 ? 'clamp(2rem, 5vw, 3rem)' : 'clamp(1rem, 3vw, 2rem)',
+                    paddingRight: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : '0',
+                    marginLeft: idx === 1 && isMobileDevice ? 'clamp(-3rem, -7vw, -2.5rem)' : idx === 1 ? 'clamp(1rem, 3vw, 2rem)' : '0',
                   }}>
                     <p
                       className="uppercase mb-2"
@@ -833,6 +835,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         letterSpacing: '0.08em',
                         lineHeight: '1.3',
                         marginBottom: '1rem',
+                        textAlign: idx === 1 && isMobileDevice ? 'center' : undefined,
+                        marginLeft: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : undefined,
                       }}
                     >
                       {s.title}
@@ -840,22 +844,39 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     <p
                       style={{
                         fontFamily: "'Playfair Display SC', serif",
-                        fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                        fontSize: idx === 1 && isMobileDevice ? 'clamp(0.85rem, 3vw, 1rem)' : 'clamp(1rem, 4vw, 1.25rem)',
                         color: '#FBC632',
                         textShadow: '0 2px 6px rgba(0,0,0,0.7)',
                         letterSpacing: '0.03em',
                         lineHeight: '1.4',
+                        maxWidth: idx === 1 && isMobileDevice ? 'calc(100vw - clamp(4rem, 10vw, 6rem))' : undefined,
+                        margin: idx === 1 && isMobileDevice ? '0 auto 0 clamp(-1rem, -3vw, -0.5rem)' : undefined,
+                        width: idx === 1 && isMobileDevice ? 'fit-content' : undefined,
                       }}
                     >
-                      {s.desc}
+                      {idx === 1 ? (
+                        isMobileDevice ? (
+                          <>
+                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СИМВОЛ БЕЗУМИЯ</span>
+                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ПРОГРЕССА — ЗДЕСЬ</span>
+                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СКРЫТ ГЕНИЙ-ХАКЕР,</span>
+                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ВЗЛОМАВШИЙ СИСТЕМУ.</span>
+                          </>
+                        ) : (
+                          s.desc
+                        )
+                      ) : (
+                        s.desc
+                      )}
                     </p>
                   </div>
                 </div>
               ) : (
                 <div style={{ 
                   marginTop: idx === 2 ? 'clamp(-2rem, -3.5vh, -1.5rem)' : 'clamp(-1.2rem, -2vh, -0.8rem)', 
+                  transform: idx === 0 ? 'translateX(clamp(2rem, 5vw, 3.5rem))' : undefined,
                   width: '100%', 
-                  padding: idx === 0 ? '0 1rem 0 clamp(5rem, 12vw, 7rem)' : idx === 2 ? '0 clamp(2rem, 6vw, 4rem) 0 1rem' : '0 1rem',
+                  padding: idx === 0 ? '0 clamp(0.5rem, 1.5vw, 1rem) 0 clamp(1rem, 2.5vw, 1.5rem)' : idx === 2 ? '0 clamp(2rem, 6vw, 4rem) 0 1rem' : '0 1rem',
                   paddingBottom: idx === 2 ? '0' : undefined,
                   textAlign: idx === 0 ? 'right' : idx === 2 ? 'right' : 'center'
                 }}>
@@ -869,6 +890,9 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       letterSpacing: '0.08em',
                       lineHeight: '1.3',
                       marginBottom: '1rem',
+                      whiteSpace: idx === 0 ? 'nowrap' : 'normal',
+                      textAlign: idx === 1 && isMobileDevice ? 'center' : undefined,
+                      marginLeft: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : undefined,
                     }}
                   >
                     {s.title}
@@ -876,14 +900,35 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                   <p
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: 'clamp(1rem, 4vw, 1.25rem)',
+                      fontSize: idx === 1 && isMobileDevice ? 'clamp(0.85rem, 3vw, 1rem)' : 'clamp(1rem, 4vw, 1.25rem)',
                       color: '#FBC632',
                       textShadow: '0 2px 6px rgba(0,0,0,0.7)',
                       letterSpacing: '0.03em',
                       lineHeight: '1.4',
+                      maxWidth: idx === 1 && isMobileDevice ? 'calc(100vw - clamp(4rem, 10vw, 6rem))' : undefined,
+                      margin: idx === 1 && isMobileDevice ? '0 auto 0 clamp(-1rem, -3vw, -0.5rem)' : undefined,
+                      width: idx === 1 && isMobileDevice ? 'fit-content' : undefined,
                     }}
                   >
-                    {s.desc}
+                    {idx === 0 ? (
+                      <>
+                        ТОЧКА, ГДЕ НАЧИНАЕТСЯ АФЕРА И<br />
+                        РАСКРЫВАЕТСЯ ХАКЕРСКАЯ МАХИНАЦИЯ.
+                      </>
+                    ) : idx === 1 ? (
+                      isMobileDevice ? (
+                        <>
+                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СИМВОЛ БЕЗУМИЯ</span>
+                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ПРОГРЕССА — ЗДЕСЬ</span>
+                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СКРЫТ ГЕНИЙ-ХАКЕР,</span>
+                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ВЗЛОМАВШИЙ СИСТЕМУ.</span>
+                        </>
+                      ) : (
+                        s.desc
+                      )
+                    ) : (
+                      s.desc
+                    )}
                   </p>
                 </div>
               )}
@@ -1442,8 +1487,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
               lineHeight: '1.5'
             }}
           >
-            СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ<br />
-            СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.
+            СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.
           </p>
         </div>
 

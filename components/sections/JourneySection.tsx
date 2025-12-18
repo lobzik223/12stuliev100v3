@@ -24,6 +24,12 @@ const VPUT_IMAGES_VERSION = '?v=2.0';
 
 export default function JourneySection({ sectionEndRef, finalTextRef, officeRef, psychushkaRef, kisaRef, yaryginaRef }: JourneySectionProps) {
   const vputSectionRef = useRef<HTMLDivElement>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(() => {
+    if (typeof window === 'undefined') {
+      return true;
+    }
+    return isProbablyMobile();
+  });
 
   // Мобильная версия: без absolute/parallax (на телефонах rem/clamp координаты уводят всё за экран).
   // ВАЖНО: рендерим mobile+desktop всегда, а показываем только нужное через CSS (md:hidden / hidden md:block + force-mobile),
@@ -435,8 +441,18 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             lineHeight: '1.5'
           }}
         >
-          СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ<br />
-          СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.
+          {isMobileDevice ? (
+            <>
+              СИМВОЛ БЕЗУМИЯ ПРОГРЕССА —<br />
+              ЗДЕСЬ<br />
+              СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.
+            </>
+          ) : (
+            <>
+              СИМВОЛ БЕЗУМИЯ ПРОГРЕССА — ЗДЕСЬ<br />
+              СКРЫТ ГЕНИЙ-ХАКЕР, ВЗЛОМАВШИЙ СИСТЕМУ.
+            </>
+          )}
         </p>
       </div>
 
