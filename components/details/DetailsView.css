@@ -20,14 +20,17 @@
   /* Mobile viewport reliability:
      Use --vvh (set in <head>) instead of raw vh so iOS address-bar changes don't cut backgrounds early. */
   .details-container::before {
-    /* Mobile: make section-34839282.png a bit shorter (Y only) */
-    height: calc(var(--vvh, 1vh) * 400) !important;
-    background-size: 100% calc(var(--vvh, 1vh) * 400) !important;
+    /* Mobile: make section-34839282.png much shorter in height (Y only) - reduced to 55vh */
+    height: calc(var(--vvh, 1vh) * 55) !important;
+    max-height: calc(var(--vvh, 1vh) * 55) !important;
+    min-height: calc(var(--vvh, 1vh) * 55) !important;
+    background-size: 100% auto !important;
   }
 
   /* Ensure the black background continues all the way to the bottom on mobile. */
   .details-container::after {
-    top: calc(var(--vvh, 1vh) * 400) !important;
+    /* Updated to match reduced background height (55vh instead of 400vh) */
+    top: calc(var(--vvh, 1vh) * 55) !important;
     bottom: 0 !important;
     height: auto !important;
     background-color: #000000 !important;
@@ -821,11 +824,11 @@ span.date-time-number {
   .details-container::before {
     background-attachment: scroll;
     /* Use --vvh to avoid iOS address-bar vh jumps */
+    /* Mobile: make section-34839282.png much shorter in height (Y only) - reduced to 50-60vh */
     --details-bg-h: clamp(
-      /* Mobile: make section-34839282.png shorter (Y only) */
-      calc(var(--vvh, 1vh) * 240),
-      calc(var(--vvh, 1vh) * 260),
-      calc(var(--vvh, 1vh) * 280)
+      calc(var(--vvh, 1vh) * 50),
+      calc(var(--vvh, 1vh) * 55),
+      calc(var(--vvh, 1vh) * 60)
     );
 
     /* Replace expensive mask-image (can cause "blank" on reverse scroll in iOS)
@@ -839,12 +842,14 @@ span.date-time-number {
       ),
       url(/photo/section-34839282.png) !important;
     /* Mobile: keep width 100%, preserve image aspect ratio (no vertical stretching) */
+    /* First value (100% 100%) is for gradient overlay, second (100% auto) preserves image aspect ratio */
     background-size: 100% 100%, 100% auto !important;
     background-position: 0 0, center top !important;
     background-repeat: no-repeat, no-repeat !important;
 
     height: var(--details-bg-h) !important;
     max-height: var(--details-bg-h) !important;
+    min-height: var(--details-bg-h) !important;
 
     /* Mobile: keep background behaving like a normal background layer (avoid separate compositing). */
     -webkit-backface-visibility: visible !important;

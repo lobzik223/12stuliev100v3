@@ -272,14 +272,14 @@
     transform: none;
     /* Start after "театральное путешествие" text, slightly below (mobile only) */
     top: clamp(-2.5rem, -3.5vh, -1.2rem);
-    /* Shorter length on mobile (as requested) - чуть-чуть короче */
-    bottom: clamp(-10rem, -14vh, -7rem);
+    /* Shorter length on mobile - уменьшаем длину */
+    bottom: clamp(-8rem, -10vh, -6rem);
     background-image: url(/backgrounds/sections/mobile/section-4-mobile.png);
     background-repeat: no-repeat;
     /* Move background image higher (mobile only) - start after "театральное путешествие" */
     background-position: center -18%;
-    /* Keep width as-is; shorter height (length) */
-    background-size: 100% 100%;
+    /* Keep width as-is (100%), reduce height (length) - уменьшаем длину */
+    background-size: 100% 85%;
     pointer-events: none;
     z-index: 0;
   }
@@ -361,13 +361,14 @@
   .mobile-journey-section .mobile-scene-card:first-child .mobile-scene-image,
   .mobile-scene-card:first-child .mobile-scene-image {
     margin-bottom: clamp(2rem, 4vh, 2.5rem) !important;
-    transform: translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(2rem, 5vw, 3rem)) !important;
+    transform: translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(4rem, 8vw, 6rem)) !important;
     /* КРИТИЧНО: Убираем ВСЕ ограничения ширины - элемент должен быть полностью виден */
+    /* УВЕЛИЧИВАЕМ РАЗМЕР для PNG рамки vput.png */
     height: 0 !important;
-    padding-top: clamp(22%, 26%, 30%) !important;
+    padding-top: clamp(42%, 48%, 54%) !important;
     width: auto !important;
     max-width: 100% !important;
-    min-width: clamp(280px, 80vw, 400px) !important;
+    min-width: clamp(550px, 115vw, 750px) !important;
     flex: 0 1 auto !important;
     flex-grow: 0 !important;
     flex-shrink: 1 !important;
@@ -573,7 +574,7 @@
     transform: translateX(clamp(4rem, 9vw, 6rem)) translateY(clamp(3rem, 6vh, 4.5rem)) !important;
   }
   
-  /* Элемент tiraj.png - перемещаем чуть правее */
+  /* Элемент tiraj.png - теперь справа от flash.png на мобильной версии */
   .mobile-journey-section .mobile-journey-tiraj,
   .mobile-journey-tiraj {
     display: block !important;
@@ -581,8 +582,9 @@
     opacity: 1 !important;
     width: min(30vw, 120px) !important;
     height: clamp(90px, 18vh, 130px) !important;
-    transform: translateY(clamp(-0.5rem, -1vh, -0.3rem)) translateX(clamp(-2rem, -5vw, -1rem)) !important;
-    margin-left: clamp(1.5rem, 4vw, 2.5rem) !important;
+    /* Убираем transform, так как теперь tiraj.png находится в flex-контейнере рядом с flash.png */
+    transform: none !important;
+    margin-left: 0 !important;
     flex-shrink: 0 !important;
   }
   
@@ -612,6 +614,28 @@
   .mobile-scene-image {
     overflow: hidden !important; /* Keep hidden for proper video frame clipping */
     position: relative !important;
+  }
+  
+  /* Ensure first scene frame is not clipped at bottom */
+  .mobile-journey-section .mobile-scene-card:first-child > div:first-child .mobile-scene-image,
+  .mobile-scene-card:first-child > div:first-child .mobile-scene-image {
+    overflow: visible !important;
+    padding-bottom: clamp(2rem, 4vh, 3rem) !important;
+  }
+  
+  /* Ensure vput.png frame background is fully visible, especially bottom medallion */
+  /* УВЕЛИЧИВАЕМ РАЗМЕР PNG РАМКИ vput.png - только рамка, не видео */
+  .mobile-journey-section .mobile-scene-card:first-child > div:first-child .mobile-scene-image > div[style*="vput.png"],
+  .mobile-journey-section .mobile-scene-card:first-child .mobile-scene-image > div[style*="vput.png"],
+  .mobile-scene-card:first-child > div:first-child .mobile-scene-image > div[style*="backgroundImage"]:not([style*="video"]) {
+    background-position: center top !important;
+    background-size: contain !important;
+    /* УВЕЛИЧИВАЕМ РАЗМЕР PNG РАМКИ - увеличиваем width и height */
+    width: 130% !important;
+    height: calc(130% + clamp(2.6rem, 5.2vh, 3.9rem)) !important;
+    left: -15% !important;
+    top: -15% !important;
+    position: absolute !important;
   }
   
   /* CRITICAL FIX: Ensure all 4 Journey videos are visible */
@@ -645,18 +669,20 @@
   
   /* КРИТИЧНО: Для первой сцены убираем ВСЕ ограничения ширины - МАКСИМАЛЬНАЯ СПЕЦИФИЧНОСТЬ */
   /* Это правило должно переопределить ВСЕ предыдущие ограничения */
+  /* УВЕЛИЧИВАЕМ РАЗМЕР КОНТЕЙНЕРА для PNG рамки vput.png */
   .mobile-journey-section .mobile-scene-card:first-child > div:first-child .mobile-scene-image,
   .mobile-journey-section .mobile-scene-card:first-child .mobile-scene-image,
   .mobile-scene-card:first-child > div:first-child .mobile-scene-image,
   .mobile-scene-card:first-child .mobile-scene-image {
     width: auto !important;
     max-width: none !important;
-    min-width: clamp(280px, 75vw, 400px) !important;
+    min-width: clamp(850px, 130vw, 1100px) !important;
     flex: 0 1 auto !important;
     flex-grow: 0 !important;
     flex-shrink: 1 !important;
     flex-basis: auto !important;
-    transform: translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(2rem, 5vw, 3rem)) !important;
+    transform: translateY(clamp(-2rem, -3vh, -1.5rem)) translateX(clamp(6rem, 12vw, 9rem)) !important;
+    margin: 0 auto !important;
   }
   
   /* Fix journey section container - CRITICAL for mobile */
@@ -1339,6 +1365,24 @@
   .hero-logo-container img {
     width: clamp(30rem, 98vw, 48rem) !important;
     max-width: 98vw !important;
+  }
+  
+  /* Уменьшаем ширину и увеличиваем высоту (длину) видео bimbom.mp4 в Journey section на мобильных */
+  /* Чтобы видео не выходило за пределы рамки vput.png */
+  .mobile-journey-section video[src="/backgrounds/sections/bimbom.mp4"],
+  .mobile-journey-section video[src*="bimbom.mp4"],
+  .journey-section-container video[src="/backgrounds/sections/bimbom.mp4"],
+  .journey-section-container video[src*="bimbom.mp4"],
+  .mobile-scene-card:first-child video[src*="bimbom.mp4"],
+  .mobile-scene-image video[src*="bimbom.mp4"] {
+    /* КРИТИЧНО: Уменьшаем ширину В РАЗЫ - ЗНАЧИТЕЛЬНО увеличиваем отступы слева и справа */
+    width: calc(100% - clamp(20rem, 40vw, 30rem)) !important;
+    max-width: calc(100% - clamp(20rem, 40vw, 30rem)) !important;
+    /* Увеличиваем высоту - уменьшаем отступы сверху и снизу */
+    height: calc(100% - clamp(2rem, 4vw, 3rem)) !important;
+    /* Дополнительно уменьшаем ширину через scaleX - делаем В РАЗЫ УЖЕ */
+    transform: translate(-50%, -50%) scaleX(0.6) !important;
+    -webkit-transform: translate(-50%, -50%) scaleX(0.6) !important;
   }
   
   /* Увеличиваем ширину видео psihuska.mp4 и babka.mp4 в Journey section на мобильных */

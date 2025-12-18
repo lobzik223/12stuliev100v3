@@ -114,7 +114,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
               flexDirection: 'column',
               alignItems: 'center',
               // Pull this block slightly upward without affecting date/city line
-              transform: 'translateY(-6%)',
+              transform: isMobileUi ? 'translateY(-8%)' : 'translateY(-6%)',
             }}
           >
             <h3
@@ -125,7 +125,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                 color: '#682302',
                 fontWeight: 700,
                 lineHeight: 1.05,
-                marginTop: '4%',
+                marginTop: isMobileUi ? '0.5%' : '4%',
                 marginBottom: event.ticketsLeft === 0 ? '8%' : '3.5%',
                 position: 'relative',
                 width: '100%',
@@ -221,9 +221,9 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                     backgroundColor: '#FBC632',
                     color: '#682302',
                     fontWeight: 700,
-                    /* Mobile: make the BUTTON smaller (not by stretching) */
+                    /* Mobile: make the BUTTON smaller in height (not by stretching) */
                     fontSize: 'clamp(0.68rem, 2.7vw, 0.84rem)',
-                    padding: '0.24rem 0.52rem',
+                    padding: isMobileUi ? '0.1rem 0.52rem' : '0.24rem 0.52rem',
                     borderRadius: '0.5rem',
                     border: 'none',
                     whiteSpace: 'nowrap',
@@ -258,9 +258,9 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                     borderStyle: 'solid',
                     color: '#682302',
                     fontWeight: 700,
-                    /* Mobile: make the BUTTON smaller (not by stretching) */
+                    /* Mobile: make the BUTTON smaller in height (not by stretching) */
                     fontSize: 'clamp(0.68rem, 2.7vw, 0.84rem)',
-                    padding: '0.24rem 0.52rem',
+                    padding: isMobileUi ? '0.1rem 0.52rem' : '0.24rem 0.52rem',
                     borderRadius: '0.5rem',
                     whiteSpace: 'nowrap',
                     display: 'inline-flex',
@@ -755,8 +755,8 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         <div
           className="w-full flex justify-center px-4 schedule-button-container"
           style={{
-            // Mobile: button must be BELOW the card (no overlap)
-            marginTop: isMobileUi ? 'clamp(1.5rem, 3vh, 2.5rem)' : 'clamp(-6rem, -10vh, -7rem)',
+            // Mobile: button closer to card (reduced margin)
+            marginTop: isMobileUi ? 'clamp(0.5rem, 1vh, 0.75rem)' : 'clamp(-6rem, -10vh, -7rem)',
             position: 'relative',
             zIndex: 30,
           }}
@@ -810,7 +810,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
 
         {/* Логотип и статистика */}
         <ScrollReveal delay={200}>
-          <div className="mt-16 flex justify-center">
+          <div className={`${isMobileUi ? 'mt-14' : 'mt-16'} flex justify-center`}>
             {isMobileUi ? (
               <img
                 className="events-logo100let-img"
@@ -859,7 +859,7 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         </ScrollReveal>
 
         {/* Статистика */}
-        <div className="flex items-center justify-center gap-8" style={{ marginTop: 'clamp(2.5rem, 4vh, 3rem)', gap: 'clamp(3rem, 5vw, 5rem)', flexWrap: 'nowrap' }}>
+        <div className="flex items-center justify-center gap-8" style={{ marginTop: 'clamp(2.5rem, 4vh, 3rem)', gap: isMobileUi ? 'clamp(2rem, 3vw, 3.5rem)' : 'clamp(3rem, 5vw, 5rem)', flexWrap: 'nowrap' }}>
           {[
             { number: 5, label: 'СТРАН' },
             { number: 27, label: 'ГОРОДОВ' },

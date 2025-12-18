@@ -497,7 +497,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 alignItems: 'center', 
                 justifyContent: idx === 2 ? 'flex-start' : 'center',
                 gap: 'clamp(0.5rem, 2vw, 1rem)',
-                marginBottom: 'clamp(1.5rem, 3vh, 2rem)',
+                marginBottom: idx === 0 ? 'clamp(2.5rem, 4vh, 3.5rem)' : 'clamp(1.5rem, 3vh, 2rem)',
+                paddingBottom: idx === 0 ? 'clamp(1rem, 2vh, 1.5rem)' : '0',
                 overflow: 'visible',
                 overflowX: 'visible',
                 overflowY: 'visible',
@@ -515,14 +516,17 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       flex: '0 1 auto',
                       maxWidth: '100%',
                       width: 'auto',
-                      minWidth: 'clamp(200px, 60vw, 300px)',
+                      minWidth: 'clamp(520px, 100vw, 700px)',
                       height: '0',
-                      paddingTop: 'clamp(22%, 26%, 30%)',
+                      paddingTop: 'clamp(52%, 56%, 60%)',
+                      paddingBottom: 'clamp(2rem, 4vh, 3rem)',
                       position: 'relative',
                       display: 'block',
                       visibility: 'visible',
-                      overflow: 'hidden',
+                      overflow: 'visible',
                       boxSizing: 'border-box',
+                      margin: '0 auto',
+                      transform: 'translateX(clamp(4rem, 9vw, 6.5rem)) translateY(clamp(-2rem, -3vh, -1.5rem))',
                     }}
                   >
                     {/* Видео внутри рамки для мобильной версии */}
@@ -536,11 +540,11 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       preload="metadata"
                       style={{
                         position: 'absolute',
-                        top: '50%',
-                        left: 'calc(50% - clamp(0.3rem, 1vw, 0.5rem))',
-                        transform: 'translate(-50%, -50%) scaleX(0.96)',
-                        width: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
-                        height: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
+                        top: 'calc(50% + clamp(1rem, 2vh, 1.5rem))',
+                        left: 'calc(50% - clamp(0.5rem, 1vw, 0.8rem))',
+                        transform: 'translate(-50%, -50%) scaleX(0.6)',
+                        width: 'calc(100% - clamp(20rem, 40vw, 30rem))',
+                        height: 'calc(100% - clamp(2rem, 4vw, 3rem))',
                         objectFit: 'cover',
                         zIndex: 1,
                         pointerEvents: 'none',
@@ -557,12 +561,12 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         backgroundImage: `url(${s.img})`,
                         backgroundSize: 'contain',
                         backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center center',
+                        backgroundPosition: idx === 0 ? 'center top' : 'center center',
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         width: '100%',
-                        height: '100%',
+                        height: idx === 0 ? 'calc(100% + clamp(2rem, 4vh, 3rem))' : '100%',
                         zIndex: 2,
                         pointerEvents: 'none'
                       }}
@@ -780,24 +784,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     }}
                   />
                 )}
-                {idx === 0 && (
-                  <div
-                    className="mobile-journey-tiraj"
-                    style={{
-                      width: 'min(30vw, 120px)',
-                      height: 'clamp(90px, 18vh, 130px)',
-                      backgroundImage: 'url(/backgrounds/sections/tiraj.png)',
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center',
-                      flexShrink: 0,
-                      display: 'block',
-                      visibility: 'visible',
-                      transform: 'translateY(clamp(-0.5rem, -1vh, -0.3rem)) translateX(clamp(1rem, 3vw, 2rem))',
-                      marginLeft: '0',
-                    }}
-                  />
-                )}
+                {/* tiraj.png перемещен вниз, рядом с flash.png - удален отсюда */}
               </div>
               {/* For ПСИХУШКА (idx === 1) and КВАРТИРА СТАРУХИ ЯРЫГИНОЙ (idx === 3): image on left, text on right */}
               {idx === 1 || idx === 3 ? (
@@ -951,21 +938,49 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 </div>
               )}
               
-              {/* Add flash.png below ОФИС ЛОТЕРЕИ text (idx === 0) */}
+              {/* Add flash.png and tiraj.png side by side below ОФИС ЛОТЕРЕИ text (idx === 0) */}
               {idx === 0 && (
                 <div
                   style={{
-                    width: 'clamp(150px, 40vw, 250px)',
-                    height: 'clamp(150px, 40vw, 250px)',
-                    backgroundImage: 'url(/backgrounds/sections/flash.png)',
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 'clamp(1rem, 3vw, 2rem)',
                     marginTop: 'clamp(1.5rem, 3vh, 2rem)',
                     marginLeft: 'auto',
                     marginRight: 'auto',
+                    width: '100%',
+                    maxWidth: '100%',
                   }}
-                />
+                >
+                  {/* flash.png слева */}
+                  <div
+                    style={{
+                      width: 'clamp(150px, 40vw, 250px)',
+                      height: 'clamp(150px, 40vw, 250px)',
+                      backgroundImage: 'url(/backgrounds/sections/flash.png)',
+                      backgroundSize: 'contain',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {/* tiraj.png справа от flash.png */}
+                  <div
+                    className="mobile-journey-tiraj"
+                    style={{
+                      width: 'min(30vw, 120px)',
+                      height: 'clamp(90px, 18vh, 130px)',
+                      backgroundImage: 'url(/backgrounds/sections/tiraj.png)',
+                      backgroundSize: 'contain',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      flexShrink: 0,
+                      display: 'block',
+                      visibility: 'visible',
+                    }}
+                  />
+                </div>
               )}
             </div>
           ))}

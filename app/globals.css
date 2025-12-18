@@ -987,15 +987,17 @@ div.swiper-button-next.swiper-button-next-actors {
   /* === Mobile UI polish (event card) === */
   /* 1) Slightly smaller buttons inside the card */
   .event-card-mobile__content button {
-    /* Mobile: smaller BUTTON (less padding), keep text readable */
+    /* Mobile: smaller BUTTON (less padding in height), keep text readable */
     font-size: clamp(0.68rem, 2.7vw, 0.84rem) !important;
-    padding: 0.24rem 0.52rem !important;
+    padding: 0.1rem 0.52rem !important;
     line-height: 1.1 !important;
   }
 
   /* 2) Make text blocks more compact */
   .event-card-mobile__content > p {
     line-height: 1.15 !important;
+    margin-bottom: 0.5rem !important;
+    margin-top: 0.3rem !important;
   }
 
   .event-card-mobile__content > h3 {
@@ -1213,8 +1215,8 @@ div.swiper-button-next.swiper-button-next-actors {
 
   /* Кнопка расписания на мобильных — должна быть НИЖЕ карточки, без перекрытий */
   .schedule-button-container {
-    /* 3) Move slightly UP (closer to card), but keep separation */
-    margin-top: clamp(1rem, 2vh, 1.75rem) !important;
+    /* 3) Move UP (closer to card) on mobile - уменьшаем отступ */
+    margin-top: clamp(0.5rem, 1vh, 0.75rem) !important;
   }
 
   /* EventsSection: logo100let.png below schedule — mobile only */
@@ -1236,7 +1238,7 @@ div.swiper-button-next.swiper-button-next-actors {
 
   /* EventsSection mobile logo as <img> (prevents left/right cropping) */
   .events-logo100let-img {
-    width: min(76vw, 300px) !important;
+    width: min(48vw, 190px) !important;
     height: auto !important;
     max-width: 100% !important;
     object-fit: contain !important;
@@ -1245,11 +1247,12 @@ div.swiper-button-next.swiper-button-next-actors {
     position: relative !important;
     z-index: 2 !important;
     transform: translateY(-10%) !important;
+    margin-top: clamp(0.5rem, 1vh, 1rem) !important;
   }
 
-  /* EventsSection subtitle: reduce negative pull-up on mobile so it doesn't cover the logo */
+  /* EventsSection subtitle: increase spacing between logo and text on mobile */
   .events-subtitle-block {
-    margin-top: clamp(-0.75rem, -1.2vh, -0.5rem) !important;
+    margin-top: clamp(1.5rem, 3vh, 2.5rem) !important;
     position: relative !important;
     z-index: 1 !important;
   }
