@@ -361,7 +361,7 @@
   .mobile-journey-section .mobile-scene-card:first-child .mobile-scene-image,
   .mobile-scene-card:first-child .mobile-scene-image {
     margin-bottom: clamp(2rem, 4vh, 2.5rem) !important;
-    transform: translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(4rem, 8vw, 6rem)) !important;
+    transform: translateY(clamp(-0.8rem, -1.5vh, -0.5rem)) translateX(clamp(0.5rem, 1vw, 1rem)) !important;
     /* КРИТИЧНО: Убираем ВСЕ ограничения ширины - элемент должен быть полностью виден */
     /* УВЕЛИЧИВАЕМ РАЗМЕР для PNG рамки vput.png */
     height: 0 !important;
@@ -412,20 +412,26 @@
     margin-right: 0 !important;
   }
   
-  /* Применяем правильные размеры к vput2.png - такие же как у vput.png */
-  .mobile-scene-card:nth-child(2) .mobile-scene-image {
+  /* Применяем правильные размеры к vput2.png - ТОЧНО такие же как у vput.png */
+  /* КРИТИЧНО: Гарантируем видимость vput2.png на мобильной версии */
+  .mobile-scene-card:nth-child(2) .mobile-scene-image,
+  .mobile-vput2-with-video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     height: 0 !important;
-    padding-top: clamp(22%, 26%, 30%) !important;
-    /* Match vput.png sizing (scene 1) on mobile */
-    min-width: clamp(280px, 80vw, 400px) !important;
+    padding-top: clamp(42%, 48%, 54%) !important;
+    padding-bottom: clamp(2rem, 4vh, 3rem) !important;
+    /* Match vput.png sizing (scene 1) on mobile - ТОЧНО такие же размеры */
+    min-width: clamp(550px, 115vw, 750px) !important;
     width: auto !important;
     max-width: 100% !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    transform: none !important;
+    margin: 0 auto !important;
+    transform: translateX(clamp(0.5rem, 1vw, 1rem)) translateY(clamp(-3.5rem, -5vh, -3rem)) !important;
     overflow: visible !important;
     background-size: contain !important;
     background-position: center center !important;
+    position: relative !important;
   }
   
   /* vput3.png - сдвигаем вправо */
@@ -467,6 +473,24 @@
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
+  }
+  
+  /* КРИТИЧНО: Гарантируем видимость vput2.png рамки на мобильной версии */
+  /* УВЕЛИЧИВАЕМ РАЗМЕР РАМКИ vput2.png - ТОЧНО такие же размеры как у vput.png */
+  .mobile-scene-card:nth-child(2) .mobile-scene-image > div[style*="vput2.png"],
+  .mobile-scene-card:nth-child(2) .mobile-scene-image > div[style*="backgroundImage"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background-size: contain !important;
+    background-position: center top !important;
+    /* УВЕЛИЧИВАЕМ РАЗМЕР PNG РАМКИ - увеличиваем width и height как у vput.png */
+    width: 130% !important;
+    height: calc(130% + clamp(2.6rem, 5.2vh, 3.9rem)) !important;
+    left: -15% !important;
+    top: -15% !important;
+    position: absolute !important;
+    z-index: 2 !important;
   }
   
   /* Все тексты в разделе "В ПУТЬ" одного размера (как у первой сцены) */
@@ -681,8 +705,33 @@
     flex-grow: 0 !important;
     flex-shrink: 1 !important;
     flex-basis: auto !important;
-    transform: translateY(clamp(-2rem, -3vh, -1.5rem)) translateX(clamp(6rem, 12vw, 9rem)) !important;
+    transform: translateY(clamp(-2rem, -3vh, -1.5rem)) translateX(clamp(0.5rem, 1vw, 1rem)) !important;
     margin: 0 auto !important;
+  }
+  
+  /* КРИТИЧНО: Для второй сцены (vput2.png) применяем ТОЧНО такие же размеры как у vput.png */
+  /* Гарантируем видимость и правильные размеры - УВЕЛИЧИВАЕМ ДО РАЗМЕРОВ vput.png */
+  /* ПОДНИМАЕМ vput2.png ВЫШЕ на мобильной версии */
+  .mobile-journey-section .mobile-scene-card:nth-child(2) > div:first-child .mobile-scene-image,
+  .mobile-journey-section .mobile-scene-card:nth-child(2) .mobile-scene-image,
+  .mobile-scene-card:nth-child(2) > div:first-child .mobile-scene-image,
+  .mobile-scene-card:nth-child(2) .mobile-scene-image,
+  .mobile-vput2-with-video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: clamp(850px, 130vw, 1100px) !important;
+    flex: 0 1 auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 1 !important;
+    flex-basis: auto !important;
+    transform: translateY(clamp(-3.5rem, -5vh, -3rem)) translateX(clamp(0.5rem, 1vw, 1rem)) !important;
+    margin: 0 auto !important;
+    padding-top: clamp(42%, 48%, 54%) !important;
+    padding-bottom: clamp(2rem, 4vh, 3rem) !important;
+    position: relative !important;
   }
   
   /* Fix journey section container - CRITICAL for mobile */
@@ -1385,19 +1434,19 @@
     -webkit-transform: translate(-50%, -50%) scaleX(0.6) !important;
   }
   
-  /* Увеличиваем ширину видео psihuska.mp4 и babka.mp4 в Journey section на мобильных */
-  /* Находим видео по src атрибуту и увеличиваем ширину, сохраняя высоту и aspect ratio */
-  /* Только для мобильных версий в Journey section */
+  /* Применяем ТОЧНО такие же размеры к psihuska.mp4 как у bimbom.mp4 */
   .mobile-journey-section video[src="/photo/psihuska.mp4"],
   .mobile-journey-section video[src*="psihuska.mp4"],
   .journey-section-container video[src="/photo/psihuska.mp4"],
-  .journey-section-container video[src*="psihuska.mp4"] {
-    /* Mobile: keep video narrower than the vput2.png frame (X only) */
-    width: calc(100% - clamp(1.2rem, 4vw, 2rem)) !important;
-    transform: translate(-50%, -50%) scaleX(0.985) !important;
-    -webkit-transform: translate(-50%, -50%) scaleX(0.985) !important;
-    /* Высота остается без изменений */
-    height: calc(100% - clamp(5rem, 11vw, 7.5rem)) !important;
+  .journey-section-container video[src*="psihuska.mp4"],
+  .mobile-scene-card:nth-child(2) video[src*="psihuska.mp4"],
+  .mobile-vput2-with-video video[src*="psihuska.mp4"] {
+    /* ТОЧНО такие же размеры как у bimbom.mp4 */
+    width: calc(100% - clamp(20rem, 40vw, 30rem)) !important;
+    max-width: calc(100% - clamp(20rem, 40vw, 30rem)) !important;
+    height: calc(100% - clamp(2rem, 4vw, 3rem)) !important;
+    transform: translate(-50%, -50%) scaleX(0.6) !important;
+    -webkit-transform: translate(-50%, -50%) scaleX(0.6) !important;
   }
   
   .mobile-journey-section video[src="/photo/babka.mp4"],
