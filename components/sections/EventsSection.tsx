@@ -1084,10 +1084,10 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
         <>
           {/* Desktop версия - рендерим как обычно */}
           {!isMobile && (
-            <div
+        <div
               className="fixed inset-0 z-[9999]"
-              style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
                 backdropFilter: 'blur(5px)',
                 padding: '1rem',
                 display: 'flex',
@@ -1101,31 +1101,31 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                 bottom: 0,
                 width: '100vw',
                 height: '100vh'
-              }}
-              onClick={closeModal}
-            >
-              <div
+          }}
+          onClick={closeModal}
+        >
+          <div
                 className="relative bg-white overflow-hidden"
-                style={{
-                  width: '90vw',
-                  height: '85vh',
-                  maxWidth: '1200px',
-                  maxHeight: '800px',
+            style={{
+              width: '90vw',
+              height: '85vh',
+              maxWidth: '1200px',
+              maxHeight: '800px',
                   borderRadius: '0.5rem',
-                  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-                  overflowY: 'auto',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              overflowY: 'auto',
                   display: 'flex',
                   flexDirection: 'column',
                   position: 'relative',
                   margin: 'auto'
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
                 {/* Кнопка закрытия - черный крестик в белом круге */}
-                <button
-                  onClick={closeModal}
+            <button
+              onClick={closeModal}
                   className="absolute z-[10000] bg-white rounded-full transition-all hover:bg-gray-100"
-                  style={{
+              style={{
                     top: '1rem',
                     right: '1rem',
                     width: '2.5rem',
@@ -1136,42 +1136,42 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
                     alignItems: 'center',
                     justifyContent: 'center',
                     border: '2px solid rgba(0, 0, 0, 0.1)'
-                  }}
-                >
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
+              }}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
                     stroke="#000000"
                     strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </button>
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
 
-                {/* Iframe с виджетом intickets */}
-                <iframe
+            {/* Iframe с виджетом intickets */}
+            <iframe
                   key={`ticket-${selectedEventUrl}-${Date.now()}`}
-                  src={selectedEventUrl}
+              src={selectedEventUrl}
                   className="w-full border-0"
-                  style={{
+              style={{
                     width: '100%',
                     height: '100%',
                     minHeight: '600px',
                     flex: '1',
                     display: 'block',
                     border: 'none'
-                  }}
-                  allow="payment"
+              }}
+              allow="payment"
                   allowFullScreen
-                  title="Покупка билетов"
-                />
-              </div>
-            </div>
+              title="Покупка билетов"
+            />
+          </div>
+        </div>
           )}
 
           {/* Mobile версия - рендерим через Portal в document.body */}

@@ -1523,6 +1523,91 @@ const DetailsView: React.FC<DetailsViewProps> = ({
 
       {/* Блюр убран на мобильной версии - черный фон убран */}
 
+      {/* Раздел "Быстрая покупка билета" с встроенным виджетом Intickets - только для ПК, над разделом "ОТЗЫВЫ" */}
+      {!isMobile && buyTicketUrl && (
+        <div 
+          className="w-full flex flex-col items-center justify-center"
+          style={{ 
+            marginTop: 'clamp(4rem, 7vh, 6rem)',
+            paddingTop: 'clamp(2rem, 4vh, 3rem)',
+            paddingBottom: 'clamp(2rem, 4vh, 3rem)',
+            backgroundColor: '#000000',
+            width: '100%',
+            position: 'relative',
+            zIndex: 22,
+            minHeight: '80vh'
+          }}
+        >
+          <div className="w-full max-w-[120rem] mx-auto flex flex-col items-center" style={{ padding: '0 clamp(1rem, 4vw, 4rem)' }}>
+            {/* Заголовок раздела */}
+            <p
+              className="uppercase text-center mb-8"
+              style={{
+                fontFamily: "'Playfair Display SC', serif",
+                fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)',
+                color: '#FBC632',
+                filter: 'drop-shadow(0 0 7.5px rgba(231, 200, 132, 0.6))',
+                textShadow: '0 0 15px rgba(231, 200, 132, 0.4), 0 0 30px rgba(231, 200, 132, 0.3)',
+                letterSpacing: '0.1em',
+                marginBottom: 'clamp(2rem, 3vh, 3rem)'
+              }}
+            >
+              Быстрая покупка билета
+            </p>
+
+            {/* Контейнер для виджета Intickets */}
+            <div 
+              className="w-full"
+              style={{
+                maxWidth: 'clamp(1000px, 85vw, 1400px)',
+                minHeight: '600px',
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                padding: 'clamp(1.5rem, 2vw, 2rem)',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Виджет Intickets - используем и класс для скрипта, и iframe как fallback */}
+              <div 
+                ref={inticketsWidgetRef}
+                className="intickets-frame-container" 
+                data-url={buyTicketUrl}
+                style={{
+                  width: '100%',
+                  minHeight: '600px',
+                  height: '100%',
+                  display: 'block',
+                  visibility: 'visible',
+                  position: 'relative'
+                }}
+              >
+                {/* Iframe как основной способ отображения виджета */}
+                {buyTicketUrl && (
+                  <iframe
+                    key={`details-intickets-${buyTicketUrl}`}
+                    src={buyTicketUrl}
+                    className="w-full border-0"
+                    style={{
+                      width: '100%',
+                      height: '600px',
+                      minHeight: '600px',
+                      border: 'none',
+                      display: 'block',
+                      borderRadius: '8px'
+                    }}
+                    allow="payment"
+                    allowFullScreen
+                    title="Покупка билетов"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Раздел "ОТЗЫВЫ" - на мобильной версии идет после PNG изображений */}
       <div ref={reviewsSectionRef} className="w-full flex flex-col items-center reviews-section-details" style={{
         marginTop: isMobile ? 'clamp(4rem, 8vh, 5.5rem)' : 'clamp(8rem, 12vh, 10rem)',
@@ -1886,91 +1971,6 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           </div>
         </div>
       </div>
-
-      {/* Раздел "Быстрая покупка билета" с встроенным виджетом Intickets - только для ПК */}
-      {!isMobile && buyTicketUrl && (
-        <div 
-          className="w-full flex flex-col items-center justify-center"
-          style={{ 
-            marginTop: 'clamp(4rem, 7vh, 6rem)',
-            paddingTop: 'clamp(2rem, 4vh, 3rem)',
-            paddingBottom: 'clamp(2rem, 4vh, 3rem)',
-            backgroundColor: '#000000',
-            width: '100%',
-            position: 'relative',
-            zIndex: 22,
-            minHeight: '80vh'
-          }}
-        >
-          <div className="w-full max-w-[120rem] mx-auto flex flex-col items-center" style={{ padding: '0 clamp(1rem, 4vw, 4rem)' }}>
-            {/* Заголовок раздела */}
-            <p
-              className="uppercase text-center mb-8"
-              style={{
-                fontFamily: "'Playfair Display SC', serif",
-                fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)',
-                color: '#FBC632',
-                filter: 'drop-shadow(0 0 7.5px rgba(231, 200, 132, 0.6))',
-                textShadow: '0 0 15px rgba(231, 200, 132, 0.4), 0 0 30px rgba(231, 200, 132, 0.3)',
-                letterSpacing: '0.1em',
-                marginBottom: 'clamp(2rem, 3vh, 3rem)'
-              }}
-            >
-              Быстрая покупка билета
-            </p>
-
-            {/* Контейнер для виджета Intickets */}
-            <div 
-              className="w-full"
-              style={{
-                maxWidth: 'clamp(1000px, 85vw, 1400px)',
-                minHeight: '600px',
-                backgroundColor: '#ffffff',
-                borderRadius: '12px',
-                padding: 'clamp(1.5rem, 2vw, 2rem)',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}
-            >
-              {/* Виджет Intickets - используем и класс для скрипта, и iframe как fallback */}
-              <div 
-                ref={inticketsWidgetRef}
-                className="intickets-frame-container" 
-                data-url={buyTicketUrl}
-                style={{
-                  width: '100%',
-                  minHeight: '600px',
-                  height: '100%',
-                  display: 'block',
-                  visibility: 'visible',
-                  position: 'relative'
-                }}
-              >
-                {/* Iframe как основной способ отображения виджета */}
-                {buyTicketUrl && (
-                  <iframe
-                    key={`details-intickets-${buyTicketUrl}`}
-                    src={buyTicketUrl}
-                    className="w-full border-0"
-                    style={{
-                      width: '100%',
-                      height: '600px',
-                      minHeight: '600px',
-                      border: 'none',
-                      display: 'block',
-                      borderRadius: '8px'
-                    }}
-                    allow="payment"
-                    allowFullScreen
-                    title="Покупка билетов"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Раздел "Контакты и партнёры" - FOOTER */}
       <div ref={contactsSectionRef} className="w-full flex flex-col items-center contacts-section-no-overlay" style={{ width: '100%', padding: '0 clamp(1rem, 4vw, 4rem)', marginTop: 'clamp(2rem, 4vh, 3rem)', paddingBottom: 'clamp(2rem, 4vh, 3rem)', marginBottom: '0', position: 'relative', zIndex: 25 }}>

@@ -95,8 +95,8 @@ const formatDateTime = (date: string, location?: string, time?: string): { __htm
       const day = dateMatch[1];
       const month = dateMatch[2].toUpperCase();
       result = `${day} ${month}`;
-    } else {
-      result = date.toUpperCase();
+  } else {
+    result = date.toUpperCase();
     }
   }
   
