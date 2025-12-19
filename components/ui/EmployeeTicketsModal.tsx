@@ -186,12 +186,13 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
             className="relative w-full h-full employee-tickets-modal-bg"
             style={{
               backgroundImage: 'url(/backgrounds/sections/fonsotrud.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundSize: isMobile ? 'cover' : 'cover', /* Cover для растягивания фона на весь экран */
+              backgroundPosition: 'center center',
               backgroundRepeat: 'no-repeat',
               width: '100vw',
               height: '100vh',
               minHeight: '100vh',
+              maxHeight: '100vh',
               padding: isMobile ? 'clamp(2.5rem, 5vh, 3.5rem) clamp(1rem, 3vw, 1.5rem)' : 'clamp(2rem, 3vh, 3rem) clamp(2rem, 3vw, 3rem)',
               paddingTop: isMobile ? 'clamp(3rem, 5vh, 4rem)' : 'clamp(2rem, 3vh, 3rem)',
               paddingBottom: isMobile ? 'clamp(3rem, 5vh, 4rem)' : 'clamp(2rem, 3vh, 3rem)',
@@ -237,8 +238,8 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
               <div
                 className="mb-3"
                 style={{
-                  width: isMobile ? 'clamp(10rem, 50vw, 14rem)' : 'clamp(12rem, 15vw, 16rem)',
-                  height: isMobile ? 'clamp(6rem, 30vw, 9rem)' : 'clamp(7rem, 10vw, 10rem)',
+                  width: isMobile ? 'clamp(12rem, 55vw, 16rem)' : 'clamp(14rem, 18vw, 18rem)',
+                  height: isMobile ? 'clamp(7rem, 35vw, 11rem)' : 'clamp(8rem, 12vw, 12rem)',
                   position: 'relative',
                   marginTop: isMobile ? 'clamp(0.5rem, 1vh, 1rem)' : '0',
                   marginBottom: isMobile ? 'clamp(1rem, 2vh, 1.5rem)' : 'clamp(0.5rem, 1vh, 0.75rem)',
@@ -262,7 +263,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                 className="text-center mb-2"
                 style={{
                   fontFamily: "'Playfair Display SC', serif",
-                  fontSize: isMobile ? 'clamp(1.1rem, 4.5vw, 1.5rem)' : 'clamp(1.3rem, 1.8vw, 1.7rem)',
+                  fontSize: isMobile ? 'clamp(1.3rem, 5.5vw, 1.8rem)' : 'clamp(1.5rem, 2.2vw, 2rem)',
                   color: '#FBC632',
                   fontWeight: 400,
                   letterSpacing: '0.1em',
@@ -316,7 +317,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                 className="text-center mb-1"
                 style={{
                   fontFamily: "'Playfair Display SC', serif",
-                  fontSize: isMobile ? 'clamp(0.9rem, 3.5vw, 1.15rem)' : 'clamp(1.1rem, 1.6vw, 1.3rem)',
+                  fontSize: isMobile ? 'clamp(1.05rem, 4.2vw, 1.35rem)' : 'clamp(1.3rem, 1.9vw, 1.5rem)',
                   color: '#FFFFFF',
                   fontWeight: 400,
                   letterSpacing: '0.05em',
@@ -332,7 +333,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                     <span
                       style={{
                         color: '#FBC632',
-                        fontSize: 'clamp(1rem, 4vw, 1.3rem)',
+                        fontSize: 'clamp(1.2rem, 4.8vw, 1.55rem)',
                         textShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.6), 0 0 1.875rem rgba(251, 198, 50, 0.4)',
                       }}
                     >
@@ -345,7 +346,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                     <span
                       style={{
                         color: '#FBC632',
-                        fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
+                        fontSize: 'clamp(1.7rem, 2.8vw, 2.3rem)',
                         textShadow: '0 0 0.9375rem rgba(251, 198, 50, 0.6), 0 0 1.875rem rgba(251, 198, 50, 0.4)',
                       }}
                     >
@@ -360,7 +361,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                 className="text-center mb-4"
                 style={{
                   fontFamily: "'Playfair Display SC', serif",
-                  fontSize: isMobile ? 'clamp(0.75rem, 2.8vw, 0.95rem)' : 'clamp(0.8rem, 1.1vw, 0.9rem)',
+                  fontSize: isMobile ? 'clamp(0.85rem, 3.2vw, 1.1rem)' : 'clamp(0.95rem, 1.3vw, 1.05rem)',
                   color: '#FFFFFF',
                   letterSpacing: '0.03em',
                   lineHeight: 1.4,
@@ -387,7 +388,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.85rem, 3.2vw, 1.1rem)' : 'clamp(1.2rem, 1.6vw, 1.5rem)',
+                      fontSize: isMobile ? 'clamp(0.95rem, 3.6vw, 1.25rem)' : 'clamp(1.35rem, 1.8vw, 1.65rem)',
                       color: '#FBC632',
                       fontWeight: 400,
                       marginBottom: isMobile ? 'clamp(0.3rem, 0.8vh, 0.5rem)' : 'clamp(0.5rem, 1vh, 0.75rem)',
@@ -401,7 +402,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                     <div
                       style={{
                         fontFamily: "'Playfair Display SC', serif",
-                        fontSize: 'clamp(1.1rem, 4.5vw, 1.5rem)',
+                        fontSize: 'clamp(1.25rem, 5vw, 1.7rem)',
                         color: '#FBC632',
                         fontWeight: 400,
                         marginBottom: 'clamp(0.4rem, 1vh, 0.6rem)',
@@ -415,7 +416,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.65rem, 2.5vw, 0.85rem)' : 'clamp(0.7rem, 0.9vw, 0.8rem)',
+                      fontSize: isMobile ? 'clamp(0.75rem, 2.8vw, 0.95rem)' : 'clamp(0.8rem, 1vw, 0.9rem)',
                       color: '#FFFFFF',
                       marginBottom: isMobile ? 'clamp(0.5rem, 1.2vh, 0.75rem)' : 'clamp(0.5rem, 1vh, 0.75rem)',
                       lineHeight: 1.35,
@@ -454,7 +455,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.7rem, 2.8vw, 0.9rem)' : 'clamp(0.75rem, 1vw, 0.85rem)',
+                      fontSize: isMobile ? 'clamp(0.8rem, 3.2vw, 1rem)' : 'clamp(0.85rem, 1.15vw, 0.95rem)',
                       color: '#FBC632',
                       fontWeight: 400,
                       marginBottom: isMobile ? 'clamp(0.3rem, 0.8vh, 0.5rem)' : 'clamp(0.3rem, 0.8vh, 0.5rem)',
@@ -465,7 +466,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.6rem, 2.2vw, 0.8rem)' : 'clamp(0.65rem, 0.85vw, 0.75rem)',
+                      fontSize: isMobile ? 'clamp(0.7rem, 2.5vw, 0.9rem)' : 'clamp(0.75rem, 0.95vw, 0.85rem)',
                       color: '#FFFFFF',
                       lineHeight: 1.4,
                     }}
@@ -479,7 +480,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.85rem, 3.2vw, 1.1rem)' : 'clamp(1.2rem, 1.6vw, 1.5rem)',
+                      fontSize: isMobile ? 'clamp(0.95rem, 3.6vw, 1.25rem)' : 'clamp(1.35rem, 1.8vw, 1.65rem)',
                       color: '#FBC632',
                       fontWeight: 400,
                       marginBottom: isMobile ? 'clamp(0.3rem, 0.8vh, 0.5rem)' : 'clamp(0.5rem, 1vh, 0.75rem)',
@@ -493,7 +494,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                     <div
                       style={{
                         fontFamily: "'Playfair Display SC', serif",
-                        fontSize: 'clamp(1.1rem, 4.5vw, 1.5rem)',
+                        fontSize: 'clamp(1.25rem, 5vw, 1.7rem)',
                         color: '#FBC632',
                         fontWeight: 400,
                         marginBottom: 'clamp(0.4rem, 1vh, 0.6rem)',
@@ -507,7 +508,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.65rem, 2.5vw, 0.85rem)' : 'clamp(0.7rem, 0.9vw, 0.8rem)',
+                      fontSize: isMobile ? 'clamp(0.75rem, 2.8vw, 0.95rem)' : 'clamp(0.8rem, 1vw, 0.9rem)',
                       color: '#FFFFFF',
                       marginBottom: isMobile ? 'clamp(0.5rem, 1.2vh, 0.75rem)' : 'clamp(0.5rem, 1vh, 0.75rem)',
                       lineHeight: 1.35,
@@ -546,7 +547,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.7rem, 2.8vw, 0.9rem)' : 'clamp(0.75rem, 1vw, 0.85rem)',
+                      fontSize: isMobile ? 'clamp(0.8rem, 3.2vw, 1rem)' : 'clamp(0.85rem, 1.15vw, 0.95rem)',
                       color: '#FBC632',
                       fontWeight: 400,
                       marginBottom: isMobile ? 'clamp(0.3rem, 0.8vh, 0.5rem)' : 'clamp(0.3rem, 0.8vh, 0.5rem)',
@@ -557,7 +558,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.6rem, 2.2vw, 0.8rem)' : 'clamp(0.65rem, 0.85vw, 0.75rem)',
+                      fontSize: isMobile ? 'clamp(0.7rem, 2.5vw, 0.9rem)' : 'clamp(0.75rem, 0.95vw, 0.85rem)',
                       color: '#FFFFFF',
                       lineHeight: 1.4,
                     }}
@@ -571,7 +572,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.85rem, 3.2vw, 1.1rem)' : 'clamp(1.2rem, 1.6vw, 1.5rem)',
+                      fontSize: isMobile ? 'clamp(0.95rem, 3.6vw, 1.25rem)' : 'clamp(1.35rem, 1.8vw, 1.65rem)',
                       color: '#FBC632',
                       fontWeight: 400,
                       marginBottom: isMobile ? 'clamp(0.3rem, 0.8vh, 0.5rem)' : 'clamp(0.5rem, 1vh, 0.75rem)',
@@ -585,7 +586,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                     <div
                       style={{
                         fontFamily: "'Playfair Display SC', serif",
-                        fontSize: 'clamp(1.1rem, 4.5vw, 1.5rem)',
+                        fontSize: 'clamp(1.25rem, 5vw, 1.7rem)',
                         color: '#FBC632',
                         fontWeight: 400,
                         marginBottom: 'clamp(0.4rem, 1vh, 0.6rem)',
@@ -599,7 +600,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.65rem, 2.5vw, 0.85rem)' : 'clamp(0.7rem, 0.9vw, 0.8rem)',
+                      fontSize: isMobile ? 'clamp(0.75rem, 2.8vw, 0.95rem)' : 'clamp(0.8rem, 1vw, 0.9rem)',
                       color: '#FFFFFF',
                       marginBottom: isMobile ? 'clamp(0.5rem, 1.2vh, 0.75rem)' : 'clamp(0.5rem, 1vh, 0.75rem)',
                       lineHeight: 1.35,
@@ -638,7 +639,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.7rem, 2.8vw, 0.9rem)' : 'clamp(0.75rem, 1vw, 0.85rem)',
+                      fontSize: isMobile ? 'clamp(0.8rem, 3.2vw, 1rem)' : 'clamp(0.85rem, 1.15vw, 0.95rem)',
                       color: '#FBC632',
                       fontWeight: 400,
                       marginBottom: isMobile ? 'clamp(0.3rem, 0.8vh, 0.5rem)' : 'clamp(0.3rem, 0.8vh, 0.5rem)',
@@ -649,7 +650,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
                   <div
                     style={{
                       fontFamily: "'Playfair Display SC', serif",
-                      fontSize: isMobile ? 'clamp(0.6rem, 2.2vw, 0.8rem)' : 'clamp(0.65rem, 0.85vw, 0.75rem)',
+                      fontSize: isMobile ? 'clamp(0.7rem, 2.5vw, 0.9rem)' : 'clamp(0.75rem, 0.95vw, 0.85rem)',
                       color: '#FFFFFF',
                       lineHeight: 1.4,
                     }}
@@ -662,13 +663,15 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
               {/* Button - увеличенный размер для мобильной версии */}
               <button
                 onClick={() => {
-                  // Здесь можно добавить логику отправки заявки
-                  console.log('Оставить заявку');
+                  // Открываем почтовый клиент с предзаполненным email и темой
+                  const email = 'BELGORODKONCERT@YANDEX.RU';
+                  const subject = encodeURIComponent('Билеты для сотрудников');
+                  window.location.href = `mailto:${email}?subject=${subject}`;
                 }}
                 className="rounded-lg border-2 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
                 style={{
                   fontFamily: "'Playfair Display SC', serif",
-                  fontSize: isMobile ? 'clamp(0.85rem, 3.2vw, 1.1rem)' : 'clamp(0.8rem, 1.1vw, 0.9rem)',
+                  fontSize: isMobile ? 'clamp(0.95rem, 3.6vw, 1.25rem)' : 'clamp(0.95rem, 1.25vw, 1.05rem)',
                   letterSpacing: '0.08em',
                   color: '#FFFFFF',
                   backgroundColor: 'rgba(0, 0, 0, 0.4)',

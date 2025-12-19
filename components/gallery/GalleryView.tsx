@@ -6,8 +6,23 @@ import { useRouter } from 'next/navigation';
 import Header from '../Header';
 import './GalleryView.css';
 
-const GalleryView: React.FC = () => {
+interface GalleryViewProps {
+  onClose?: () => void; // Функция для закрытия overlay на ПК
+}
+
+const GalleryView: React.FC<GalleryViewProps> = ({ onClose }) => {
   const router = useRouter();
+  
+  // Функция для возврата на главную страницу
+  const handleReturnToMain = () => {
+    if (onClose) {
+      // Если есть функция закрытия (overlay на ПК) - закрываем overlay
+      onClose();
+    } else {
+      // Если нет функции закрытия (мобильная версия или отдельная страница) - делаем router.push
+      router.push('/');
+    }
+  };
   const images = [
     '/photo/Fotoset-22.jpg',
     '/photo/Fotoset-32.jpg',
@@ -160,13 +175,13 @@ const GalleryView: React.FC = () => {
       {/* Шапка вынесена из контейнера для правильного z-index */}
       <Header 
         isVisible={true}
-        onTicketsClick={() => router.push('/')}
-        onAboutClick={() => router.push('/')}
-        onGalleryClick={() => router.push('/gallery')}
-        onActorsClick={() => router.push('/')}
-        onTeamClick={() => router.push('/')}
-        onReviewsClick={() => router.push('/')}
-        onContactsClick={() => router.push('/')}
+        onTicketsClick={handleReturnToMain}
+        onAboutClick={handleReturnToMain}
+        onGalleryClick={handleReturnToMain}
+        onActorsClick={handleReturnToMain}
+        onTeamClick={handleReturnToMain}
+        onReviewsClick={handleReturnToMain}
+        onContactsClick={handleReturnToMain}
         hideMobileButton={true}
         hideCloseButton={true}
       />

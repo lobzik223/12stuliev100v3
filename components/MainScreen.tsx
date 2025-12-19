@@ -615,7 +615,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
             overflow: 'auto'
           }}
         >
-          <GalleryView />
+          <GalleryView onClose={() => setIsGalleryOpen(false)} />
         </div>
       )}
     </main>

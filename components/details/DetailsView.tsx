@@ -38,6 +38,18 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const defaultDateTime = '24 НОЯБРЯ | 19:00';
   // Проверяем, что dateTime не undefined и не null
   const dateTimeValue = (dateTime !== undefined && dateTime !== null) ? dateTime : defaultDateTime;
+  
+  // Извлекаем базовый URL для виджета Intickets (если требуется)
+  const getInticketsBaseUrl = (url: string | undefined): string | undefined => {
+    if (!url) return undefined;
+    try {
+      const urlObj = new URL(url);
+      // Возвращаем базовый URL (протокол + хост)
+      return `${urlObj.protocol}//${urlObj.host}/`;
+    } catch {
+      return url;
+    }
+  };
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isEmployeeTicketsModalOpen, setIsEmployeeTicketsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => {
@@ -80,6 +92,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const contactsSectionRef = useRef<HTMLDivElement>(null);
   const legalInfoRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const inticketsWidgetRef = useRef<HTMLDivElement>(null);
 
   // Инициализация isMobile при монтировании и изменении размера окна
   useEffect(() => {
@@ -833,6 +846,123 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, [isMobile]);
+
+  // Инициализация виджета Intickets для ПК версии
+  useEffect(() => {
+    if (isMobile || !buyTicketUrl || typeof window === 'undefined') return;
+
+    const container = inticketsWidgetRef.current;
+    if (!container) return;
+
+    // Функция инициализации виджета
+    const initInticketsWidget = () => {
+      if (!container) return;
+
+      // Убеждаемся, что контейнер видим и имеет правильный атрибут
+      container.setAttribute('data-url', buyTicketUrl);
+      container.style.display = 'block';
+      container.style.visibility = 'visible';
+      container.style.width = '100%';
+      container.style.minHeight = '600px';
+      container.style.height = 'auto';
+
+      // Скрипт Intickets должен автоматически найти и инициализировать виджеты
+      // Проверяем, загружен ли скрипт и принудительно инициализируем виджеты
+      const checkAndInit = () => {
+        try {
+          // Проверяем различные возможные API скрипта Intickets
+          if (typeof (window as any).InticketsFrame !== 'undefined') {
+            // Если есть метод инициализации, вызываем его
+            if (typeof (window as any).InticketsFrame.init === 'function') {
+              (window as any).InticketsFrame.init();
+            }
+            // Также пробуем найти и инициализировать все виджеты на странице
+            const widgets = document.querySelectorAll('.intickets-frame-container[data-url]');
+            widgets.forEach((widget) => {
+              const url = widget.getAttribute('data-url');
+              if (url && !widget.hasAttribute('data-initialized')) {
+                widget.setAttribute('data-initialized', 'true');
+              }
+            });
+          } else if (typeof (window as any).intickets !== 'undefined') {
+            // Альтернативный API
+            if (typeof (window as any).intickets.init === 'function') {
+              (window as any).intickets.init();
+            }
+          } else {
+            // Если скрипт еще не загружен, пробуем принудительно загрузить виджет через iframe
+            // Это fallback на случай, если скрипт Intickets не работает
+            const existingIframe = container.querySelector('iframe');
+            if (!existingIframe) {
+              const iframe = document.createElement('iframe');
+              iframe.src = buyTicketUrl;
+              iframe.style.width = '100%';
+              iframe.style.height = '600px';
+              iframe.style.border = 'none';
+              iframe.setAttribute('allow', 'payment');
+              iframe.setAttribute('allowFullScreen', 'true');
+              iframe.setAttribute('title', 'Покупка билетов');
+              container.appendChild(iframe);
+            }
+          }
+        } catch (e) {
+          console.warn('Intickets init error:', e);
+          // Fallback: если скрипт не работает, используем обычный iframe
+          const existingIframe = container.querySelector('iframe');
+          if (!existingIframe) {
+            const iframe = document.createElement('iframe');
+            iframe.src = buyTicketUrl;
+            iframe.style.width = '100%';
+            iframe.style.height = '600px';
+            iframe.style.border = 'none';
+            iframe.setAttribute('allow', 'payment');
+            iframe.setAttribute('allowFullScreen', 'true');
+            iframe.setAttribute('title', 'Покупка билетов');
+            container.appendChild(iframe);
+          }
+        }
+      };
+
+      // Проверяем сразу
+      checkAndInit();
+
+      // Если скрипт еще не загружен, ждем его
+      if (typeof (window as any).InticketsFrame === 'undefined' && typeof (window as any).intickets === 'undefined') {
+        let checkCount = 0;
+        const maxChecks = 75; // 15 секунд при проверке каждые 200мс
+        
+        const checkInterval = setInterval(() => {
+          checkCount++;
+          if (typeof (window as any).InticketsFrame !== 'undefined' || typeof (window as any).intickets !== 'undefined') {
+            clearInterval(checkInterval);
+            checkAndInit();
+          } else if (checkCount >= maxChecks) {
+            // Если скрипт так и не загрузился, используем fallback с iframe
+            clearInterval(checkInterval);
+            checkAndInit();
+          }
+        }, 200);
+      }
+    };
+
+    // Запускаем инициализацию после задержки, чтобы DOM был готов
+    const timeoutId = setTimeout(initInticketsWidget, 1000);
+
+    // Также слушаем событие загрузки страницы
+    window.addEventListener('load', initInticketsWidget);
+
+    // Слушаем событие app-ready, если оно есть
+    const handleAppReady = () => {
+      setTimeout(initInticketsWidget, 500);
+    };
+    window.addEventListener('app-ready', handleAppReady);
+
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('load', initInticketsWidget);
+      window.removeEventListener('app-ready', handleAppReady);
+    };
+  }, [isMobile, buyTicketUrl]);
 
   // УПРОЩЕННОЕ позиционирование для мобильных - БЕЗ СЛОЖНЫХ ВЫЧИСЛЕНИЙ
   useEffect(() => {
@@ -1756,6 +1886,91 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Раздел "Быстрая покупка билета" с встроенным виджетом Intickets - только для ПК */}
+      {!isMobile && buyTicketUrl && (
+        <div 
+          className="w-full flex flex-col items-center justify-center"
+          style={{ 
+            marginTop: 'clamp(4rem, 7vh, 6rem)',
+            paddingTop: 'clamp(2rem, 4vh, 3rem)',
+            paddingBottom: 'clamp(2rem, 4vh, 3rem)',
+            backgroundColor: '#000000',
+            width: '100%',
+            position: 'relative',
+            zIndex: 22,
+            minHeight: '80vh'
+          }}
+        >
+          <div className="w-full max-w-[120rem] mx-auto flex flex-col items-center" style={{ padding: '0 clamp(1rem, 4vw, 4rem)' }}>
+            {/* Заголовок раздела */}
+            <p
+              className="uppercase text-center mb-8"
+              style={{
+                fontFamily: "'Playfair Display SC', serif",
+                fontSize: 'clamp(1.75rem, 2.5vw, 2.5rem)',
+                color: '#FBC632',
+                filter: 'drop-shadow(0 0 7.5px rgba(231, 200, 132, 0.6))',
+                textShadow: '0 0 15px rgba(231, 200, 132, 0.4), 0 0 30px rgba(231, 200, 132, 0.3)',
+                letterSpacing: '0.1em',
+                marginBottom: 'clamp(2rem, 3vh, 3rem)'
+              }}
+            >
+              Быстрая покупка билета
+            </p>
+
+            {/* Контейнер для виджета Intickets */}
+            <div 
+              className="w-full"
+              style={{
+                maxWidth: 'clamp(1000px, 85vw, 1400px)',
+                minHeight: '600px',
+                backgroundColor: '#ffffff',
+                borderRadius: '12px',
+                padding: 'clamp(1.5rem, 2vw, 2rem)',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Виджет Intickets - используем и класс для скрипта, и iframe как fallback */}
+              <div 
+                ref={inticketsWidgetRef}
+                className="intickets-frame-container" 
+                data-url={buyTicketUrl}
+                style={{
+                  width: '100%',
+                  minHeight: '600px',
+                  height: '100%',
+                  display: 'block',
+                  visibility: 'visible',
+                  position: 'relative'
+                }}
+              >
+                {/* Iframe как основной способ отображения виджета */}
+                {buyTicketUrl && (
+                  <iframe
+                    key={`details-intickets-${buyTicketUrl}`}
+                    src={buyTicketUrl}
+                    className="w-full border-0"
+                    style={{
+                      width: '100%',
+                      height: '600px',
+                      minHeight: '600px',
+                      border: 'none',
+                      display: 'block',
+                      borderRadius: '8px'
+                    }}
+                    allow="payment"
+                    allowFullScreen
+                    title="Покупка билетов"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Раздел "Контакты и партнёры" - FOOTER */}
       <div ref={contactsSectionRef} className="w-full flex flex-col items-center contacts-section-no-overlay" style={{ width: '100%', padding: '0 clamp(1rem, 4vw, 4rem)', marginTop: 'clamp(2rem, 4vh, 3rem)', paddingBottom: 'clamp(2rem, 4vh, 3rem)', marginBottom: '0', position: 'relative', zIndex: 25 }}>

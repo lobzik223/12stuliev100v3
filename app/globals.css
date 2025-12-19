@@ -1973,21 +1973,28 @@ div.swiper-button-next.swiper-button-next-actors {
     z-index: 1 !important;
   }
 
-  /* Убеждаемся, что нативные контролы видео всегда видны и доступны на мобильных */
-  .trailer-section-wrapper-mobile video::-webkit-media-controls-panel {
+  /* На мобильных: скрываем нативные контролы когда видео не играет (когда показывается кастомная кнопка) */
+  .trailer-section-wrapper-mobile video:not([data-playing="true"])::-webkit-media-controls-panel {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .trailer-section-wrapper-mobile video:not([data-playing="true"])::-webkit-media-controls-play-button {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Когда видео играет - показываем нативные контролы для паузы */
+  .trailer-section-wrapper-mobile video[data-playing="true"]::-webkit-media-controls-panel {
     display: flex !important;
     opacity: 1 !important;
     pointer-events: auto !important;
     z-index: 10 !important;
   }
 
-  .trailer-section-wrapper-mobile video::-webkit-media-controls-play-button {
-    display: flex !important;
-    pointer-events: auto !important;
-    z-index: 10 !important;
-  }
-
-  .trailer-section-wrapper-mobile video::-webkit-media-controls-pause-button {
+  .trailer-section-wrapper-mobile video[data-playing="true"]::-webkit-media-controls-pause-button {
     display: flex !important;
     pointer-events: auto !important;
     z-index: 10 !important;
@@ -3341,11 +3348,14 @@ body.employee-tickets-modal-open .secondary-nav {
 
 /* Исправление обрезки фона в модальном окне "БИЛЕТЫ ДЛЯ СОТРУДНИКОВ" */
 @media (max-width: 768px), (pointer: coarse) {
-  /* На мобильной версии - используем contain для полного отображения фона */
+  /* На мобильной версии - используем cover для растягивания фона на весь экран */
   .employee-tickets-modal-bg {
-    background-size: contain !important;
+    background-size: cover !important;
     background-position: center center !important;
-    min-height: clamp(600px, 90vh, 800px) !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
     padding-top: clamp(3rem, 5vh, 4rem) !important;
     padding-bottom: clamp(3rem, 5vh, 4rem) !important;
   }

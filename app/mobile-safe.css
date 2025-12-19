@@ -1884,3 +1884,26 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
     flex-direction: column !important;
   }
 }
+
+/* Убираем полупрозрачное очертание (box-shadow) у кнопки воспроизведения трейлера на мобильных */
+@media (max-width: 768px), (pointer: coarse) {
+  .trailer-section-wrapper-mobile .rounded-full[style*="backgroundColor"][style*="rgba(251, 198, 50"] {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+  }
+  
+  .trailer-section-wrapper-mobile div.rounded-full[style*="backgroundColor"][style*="rgba(251, 198, 50"] {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+  }
+  
+  /* Убираем все возможные тени и очертания у кнопки play на мобильных */
+  .trailer-section-wrapper-mobile div[class*="rounded-full"] {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    filter: none !important;
+  }
+}

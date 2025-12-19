@@ -279,6 +279,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
             <video
               ref={videoRef}
               className="w-full h-full"
+              data-playing={isVideoPlaying ? 'true' : 'false'}
               style={{
                 width: '100%',
                 height: '100%',
@@ -290,9 +291,9 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 visibility: 'visible',
                 opacity: 1,
               }}
-              // Mobile: всегда показываем контролы для возможности паузы/остановки
+              // Mobile: контролы показываются только когда видео играет (чтобы не было двойной кнопки)
               // Desktop: контролы показываются только когда видео играет
-              controls={isMobile ? true : isVideoPlaying}
+              controls={isMobile ? (isVideoPlaying ? true : false) : isVideoPlaying}
               preload="metadata"
               playsInline
               onLoadedMetadata={() => {
@@ -301,16 +302,32 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   videoRef.current.style.display = 'block';
                   videoRef.current.style.visibility = 'visible';
                   videoRef.current.style.opacity = '1';
+                  // Обновляем атрибут data-playing для CSS
+                  if (isMobile) {
+                    videoRef.current.setAttribute('data-playing', isVideoPlaying ? 'true' : 'false');
+                  }
                 }
               }}
               onPlay={() => {
                 setIsVideoPlaying(true);
+                // Обновляем атрибут data-playing для CSS
+                if (videoRef.current && isMobile) {
+                  videoRef.current.setAttribute('data-playing', 'true');
+                }
               }}
               onPause={() => {
                 setIsVideoPlaying(false);
+                // Обновляем атрибут data-playing для CSS
+                if (videoRef.current && isMobile) {
+                  videoRef.current.setAttribute('data-playing', 'false');
+                }
               }}
               onEnded={() => {
                 setIsVideoPlaying(false);
+                // Обновляем атрибут data-playing для CSS
+                if (videoRef.current && isMobile) {
+                  videoRef.current.setAttribute('data-playing', 'false');
+                }
               }}
               onError={(e) => {
                 // PRODUCTION FIX: Обработка ошибок без блокировки рендеринга
@@ -319,6 +336,9 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   videoRef.current.style.display = 'block';
                   videoRef.current.style.visibility = 'visible';
                   videoRef.current.style.opacity = '1';
+                  if (isMobile) {
+                    videoRef.current.setAttribute('data-playing', 'false');
+                  }
                 }
               }}
             >
@@ -368,7 +388,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                     height: isMobile ? 'clamp(3rem, 12vw, 4rem)' : 'clamp(5rem, 8vw, 7rem)',
                     backgroundColor: 'rgba(251, 198, 50, 0.9)',
                     border: '3px solid #FBC632',
-                    boxShadow: '0 0 2rem rgba(251, 198, 50, 0.8)',
+                    boxShadow: isMobile ? 'none' : '0 0 2rem rgba(251, 198, 50, 0.8)', /* Убираем полупрозрачное очертание на мобильных */
                     cursor: 'pointer',
                     transition: 'transform 0.2s ease, box-shadow 0.2s ease',
                     position: 'relative',

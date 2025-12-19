@@ -805,6 +805,7 @@ export default function SchedulePage() {
                   </div>
                   <div className="flex justify-center lg:justify-end mt-6">
                     <button
+                      onClick={() => setIsEmployeeTicketsModalOpen(true)}
                       className="rounded-lg border-2 transition-all duration-300 hover:scale-105 cursor-pointer"
                       style={{
                         fontFamily: "'Playfair Display SC', serif",
