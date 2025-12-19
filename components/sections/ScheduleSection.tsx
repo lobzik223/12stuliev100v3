@@ -62,7 +62,7 @@ export default function ScheduleSection() {
                   }}
                 >
                   <span style={{ fontFamily: "'Noto Serif Malayalam', serif", fontSize: 'clamp(2rem, 2.5vw, 2.5rem)' }}>12</span>
-                  {' '}стульев – Москва
+                  {' '}стульев – Брянск
                 </p>
                 <p
                   className="uppercase"

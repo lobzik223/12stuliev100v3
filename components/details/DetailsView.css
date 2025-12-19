@@ -20,39 +20,29 @@
   /* Mobile viewport reliability:
      Use --vvh (set in <head>) instead of raw vh so iOS address-bar changes don't cut backgrounds early. */
   .details-container::before {
-    /* Mobile: make section-34839282.png much shorter in height (Y only) - reduced to 55vh */
-    height: calc(var(--vvh, 1vh) * 55) !important;
-    max-height: calc(var(--vvh, 1vh) * 55) !important;
-    min-height: calc(var(--vvh, 1vh) * 55) !important;
-    background-size: 100% auto !important;
+    /* Фон section-4-mobile.png растягивается в длину до раздела отзывов */
+    height: 400vh !important;
+    min-height: 400vh !important;
+    background-size: 100% 400vh !important; /* Растягиваем фон в длину, ширина остается 100% */
   }
 
-  /* Ensure the black background continues all the way to the bottom on mobile. */
+  /* Убираем черный фон на мобильной версии */
   .details-container::after {
-    /* Updated to match reduced background height (55vh instead of 400vh) */
-    top: calc(var(--vvh, 1vh) * 55) !important;
-    bottom: 0 !important;
-    height: auto !important;
-    background-color: #000000 !important;
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
   }
 
-  /* Reviews section black background continuation (mobile only). */
+  /* Убираем черный фон у раздела отзывов на мобильной версии */
   .reviews-section-details {
-    background-color: #000000 !important;
+    background-color: transparent !important;
     margin-bottom: 0 !important;
     padding-bottom: clamp(3rem, 6vh, 4.5rem) !important;
   }
 
   .reviews-section-details::after {
-    content: '' !important;
-    position: absolute !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: calc(-1 * clamp(3rem, 6vh, 4.5rem)) !important;
-    height: clamp(3rem, 6vh, 4.5rem) !important;
-    background-color: #000000 !important;
-    pointer-events: none !important;
-    z-index: 19 !important;
+    display: none !important;
   }
 }
 
@@ -264,7 +254,7 @@ span.date-time-number {
 /* Виджет с рамкой справа */
 .frame-widget {
   position: absolute;
-  top: 3%;
+  top: 2.5%; /* Опущено чуть ниже на ПК версии */
   right: -2%;
   /* Desktop: allow larger trailer block */
   width: 54%;
@@ -329,6 +319,19 @@ span.date-time-number {
   .details-trailer-square {
     width: 100% !important;
     max-width: 100% !important;
+    height: 100% !important;
+    position: relative !important;
+    display: block !important;
+  }
+  
+  /* Видео на мобильных - правильное отображение */
+  .details-trailer-video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 
@@ -398,7 +401,7 @@ span.date-time-number {
 /* Надпись "Наши преимущества" */
 .advantages-title {
   position: absolute;
-  top: 8%; /* Поднято выше */
+  top: 6%; /* Поднято чуть выше на ПК версии */
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Playfair Display SC', serif;
@@ -820,66 +823,49 @@ span.date-time-number {
 }
 
 @media (max-width: 768px) {
-  /* Растягиваем фон на мобильных еще больше */
+  /* Фон section-4-mobile.png для мобильной версии - растягивается в длину до раздела отзывов */
   .details-container::before {
     background-attachment: scroll;
-    /* Use --vvh to avoid iOS address-bar vh jumps */
-    /* Mobile: make section-34839282.png much shorter in height (Y only) - reduced to 50-60vh */
-    --details-bg-h: clamp(
-      calc(var(--vvh, 1vh) * 50),
-      calc(var(--vvh, 1vh) * 55),
-      calc(var(--vvh, 1vh) * 60)
-    );
-
-    /* Replace expensive mask-image (can cause "blank" on reverse scroll in iOS)
-       with a visually equivalent gradient layer. */
-    background-image:
-      linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 0) calc(100% - 200px),
-        rgba(0, 0, 0, 1) 100%
-      ),
-      url(/photo/section-34839282.png) !important;
-    /* Mobile: keep width 100%, preserve image aspect ratio (no vertical stretching) */
-    /* First value (100% 100%) is for gradient overlay, second (100% auto) preserves image aspect ratio */
-    background-size: 100% 100%, 100% auto !important;
-    background-position: 0 0, center top !important;
-    background-repeat: no-repeat, no-repeat !important;
-
-    height: var(--details-bg-h) !important;
-    max-height: var(--details-bg-h) !important;
-    min-height: var(--details-bg-h) !important;
-
-    /* Mobile: keep background behaving like a normal background layer (avoid separate compositing). */
+    background-image: url(/backgrounds/sections/mobile/section-4-mobile.png) !important;
+    background-size: 100% 400vh !important; /* Растягиваем фон в длину до раздела отзывов, ширина остается 100% */
+    background-position: center top !important;
+    background-repeat: no-repeat !important;
+    height: 400vh !important; /* Высота до раздела отзывов */
+    min-height: 400vh !important;
+    max-height: none !important;
+    width: 100% !important;
+    bottom: 0 !important;
     -webkit-backface-visibility: visible !important;
     backface-visibility: visible !important;
     will-change: auto !important;
     box-shadow: none !important;
+    transform: none !important; /* Убираем отзеркаливание для мобильной версии */
   }
   
-  /* Черный фон под изображением с плавным началом */
+  /* Убеждаемся что контейнер растягивается на всю высоту контента */
+  .details-container {
+    min-height: 100vh !important;
+  }
+  
+  /* Убираем черный фон на мобильной версии */
   .details-container::after {
-    top: calc(var(--details-bg-h) - 100px) !important; /* Начинается немного раньше для перекрытия */
-    bottom: 0 !important;
-    height: auto !important;
-    background: linear-gradient(to top, 
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.3) 30px,
-      rgba(0, 0, 0, 0.7) 60px,
-      rgba(0, 0, 0, 1) 100px,
-      #000000 100px
-    ) !important;
-    z-index: -1 !important; /* Фон за контентом */
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
   }
   
   .date-time-box {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem) !important; /* Сразу после рамки */
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 0 auto clamp(1.5rem, 3vh, 2rem) auto !important;
     padding: 8px 16px;
     gap: 8px;
     border-radius: 18px;
+    width: fit-content !important;
   }
   
   .date-time-text {
@@ -904,9 +890,13 @@ span.date-time-number {
   }
   
   .logo-container {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 50px) !important; /* Сразу после рамки */
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 0 auto clamp(1.5rem, 3vh, 2rem) auto !important;
+    width: fit-content !important;
   }
   
   .logo-image {
@@ -916,53 +906,60 @@ span.date-time-number {
   }
   
   .location-text {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 130px) !important; /* Сразу после рамки */
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 0 auto clamp(1.5rem, 3vh, 2rem) auto !important;
     font-size: 28px;
     max-width: 90%;
     text-align: center !important;
     width: 90%;
-    /* MOBILE: this is a visual overlay, don't let it intercept scroll gestures */
-    pointer-events: none !important;
-    touch-action: pan-y !important;
+    pointer-events: auto !important;
   }
   
   .description-text {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 200px) !important; /* Сразу после рамки */
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    margin: 0 auto clamp(1.5rem, 3vh, 2rem) auto !important;
     font-size: 16px;
     max-width: 90%;
     width: 90%;
     line-height: 1.3;
     text-align: center !important;
-    /* MOBILE: this is a visual overlay, don't let it intercept scroll gestures */
-    pointer-events: none !important;
-    touch-action: pan-y !important;
+    pointer-events: auto !important;
   }
   
   .buy-ticket-button {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px) !important; /* Перемещена ниже текста описания, над виджетом адреса */
-    left: 50% !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
     right: auto !important;
-    transform: translateX(-50%) !important;
+    transform: none !important;
+    margin: 0 auto clamp(1.5rem, 3vh, 2rem) auto !important;
     padding: 10px 24px !important;
     font-size: 16px !important;
-    position: absolute !important;
+    width: fit-content !important;
+    display: block !important;
   }
   
   .venue-widget {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px) !important; /* Перемещен ниже кнопки "Купить билет" */
-    left: 50% !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
     right: auto !important;
-    transform: translateX(-50%) !important;
+    transform: none !important;
+    margin: 0 auto clamp(1.5rem, 3vh, 2rem) auto !important;
     padding: 12px 18px !important;
     gap: 12px !important;
     width: fit-content !important;
     max-width: 90% !important;
     justify-content: center !important;
-    position: absolute !important;
+    display: flex !important;
   }
   
   .venue-text {
@@ -1021,53 +1018,82 @@ span.date-time-number {
   /* Рамка в начале на мобильных - позиционируется первой сверху по центру */
   .frame-widget-mobile-first,
   .frame-widget {
-    position: absolute !important;
-    top: 0.5% !important; /* Поднято выше с 2% до 0.5% */
-    left: 50% !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
     right: auto !important;
-    transform: translateX(-50%) !important;
+    transform: none !important;
     width: 85% !important;
     max-width: 400px !important;
     height: clamp(45vh, 50vh, 55vh) !important;
+    margin: clamp(2rem, 4vh, 3rem) auto clamp(2rem, 4vh, 3rem) auto !important;
     z-index: 20 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   
-  /* Видео под рамкой для мобильных - уменьшаем ширину, чтобы не было растяжения */
+  /* Контейнер для видео на мобильных */
+  .frame-widget-mobile-first .details-trailer-square,
+  .frame-widget .details-trailer-square {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    position: relative !important;
+    display: block !important;
+  }
+  
+  /* Видео на мобильных - правильное отображение */
+  .frame-widget-mobile-first .details-trailer-video,
+  .frame-widget .details-trailer-video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+  }
+  
+  /* Видео на мобильных - нормальный поток без трансформаций */
   .frame-widget-mobile-first .frame-video,
   .frame-widget .frame-video {
-    width: calc(100% - clamp(1.2rem, 4vw, 2rem)) !important;
-    height: calc(100% - clamp(4.5rem, 11vw, 6rem)) !important;
-    max-width: calc(100% - clamp(1.2rem, 4vw, 2rem)) !important;
-    max-height: calc(100% - clamp(4.5rem, 11vw, 6rem)) !important;
-    aspect-ratio: auto !important;
-    object-fit: cover !important;
-    object-position: center bottom !important;
-    /* Mobile-only: make babka.mp4 a bit narrower (X only) */
-    transform: translate(-50%, -50%) scaleX(0.985) !important;
-  }
-  
-  .dark-overlay {
-    top: calc(2% + 60vh + 280px) !important; /* Опущено ниже еще на 50px: с 230px до 280px */
-  }
-  
-  /* Затемнение (temno11.png) - уменьшена длина на мобильных */
-  .dark-overlay .dark-overlay-image,
-  .dark-overlay-duplicate .dark-overlay-image {
-    height: auto !important;
-    min-height: 100vh !important; /* Уменьшено с 150vh до 100vh для менее длинного затемнения */
-    max-height: 120vh !important; /* Ограничиваем максимальную высоту */
-    object-fit: cover !important; /* Растягиваем изображение для заполнения пространства */
-    object-position: center top !important;
     width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: none !important;
   }
   
+  /* Скрываем dark-overlay на мобильной версии - он не нужен */
+  .dark-overlay {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+  
+  /* dark-overlay скрыт на мобильной версии, поэтому эти правила не нужны */
+  
+  /* Круги (статистика) - последовательное позиционирование на мобильных */
   .stats-circles {
-    left: 50% !important; /* Центрируем круги */
+    position: relative !important;
+    left: auto !important;
     right: auto !important;
+    top: auto !important;
     gap: 12px;
-    flex-direction: row !important; /* Горизонтально в ряд */
-    top: 20% !important;
-    transform: translateX(-50%) translateY(-50%); /* Центрирование по горизонтали и вертикали */
+    flex-direction: row !important;
+    transform: none !important;
+    margin-top: clamp(5rem, 10vh, 7rem) !important; /* Значительно увеличен верхний отступ, чтобы опустить ниже */
+    margin-bottom: clamp(2rem, 4vh, 3rem) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: fit-content !important;
+    display: flex !important;
+    justify-content: center !important;
   }
   
   .stat-circle {
@@ -1089,122 +1115,35 @@ span.date-time-number {
     display: none !important;
   }
   
-  /* text1.png идет после кругов - увеличен и центрирован - ТОЛЬКО ДЛЯ МОБИЛЬНЫХ */
+  /* text1.png идет после кругов - последовательное позиционирование на мобильных */
   .quote-text-overlay {
-    left: 50% !important; /* Центрируем */
+    position: relative !important;
+    left: auto !important;
     right: auto !important;
-    transform: translateX(-50%) scale(1.8) !important; /* Центрирование и увеличение на 80% */
-    top: calc(20% + 95px - 15px) !important; /* Поднято немного выше - изменено с -5px до -15px */
-    max-width: 100% !important; /* Максимальный размер */
-    width: auto;
-  }
-  
-  /* textmibile.png идет после text1.png - ТОЛЬКО ДЛЯ МОБИЛЬНЫХ */
-  .long-quote-text-overlay {
-    left: 50% !important; /* Центрируем */
-    right: auto !important;
-    transform: translateX(-50%) scale(1.6) !important; /* Увеличение на 60% */
-    top: calc(20% + 95px + 30px + 80px) !important; /* Немного опущен - увеличено с 60px до 80px */
-    max-width: 100% !important; /* Увеличено до 100% для максимального размера */
-    width: auto;
-  }
-  
-  /* Текст "НАШИ ПРЕИМУЩЕСТВА" сразу после textmibile.png на мобильных */
-  /* Позиция top управляется JavaScript для точного позиционирования после textmibile.png */
-  .advantages-title {
-    position: absolute !important;
-    /* top НЕ устанавливается здесь - управляется JavaScript динамически через inline стили */
-    display: block !important; /* Гарантируем видимость */
-    visibility: visible !important; /* Гарантируем видимость */
-    opacity: 1 !important; /* Гарантируем видимость */
-    left: 50% !important;
-    transform: translateX(-50%) !important; /* Центрируем */
-    font-family: 'Playfair Display SC', serif !important;
-    font-size: 28px !important; /* Размер шрифта для мобильных */
-    font-weight: 400 !important;
-    color: #FBC632 !important; /* Золотой цвет */
-    letter-spacing: 0.5px !important;
-    line-height: 1.2 !important;
-    text-shadow: 
-      0 0 6px rgba(251, 198, 50, 0.4),
-      0 0 12px rgba(251, 198, 50, 0.3) !important;
-    z-index: 10 !important; /* Выше других элементов */
-    width: fit-content !important;
-    white-space: nowrap !important; /* В одну строку */
-    max-width: 95% !important; /* Ограничиваем ширину */
-    overflow: visible !important;
-    text-overflow: clip !important;
-  }
-  
-  /* Класс для переопределения позиции через JavaScript - inline стили имеют приоритет */
-  .advantages-title-mobile-positioned {
-    /* Позиция top устанавливается через inline стили в JavaScript */
-    /* Inline стили имеют приоритет над CSS, даже с !important */
-    position: absolute !important;
-  }
-  
-  /* Звезда под текстом "Наши преимущества" на мобильных */
-  /* Позиция top управляется JavaScript для точного позиционирования под текстом */
-  .star-image {
-    position: absolute !important;
-    /* top НЕ устанавливается здесь - управляется JavaScript динамически через inline стили */
-    display: block !important; /* Гарантируем видимость */
-    visibility: visible !important; /* Гарантируем видимость */
-    opacity: 1 !important; /* Гарантируем видимость */
-    left: 50% !important;
-    transform: translateX(-50%) !important; /* Центрируем */
-    width: clamp(250px, 60vw, 400px) !important; /* Адаптивный размер для мобильных */
-    height: auto !important;
+    top: auto !important;
+    transform: none !important; /* Без растягивания */
+    margin: clamp(1.5rem, 3vh, 2rem) auto clamp(2rem, 4vh, 3rem) auto !important; /* Уменьшен верхний отступ, чтобы поднять выше ближе к кругам */
     max-width: 90% !important;
-    z-index: 9 !important; /* Ниже текста "Наши преимущества" */
-    filter: drop-shadow(0 0 15px rgba(251, 198, 50, 0.5)) !important;
+    width: auto !important;
+    display: block !important;
+    text-align: center !important; /* Центрирование */
   }
   
-  /* Класс для переопределения позиции звезды через JavaScript */
-  .star-image-mobile-positioned {
-    /* Позиция top устанавливается через inline стили в JavaScript */
-    position: absolute !important;
-  }
-  
-  /* dark-overlay-duplicate под звездой на мобильных */
-  /* Позиция top управляется JavaScript для точного позиционирования под звездой */
-  .dark-overlay-duplicate {
-    position: absolute !important;
-    /* top НЕ устанавливается здесь - управляется JavaScript динамически через inline стили */
-    display: block !important; /* Гарантируем видимость */
-    visibility: visible !important; /* Гарантируем видимость */
-    opacity: 1 !important; /* Гарантируем видимость */
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    z-index: 1 !important; /* Ниже контента, но выше основного фона */
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-  
-  /* Класс для переопределения позиции dark-overlay-duplicate через JavaScript */
-  .dark-overlay-duplicate-mobile-positioned {
-    /* Позиция top устанавливается через inline стили в JavaScript */
-    position: absolute !important;
-  }
-  
-  /* ДОПОЛНИТЕЛЬНОЕ ПЕРЕОПРЕДЕЛЕНИЕ для кнопки и виджета на мобильных - гарантируем правильное позиционирование */
-  .buy-ticket-button {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 320px) !important;
-    left: 50% !important;
+  /* textmibile.png идет после text1.png - последовательное позиционирование на мобильных */
+  .long-quote-text-overlay {
+    position: relative !important;
+    left: auto !important;
     right: auto !important;
-    transform: translateX(-50%) !important;
-    position: absolute !important;
+    top: auto !important;
+    transform: none !important; /* Без растягивания */
+    margin: clamp(3rem, 6vh, 4.5rem) auto clamp(3rem, 6vh, 4rem) auto !important; /* Увеличен верхний отступ, чтобы опустить ниже */
+    max-width: 90% !important;
+    width: auto !important;
+    display: block !important;
+    text-align: center !important; /* Центрирование */
   }
   
-  .venue-widget {
-    top: calc(clamp(45vh, 50vh, 55vh) + 0.5% + 1rem + 400px) !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-    position: absolute !important;
-  }
+  /* Все эти элементы скрыты на мобильной версии, правила не нужны */
 
   /* Скрываем указанные элементы на мобильных */
   /* Для абсолютно позиционированных элементов просто скрываем */
@@ -1231,23 +1170,31 @@ span.date-time-number {
   /* Скрываем затемнение только если оно находится в области раздела контактов */
   /* Используем JavaScript для более точного контроля, но здесь просто убеждаемся, что раздел контактов выше */
   
+  /* Скрываем раздел "Наши преимущества" на мобильной версии */
+  .dark-overlay-duplicate {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+  
   /* Для раздела актеров полностью убираем из потока документа в мобильной версии */
   .actors-section-details {
     display: none !important; /* Полностью убираем, чтобы не занимал место */
   }
   
-  /* Убираем пустое пространство перед разделом "Отзывы" - позиционируем его сразу после фона */
-  /* margin-top управляется JavaScript для точного позиционирования после фона */
+  /* Раздел "Отзывы" - позиционируется последовательно после PNG изображений (text1.png и textmibile.png) */
   .reviews-section-details {
     position: relative !important;
-    /* margin-top устанавливается JavaScript динамически */
-    padding-top: 0 !important; /* Убираем padding-top полностью для максимально плотного прилегания */
+    margin-top: clamp(4rem, 8vh, 5.5rem) !important; /* Увеличен верхний отступ, чтобы опустить ниже */
+    padding-top: clamp(2rem, 4vh, 3rem) !important;
     z-index: 20 !important;
   }
   
   /* Уменьшаем отступ заголовка "ОТЗЫВЫ" от карточек на мобильной версии */
   .reviews-section-details > p {
-    margin-bottom: 0.25rem !important;
+    margin-bottom: 0 !important; /* Убран отступ для максимальной близости к карточкам */
   }
   
   /* Overlay с блюром для скрытия стыка между фоном и черным экраном */
@@ -1255,8 +1202,12 @@ span.date-time-number {
     display: none !important;
   }
 
-  /* Черный блюр между текстовым блоком и разделом "ОТЗЫВЫ" на мобильных - скрывает стык между фонами */
+  /* Убираем блюр между разделами на мобильных - черный фон убран */
   .mobile-content-blur-overlay {
+    display: none !important;
+  }
+  
+  .mobile-background-blur-overlay {
     display: none !important;
   }
   

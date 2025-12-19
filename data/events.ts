@@ -12,7 +12,7 @@ export const events: Event[] = [
   {
     id: 1,
     date: '22',
-    location: 'ОКТЯБРЯ | КУРСК',
+    location: 'ОКТЯБРЯ | ВОЛОГДА',
     title: '12 СТУЛЬЕВ',
     ticketsLeft: 15,
     time: '19:00',
@@ -21,20 +21,20 @@ export const events: Event[] = [
   {
     id: 2,
     date: '25',
-    location: 'ОКТЯБРЯ | МОСКВА',
+    location: 'ОКТЯБРЯ | БРЯНСК',
     title: '12 СТУЛЬЕВ',
     ticketsLeft: 0,
     time: '20:00',
-    buyTicketUrl: 'https://example.com/tickets/moscow'
+    buyTicketUrl: 'https://example.com/tickets/bryansk'
   },
   {
     id: 3,
     date: '28',
-    location: 'ОКТЯБРЯ | НИЖНИЙ НОВГОРОД',
+    location: 'ОКТЯБРЯ | ЛИПЕЦК',
     title: '12 СТУЛЬЕВ',
     ticketsLeft: 44,
     time: '19:30',
-    buyTicketUrl: 'https://example.com/tickets/nizhny-novgorod'
+    buyTicketUrl: 'https://example.com/tickets/lipetsk'
   }
 ];
 

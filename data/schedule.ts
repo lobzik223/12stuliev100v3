@@ -20,7 +20,7 @@ export const scheduleItems: ScheduleItem[] = [
   },
   {
     id: 2,
-    title: '12 стульев – Нижний Новгород',
+    title: '12 стульев – Липецк',
     date: '18 Февраля',
     time: '19:00',
     location: 'ДК Красное Сормово',

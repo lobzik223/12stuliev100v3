@@ -280,7 +280,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         data-animate="vput"
         data-speed="0.5"
         style={{
-          top: 'clamp(20.5vh, 31vh, 41vh)',
+          top: 'clamp(18.5vh, 29vh, 39vh)', /* Поднято чуть выше на ПК версии */
           right: 'clamp(0.5rem, 1vw, 1.5rem)'
         }}
       >
@@ -610,7 +610,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
         ref={yaryginaRef}
         className="absolute z-[5] vput4-mobile"
         style={{
-          top: 'clamp(262vh, 315vh, 288vh)',
+          top: 'clamp(310vh, 370vh, 345vh)',
           left: 'clamp(43rem, 53vw, 70rem)'
         }}
       >

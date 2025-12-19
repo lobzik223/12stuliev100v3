@@ -441,9 +441,9 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           width: '100%',
           minHeight: 'auto',
           height: 'auto',
-          backgroundImage: 'url(/backgrounds/sections/mobile/section-4-mobile.png)',
-          // Mobile: keep width, avoid vertical "stretch/zoom" across tall section
-          backgroundSize: '100% auto',
+          backgroundImage: 'url(/backgrounds/sections/mobile/section-4-mobile.png?v=10)',
+          // Mobile: изображение растянуто на 5% в файле (507x1134)
+          backgroundSize: '100% 100%',
           backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat',
           backgroundAttachment: 'scroll',
@@ -480,8 +480,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 width: '100%',
                 marginBottom: idx === 3 ? 'clamp(6rem, 12vh, 8rem)' : 'clamp(3rem, 6vh, 4rem)',
                 paddingBottom: 'clamp(2rem, 4vh, 3rem)',
-                marginTop: idx === 3 ? 'clamp(12rem, 20vh, 15rem)' : '0',
-                paddingTop: idx === 3 ? 'clamp(4rem, 8vh, 6rem)' : '0',
+                marginTop: idx === 3 ? 'clamp(0rem, 1vh, 0.5rem)' : '0',
+                paddingTop: idx === 3 ? 'clamp(0.5rem, 1vh, 1rem)' : '0',
                 marginLeft: '0',
                 marginRight: '0',
                 overflow: 'visible',
@@ -651,14 +651,14 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       position: 'relative',
                       display: 'block',
                       visibility: 'visible',
-                      overflow: 'hidden',
+                      overflow: 'visible',
                       boxSizing: 'border-box',
                       marginLeft: 'clamp(0.5rem, 2vw, 1rem)',
                       marginRight: 'clamp(0.5rem, 2vw, 1rem)',
-                      transform: 'translateY(clamp(-2.5rem, -5vh, -2rem)) translateX(clamp(-1rem, -2vw, -0.5rem))',
+                      transform: 'translateY(clamp(-5rem, -8vh, -4rem)) translateX(clamp(-1rem, -2vw, -0.5rem))',
                     }}
                   >
-                    {/* Видео kvartira.mp4 внутри рамки для мобильной версии */}
+                    {/* Видео kvartira.mp4 внутри рамки для мобильной версии - КРИТИЧНО: должно быть видно */}
                     <video
                       ref={mobileKvartiraVideoRef}
                       src="/photo/kvartira.mp4"
@@ -669,12 +669,13 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       preload="metadata"
                       style={{
                         position: 'absolute',
-                        top: '47%',
-                        left: 'calc(50% + clamp(0.05rem, 0.2vw, 0.15rem))',
-                        transform: 'translate(-50%, -50%) scaleX(0.96)',
-                        width: 'calc(100% - clamp(4.5rem, 10vw, 7.5rem))',
-                        height: 'calc(100% - clamp(4.5rem, 10vw, 7.5rem))',
-                        objectFit: 'cover',
+                        top: 'calc(50% + clamp(1rem, 2vh, 1.5rem))',
+                        left: 'calc(50% - clamp(0.5rem, 1vw, 0.8rem))',
+                        transform: 'translate(-50%, -50%) scale(0.86) scaleY(0.92)',
+                        width: 'calc(100% - clamp(22rem, 44vw, 34rem))',
+                        height: 'auto',
+                        aspectRatio: '16 / 9',
+                        objectFit: 'contain',
                         zIndex: 1,
                         pointerEvents: 'none',
                         outline: 'none',
@@ -708,14 +709,17 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       flex: '0 1 auto',
                       maxWidth: '100%',
                       width: 'auto',
-                      minWidth: 'clamp(200px, 60vw, 300px)',
+                      minWidth: 'clamp(380px, 95vw, 520px)',
                       height: '0',
-                      paddingTop: 'clamp(22%, 26%, 30%)',
+                      paddingTop: 'clamp(32%, 36%, 40%)',
+                      paddingBottom: 'clamp(8%, 9%, 10%)', /* Увеличено padding-bottom, чтобы нижняя часть рамки была видна полностью */
                       position: 'relative',
                       display: 'block',
                       visibility: 'visible',
-                      overflow: 'hidden',
+                      overflow: 'visible', /* Изменено на visible, чтобы рамка не обрезалась */
                       boxSizing: 'border-box',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
                     }}
                   >
                     {/* Видео babka.mp4 внутри рамки для мобильной версии */}
@@ -729,14 +733,16 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       preload="metadata"
                       style={{
                         position: 'absolute',
-                        top: '50%',
+                        top: '53%', /* Опущено ниже на мобильной версии */
                         // Match psihuska.mp4 sizing/centering on mobile
                         left: 'calc(50% + clamp(0.2rem, 0.8vw, 0.5rem))',
-                        // Slightly narrower than psihuska.mp4 (X only)
-                        transform: 'translate(-50%, -50%) scaleX(0.91)',
-                        width: 'calc(100% - clamp(3.05rem, 7.4vw, 4.85rem))',
-                        height: 'calc(100% - clamp(5rem, 11vw, 7.5rem))',
-                        objectFit: 'cover',
+                        // Формат 16:9 для всех устройств, растянуто в ширину на мобильных
+                        aspectRatio: '16 / 9',
+                        transform: 'translate(-50%, -50%) scale(0.72)', /* Уменьшен scale, чтобы видео было меньше в высоту на мобильных версиях */
+                        width: 'calc(90% - clamp(2.5rem, 5vw, 4rem))', /* Уменьшена ширина, чтобы видео было меньше в высоту */
+                        height: 'auto',
+                        maxHeight: '85%', /* Ограничение высоты */
+                        objectFit: 'contain',
                         zIndex: 1,
                         pointerEvents: 'none',
                         outline: 'none',
@@ -752,12 +758,12 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         backgroundImage: `url(${s.img})`,
                         backgroundSize: 'contain',
                         backgroundRepeat: 'no-repeat',
-                        backgroundPosition: 'center center',
+                        backgroundPosition: 'center bottom', /* Изменено на bottom, чтобы нижняя часть рамки была видна */
                         position: 'absolute',
                         top: 0,
                         left: 0,
                         width: '100%',
-                        height: '100%',
+                        height: 'calc(100% + clamp(8%, 9%, 10%))', /* Увеличена высота, чтобы нижняя часть была видна */
                         zIndex: 2,
                         pointerEvents: 'none'
                       }}
@@ -797,7 +803,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                   flexDirection: 'row',
                   alignItems: 'center',
                   gap: 'clamp(1rem, 3vw, 2rem)',
-                  marginTop: idx === 3 ? 'clamp(14rem, 26vh, 17rem)' : 'clamp(-1.2rem, -2vh, -0.8rem)',
+                  marginTop: idx === 3 ? 'clamp(5rem, 10vh, 7rem)' : 'clamp(-1.2rem, -2vh, -0.8rem)',
                   paddingLeft: 'clamp(1rem, 3vw, 2rem)',
                   paddingRight: 'clamp(1rem, 3vw, 2rem)',
                 }}>
@@ -814,7 +820,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       backgroundPosition: 'center',
                       flexShrink: 0,
                       marginLeft: idx === 1 ? 'clamp(-2.5rem, -6vw, -2rem)' : '0',
-                      marginTop: idx === 1 ? 'clamp(-1.5rem, -3vh, -1rem)' : idx === 3 ? 'clamp(6rem, 12vh, 8rem)' : '0',
+                      marginTop: idx === 1 ? 'clamp(4.5rem, 7vh, 6rem)' : idx === 3 ? 'clamp(3rem, 6vh, 4.5rem)' : '0',
                     }}
                   />
                   {/* Text on the right */}
@@ -823,7 +829,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     textAlign: idx === 1 && isMobileDevice ? 'center' : 'right',
                     paddingLeft: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : idx === 1 ? 'clamp(2rem, 5vw, 3rem)' : 'clamp(1rem, 3vw, 2rem)',
                     paddingRight: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : '0',
-                    marginLeft: idx === 1 && isMobileDevice ? 'clamp(-3rem, -7vw, -2.5rem)' : idx === 1 ? 'clamp(1rem, 3vw, 2rem)' : '0',
+                    marginLeft: idx === 1 && isMobileDevice ? '0' : idx === 1 ? 'clamp(1rem, 3vw, 2rem)' : '0',
+                    marginRight: idx === 1 && isMobileDevice ? '0' : undefined,
                   }}>
                     <p
                       className="uppercase mb-2"
@@ -836,7 +843,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         lineHeight: '1.3',
                         marginBottom: '1rem',
                         textAlign: idx === 1 && isMobileDevice ? 'center' : undefined,
-                        marginLeft: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : undefined,
+                        marginLeft: idx === 1 && isMobileDevice ? 'clamp(2rem, 4vw, 2.5rem)' : undefined,
+                        marginRight: idx === 1 && isMobileDevice ? 'auto' : undefined,
                       }}
                     >
                       {s.title}
@@ -850,16 +858,15 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         letterSpacing: '0.03em',
                         lineHeight: '1.4',
                         maxWidth: idx === 1 && isMobileDevice ? 'calc(100vw - clamp(4rem, 10vw, 6rem))' : undefined,
-                        margin: idx === 1 && isMobileDevice ? '0 auto 0 clamp(-1rem, -3vw, -0.5rem)' : undefined,
+                        margin: idx === 1 && isMobileDevice ? '0 auto 0 clamp(-3rem, -7vw, -2.5rem)' : undefined,
                         width: idx === 1 && isMobileDevice ? 'fit-content' : undefined,
                       }}
                     >
                       {idx === 1 ? (
                         isMobileDevice ? (
                           <>
-                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СИМВОЛ БЕЗУМИЯ</span>
-                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ПРОГРЕССА — ЗДЕСЬ</span>
-                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СКРЫТ ГЕНИЙ-ХАКЕР,</span>
+                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СИМВОЛ БЕЗУМИЯ ПРОГРЕССА</span>
+                            <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>— ЗДЕСЬ СКРЫТ ГЕНИЙ-ХАКЕР,</span>
                             <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ВЗЛОМАВШИЙ СИСТЕМУ.</span>
                           </>
                         ) : (
@@ -892,7 +899,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       marginBottom: '1rem',
                       whiteSpace: idx === 0 ? 'nowrap' : 'normal',
                       textAlign: idx === 1 && isMobileDevice ? 'center' : undefined,
-                      marginLeft: idx === 1 && isMobileDevice ? 'clamp(0.5rem, 1.5vw, 1rem)' : undefined,
+                      marginLeft: idx === 1 && isMobileDevice ? 'clamp(2rem, 4vw, 2.5rem)' : undefined,
+                      marginRight: idx === 1 && isMobileDevice ? 'auto' : undefined,
                     }}
                   >
                     {s.title}
@@ -906,7 +914,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       letterSpacing: '0.03em',
                       lineHeight: '1.4',
                       maxWidth: idx === 1 && isMobileDevice ? 'calc(100vw - clamp(4rem, 10vw, 6rem))' : undefined,
-                      margin: idx === 1 && isMobileDevice ? '0 auto 0 clamp(-1rem, -3vw, -0.5rem)' : undefined,
+                      margin: idx === 1 && isMobileDevice ? '0 auto 0 clamp(-3rem, -7vw, -2.5rem)' : undefined,
                       width: idx === 1 && isMobileDevice ? 'fit-content' : undefined,
                     }}
                   >
@@ -918,9 +926,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                     ) : idx === 1 ? (
                       isMobileDevice ? (
                         <>
-                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СИМВОЛ БЕЗУМИЯ</span>
-                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ПРОГРЕССА — ЗДЕСЬ</span>
-                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СКРЫТ ГЕНИЙ-ХАКЕР,</span>
+                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>СИМВОЛ БЕЗУМИЯ ПРОГРЕССА</span>
+                          <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>— ЗДЕСЬ СКРЫТ ГЕНИЙ-ХАКЕР,</span>
                           <span style={{ display: 'block', whiteSpace: 'nowrap', fontSize: 'inherit' }}>ВЗЛОМАВШИЙ СИСТЕМУ.</span>
                         </>
                       ) : (
@@ -938,19 +945,19 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 <div
                   className="pamat15-wrapper-mobile"
                   style={{
-                    width: '100%',
+                    width: 'auto',
                     maxWidth: '100%',
                     display: 'flex',
-                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
                     alignItems: 'center',
-                    marginTop: 'clamp(2.5rem, 5vh, 4rem)',
-                    marginBottom: 'clamp(2rem, 4vh, 3rem)',
-                    paddingTop: 'clamp(1.5rem, 3vh, 2.5rem)',
-                    paddingLeft: 'clamp(1rem, 3vw, 2rem)',
-                    paddingRight: 'clamp(1rem, 3vw, 2rem)',
+                    position: 'absolute',
+                    top: 'clamp(6rem, 8vh, 7rem)',
+                    left: 'clamp(-4rem, -7vw, -3rem)',
+                    transform: 'none',
+                    paddingLeft: '0',
+                    paddingRight: '0',
                     overflow: 'visible',
                     boxSizing: 'border-box',
-                    position: 'relative',
                     zIndex: 10,
                     visibility: 'visible',
                     opacity: 1,
@@ -1167,6 +1174,26 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
               bottom: 0,
               minHeight: '400vh',
               willChange: 'auto'
+            }}
+          />
+          {/* Блюр-градиент прямо под конец section-4.png для скрытия граней на ПК */}
+          <div
+            className="section-4-end-blur"
+            style={{
+              position: 'absolute',
+              bottom: 'clamp(1vh, 2vh, 3vh)',
+              left: 0,
+              right: 0,
+              width: '100%',
+              height: 'clamp(12vh, 15vh, 18vh)',
+              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.25) 30%, rgba(0, 0, 0, 0.15) 70%, rgba(0, 0, 0, 0) 100%)',
+              backdropFilter: 'blur(50px)',
+              WebkitBackdropFilter: 'blur(50px)',
+              zIndex: 10,
+              pointerEvents: 'none',
+              display: 'block',
+              visibility: 'visible',
+              opacity: 1
             }}
           />
         </div>
@@ -1498,7 +1525,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           data-speed="0.3"
           style={{
             top: 'clamp(175vh, 207.5vh, 200vh)',
-            left: 'clamp(-2rem, 0vw, 3rem)'
+            left: 'clamp(0rem, 2vw, 5rem)' /* Сдвинуто правее на ПК версиях */
           }}
         >
           <div
@@ -1559,7 +1586,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           data-animate="vput"
           data-speed="0.5"
           style={{
-            top: 'clamp(280vh, 335vh, 305vh)',
+            top: 'clamp(270vh, 325vh, 295vh)', /* Поднято еще выше на ПК версиях */
             left: 'clamp(3.5rem, 6.75vw, 14.5rem)'
           }}
         >
@@ -1581,7 +1608,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           ref={kisaRef}
           className="absolute z-[5] desktop-vput3-container"
           style={{
-            top: 'clamp(173vh, 206vh, 198vh)',
+            top: 'clamp(180vh, 215vh, 205vh)',
             left: 'clamp(50rem, 59vw, 66rem)',
             position: 'absolute',
             display: 'block',
@@ -1589,7 +1616,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             opacity: 1,
             zIndex: 5,
             maxWidth: 'calc(100vw - clamp(4rem, 8vw, 10rem))',
-            width: 'clamp(25rem, 38vw, 45rem)',
+            width: 'clamp(28rem, 42vw, 50rem)',
             overflow: 'visible'
           }}
         >
@@ -1598,13 +1625,13 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             style={{
               position: 'relative',
               width: '100%',
-              height: 'clamp(18.75rem, 28.5vw, 33.75rem)',
+              height: 'clamp(21rem, 32vw, 37.5rem)',
               maxWidth: '100%',
-              minWidth: 'clamp(20rem, 30vw, 35rem)',
-              overflow: 'hidden'
+              minWidth: 'clamp(22rem, 33vw, 38rem)',
+              overflow: 'visible'
             }}
           >
-            {/* Видео внутри рамки */}
+            {/* Видео внутри рамки - уменьшенный размер */}
             <video
               ref={kvartiraVideoRef}
               src="/photo/kvartira.mp4"
@@ -1619,8 +1646,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 top: '48%',
                 left: 'calc(50% + clamp(0.1rem, 0.3vw, 0.2rem))',
                 transform: 'translate(-50%, -50%) scaleX(1.08)',
-                width: 'calc(100% - clamp(7rem, 11vw, 14rem))',
-                height: 'calc(100% - clamp(8.5rem, 13vw, 16rem))',
+                width: 'calc(100% - clamp(9rem, 14vw, 18rem))', /* Уменьшены отступы для увеличения размера видео на ПК */
+                height: 'calc(100% - clamp(10rem, 15vw, 20rem))', /* Уменьшены отступы для увеличения размера видео на ПК */
                 objectFit: 'cover',
                 zIndex: 1,
                 pointerEvents: 'none',
@@ -1630,7 +1657,7 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 opacity: 1
               }}
             />
-            {/* Рамка поверх видео */}
+            {/* Рамка поверх видео - полная видимость без обрезки */}
             <div
               style={{
                 backgroundImage: `url(/backgrounds/sections/vput3.png${VPUT_IMAGES_VERSION})`,
@@ -1646,7 +1673,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                 pointerEvents: 'none',
                 display: 'block',
                 visibility: 'visible',
-                opacity: 1
+                opacity: 1,
+                overflow: 'visible'
               }}
             />
           </div>
@@ -1693,11 +1721,13 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
               style={{
                 position: 'absolute',
                 top: '50%',
-                left: 'calc(50% + clamp(0.1rem, 0.3vw, 0.2rem))',
-                transform: 'translate(-50%, -50%) scaleX(1.08)',
-                width: 'calc(100% - clamp(7rem, 11vw, 14rem))',
-                height: 'calc(100% - clamp(8.5rem, 13vw, 16rem))',
-                objectFit: 'cover',
+                left: 'calc(50% - clamp(0.2rem, 0.5vw, 0.4rem))', /* Сдвинуто левее на ПК версиях */
+                // Формат 16:9 для всех устройств
+                aspectRatio: '16 / 9',
+                transform: 'translate(-50%, -50%)',
+                width: 'calc(100% - clamp(6rem, 9vw, 12rem))', /* Увеличена ширина видео на ПК версиях */
+                height: 'auto',
+                objectFit: 'contain',
                 zIndex: 1,
                 pointerEvents: 'none',
                 outline: 'none',
@@ -1774,8 +1804,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
           data-animate="vput"
           data-speed="0.8"
           style={{
-            top: 'clamp(312vh, 375vh, 353vh)',
-            left: 'clamp(50rem, 64vw, 83.875rem)'
+            top: 'clamp(304vh, 370vh, 345vh)', /* Опущено еще ниже на ПК версиях */
+            left: 'clamp(52rem, 66vw, 86rem)' /* Сдвинуто правее на ПК версиях */
           }}
         >
           <div
@@ -1811,6 +1841,27 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
             display: 'block',
             visibility: 'visible',
             opacity: 1,
+          }}
+        />
+        
+        {/* ДОПОЛНИТЕЛЬНЫЙ блюр-градиент прямо под конец section-4.png для скрытия граней на ПК - ВНЕШНИЙ */}
+        <div
+          className="section-4-end-blur-external"
+          style={{
+            position: 'absolute',
+            bottom: 'clamp(1vh, 2vh, 3vh)',
+            left: 0,
+            right: 0,
+            width: '100%',
+            height: 'clamp(15vh, 18vh, 20vh)',
+            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.35) 25%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0) 100%)',
+            backdropFilter: 'blur(60px)',
+            WebkitBackdropFilter: 'blur(60px)',
+            zIndex: 15,
+            pointerEvents: 'none',
+            display: 'block',
+            visibility: 'visible',
+            opacity: 1
           }}
         />
       </div>

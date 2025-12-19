@@ -9,14 +9,10 @@ import { scheduleItems } from '@/data/schedule';
 // Функция для склонения городов в предложный падеж
 const getCityInPrepositionalCase = (cityName: string): string => {
   const cityMap: { [key: string]: string } = {
-    'КУРСК': 'Курске',
-    'МОСКВА': 'Москве',
-    'НИЖНИЙ НОВГОРОД': 'Нижнем Новгороде',
-    'Курск': 'Курске',
-    'Москва': 'Москве',
-    'Нижний Новгород': 'Нижнем Новгороде',
     'ВОЛОГДА': 'Вологде',
     'Вологда': 'Вологде',
+    'БРЯНСК': 'Брянске',
+    'Брянск': 'Брянске',
     'ЛИПЕЦК': 'Липецке',
     'Липецк': 'Липецке',
     'СТАРЫЙ ОСКОЛ': 'Старом Осколе',
@@ -38,7 +34,7 @@ const getCityInPrepositionalCase = (cityName: string): string => {
 
 // Функция для извлечения города из location (для events)
 const getCityFromLocation = (location: string): string => {
-  // Извлекаем город из строки вида "ОКТЯБРЯ | КУРСК" или "Театр драмы, ул. Ленина,"
+  // Извлекаем город из строки вида "ОКТЯБРЯ | ВОЛОГДА" или "Театр драмы, ул. Ленина,"
   const parts = location.split('|');
   if (parts.length > 1) {
     const city = parts[1].trim();
@@ -46,7 +42,7 @@ const getCityFromLocation = (location: string): string => {
   }
   
   // Если формат другой, пытаемся найти город в строке
-  const cityMatch = location.match(/(Москва|Курск|Нижний Новгород|МОСКВА|КУРСК|НИЖНИЙ НОВГОРОД|Вологда|ВОЛОГДА|Липецк|ЛИПЕЦК|Старый Оскол|СТАРЫЙ ОСКОЛ|Смоленск|СМОЛЕНСК|Великий Новгород|ВЕЛИКИЙ НОВГОРОД|Воронеж|ВОРОНЕЖ|Владимир|ВЛАДИМИР)/i);
+  const cityMatch = location.match(/(Вологда|ВОЛОГДА|Брянск|БРЯНСК|Липецк|ЛИПЕЦК|Старый Оскол|СТАРЫЙ ОСКОЛ|Смоленск|СМОЛЕНСК|Великий Новгород|ВЕЛИКИЙ НОВГОРОД|Воронеж|ВОРОНЕЖ|Владимир|ВЛАДИМИР)/i);
   if (cityMatch) {
     return getCityInPrepositionalCase(cityMatch[1]);
   }
@@ -69,7 +65,7 @@ const getCityFromTitle = (title: string): string => {
 const formatDateTime = (date: string, location?: string, time?: string): { __html: string } => {
   let result = '';
   
-  // Для events: date = "22", location = "ОКТЯБРЯ | КУРСК", time = "19:00"
+  // Для events: date = "22", location = "ОКТЯБРЯ | ВОЛОГДА", time = "19:00"
   if (location && location.includes('|')) {
     const monthPart = location.split('|')[0].trim();
     const dateStr = `${date} ${monthPart}`.toUpperCase();

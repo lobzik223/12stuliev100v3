@@ -274,12 +274,12 @@
     top: clamp(-2.5rem, -3.5vh, -1.2rem);
     /* Shorter length on mobile - уменьшаем длину */
     bottom: clamp(-8rem, -10vh, -6rem);
-    background-image: url(/backgrounds/sections/mobile/section-4-mobile.png);
+    background-image: url(/backgrounds/sections/mobile/section-4-mobile.png?v=10);
     background-repeat: no-repeat;
     /* Move background image higher (mobile only) - start after "театральное путешествие" */
     background-position: center -18%;
-    /* Keep width as-is (100%), reduce height (length) - уменьшаем длину */
-    background-size: 100% 85%;
+    /* Изображение растянуто на ~15% в файле, показываем растяжение */
+    background-size: 100% 100%;
     pointer-events: none;
     z-index: 0;
   }
@@ -434,32 +434,80 @@
     position: relative !important;
   }
   
-  /* vput3.png - сдвигаем вправо */
+  /* vput3.png - УВЕЛИЧИВАЕМ РАМКУ ЕЩЕ БОЛЬШЕ */
   .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image,
   .mobile-scene-card:nth-child(3) .mobile-scene-image {
-    height: clamp(200px, 35vh, 300px) !important;
+    margin-bottom: clamp(2rem, 4vh, 2.5rem) !important;
+    /* РАМКА ЕЩЕ БОЛЬШЕ - увеличиваем размер еще больше */
+    height: 0 !important;
+    padding-top: clamp(52%, 58%, 65%) !important;
     width: auto !important;
     max-width: 100% !important;
-    min-width: clamp(200px, 70vw, 350px) !important;
+    min-width: clamp(750px, 145vw, 1000px) !important;
+    flex: 0 1 auto !important;
+    flex-grow: 0 !important;
+    flex-shrink: 1 !important;
+    flex-basis: auto !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    transform: translateX(clamp(4rem, 9vw, 6rem)) !important;
+    transform: translateY(clamp(-3rem, -5vh, -2rem)) !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
     background-size: contain !important;
     background-position: center center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
   }
   
-  /* vput4.png с видео - используем те же размеры, что и vput.png с видео (idx === 0) */
+  /* Гарантируем, что рамка vput3.png не обрезается - полная видимость */
+  /* УВЕЛИЧИВАЕМ РАЗМЕР PNG РАМКИ vput3.png - увеличиваем width и height */
+  .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image > div[style*="vput3.png"],
+  .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image > div[style*="backgroundImage"],
+  .vput3-mobile-position > div[style*="vput3.png"],
+  .vput3-mobile-position > div[style*="backgroundImage"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    background-size: contain !important;
+    background-position: center center !important;
+    /* УВЕЛИЧИВАЕМ РАЗМЕР PNG РАМКИ - увеличиваем width и height */
+    width: 130% !important;
+    height: calc(130% + clamp(2.6rem, 5.2vh, 3.9rem)) !important;
+    left: -15% !important;
+    top: -15% !important;
+    position: absolute !important;
+    z-index: 2 !important;
+    pointer-events: none !important;
+  }
+  
+  /* КРИТИЧНО: Гарантируем видимость видео kvartira.mp4 под vput3.png на мобильных */
+  .mobile-journey-section .mobile-scene-card:nth-child(3) .mobile-scene-image video,
+  .vput3-mobile-position video {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    z-index: 1 !important;
+  }
+  
+  /* vput4.png с видео - увеличенный размер */
   .mobile-journey-section .mobile-scene-card:nth-child(4) .mobile-scene-image,
   .mobile-scene-card:nth-child(4) .mobile-scene-image {
     height: 0 !important;
-    padding-top: clamp(22%, 26%, 30%) !important;
-    /* Match vput.png sizing (scene 1) on mobile */
-    min-width: clamp(280px, 80vw, 400px) !important;
+    padding-top: clamp(32%, 36%, 40%) !important;
+    padding-bottom: clamp(3%, 4%, 5%) !important; /* Добавлен padding-bottom, чтобы нижняя часть рамки была видна полностью */
+    /* Увеличенный размер для vput4.png */
+    min-width: clamp(380px, 95vw, 520px) !important;
     width: auto !important;
     max-width: 100% !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-    transform: none !important;
+    margin-top: clamp(-2rem, -4vh, -1rem) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translateY(clamp(-2rem, -4vh, -1rem)) scale(1.15) !important;
     overflow: visible !important;
     background-size: contain !important;
     background-position: center center !important;
@@ -524,25 +572,25 @@
     transform: translateX(clamp(2rem, 5vw, 3.5rem)) !important;
   }
   
-  /* Вторая сцена (ПСИХУШКА) - flex layout с изображением слева и текстом справа */
+  /* Вторая сцена (ПСИХУШКА) - flex layout с изображением слева и текстом справа, поднимаем текст на верх */
   .mobile-journey-section .mobile-scene-card:nth-child(2) > div:last-child,
   .mobile-scene-card:nth-child(2) > div:last-child {
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     gap: clamp(1rem, 3vw, 2rem) !important;
-    margin-top: clamp(-1.2rem, -2vh, -0.8rem) !important;
+    margin-top: clamp(-5rem, -7vh, -4rem) !important;
     padding-left: clamp(1rem, 3vw, 2rem) !important;
     padding-right: clamp(1rem, 3vw, 2rem) !important;
   }
   
-  /* Изображение stul100let.png в ПСИХУШКА - уменьшаем размер и поднимаем выше */
+  /* Изображение stul100let.png в ПСИХУШКА - опускаем еще ниже текста */
   .mobile-journey-section .mobile-scene-card:nth-child(2) > div:last-child > div:first-child,
   .mobile-scene-card:nth-child(2) > div:last-child > div:first-child {
     width: clamp(100px, 25vw, 140px) !important;
     height: clamp(100px, 25vw, 140px) !important;
     margin-left: clamp(-2.5rem, -6vw, -2rem) !important;
-    margin-top: clamp(-1.5rem, -3vh, -1rem) !important;
+    margin-top: clamp(4.5rem, 7vh, 6rem) !important;
   }
   
   /* Изображение computer.png в КВАРТИРА СТАРУХИ ЯРЫГИНОЙ - увеличиваем размер */
@@ -550,6 +598,20 @@
   .mobile-scene-card:nth-child(4) > div:last-child > div:first-child {
     width: clamp(120px, 30vw, 170px) !important;
     height: clamp(120px, 30vw, 170px) !important;
+  }
+  
+  /* Изображение pamat15.png - позиционирование */
+  .mobile-journey-section .mobile-scene-card:nth-child(3) .pamat15-wrapper-mobile {
+    position: absolute !important;
+    top: clamp(6rem, 8vh, 7rem) !important;
+    left: clamp(-4rem, -7vw, -3rem) !important;
+    transform: none !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    justify-content: flex-start !important;
+    width: auto !important;
   }
   
   /* Изображение pamat15.png - уменьшаем размер */
@@ -568,12 +630,14 @@
     margin-left: clamp(1rem, 3vw, 2rem) !important;
   }
   
-  /* Третья сцена (КВАРТИРА КИСЫ) - текст вправо, поднимаем выше и сдвигаем влево */
+  /* Третья сцена (КВАРТИРА КИСЫ) - текст вправо, опускаем ниже */
   .mobile-journey-section .mobile-scene-card:nth-child(3) > div:last-child {
     padding-left: clamp(2rem, 6vw, 4rem) !important;
     padding-right: 1rem !important;
-    margin-top: clamp(-2rem, -3.5vh, -1.5rem) !important;
+    padding-top: clamp(6rem, 12vh, 9rem) !important;
+    margin-top: clamp(4rem, 8vh, 6rem) !important;
     text-align: right !important;
+    transform: translateY(clamp(3rem, 6vh, 4.5rem)) !important;
   }
   
   /* Четвертая сцена (КВАРТИРА СТАРУХИ ЯРЫГИНОЙ) - flex layout с изображением слева и текстом справа */
@@ -596,19 +660,21 @@
     padding-right: 0 !important;
   }
   
-  /* vput4.png - опускаем ниже */
+  /* vput4.png - позиционирование */
   .mobile-journey-section .mobile-scene-card:nth-child(4),
-  .mobile-scene-card:nth-child(4) {
-    margin-top: clamp(5rem, 10vh, 7rem) !important;
+  .mobile-scene-card:nth-child(4),
+  .yarygina-mobile-scene {
+    margin-top: clamp(4rem, 5vh, 4.5rem) !important;
     margin-bottom: clamp(6rem, 12vh, 8rem) !important;
   }
   
-  /* vput4.png изображение - опускаем ниже */
+  /* Дополнительное позиционирование для vput4 на мобильных */
   .mobile-journey-section .mobile-scene-card:nth-child(4) .mobile-scene-image,
   .mobile-scene-card:nth-child(4) .mobile-scene-image {
-    margin-top: clamp(4rem, 8vh, 6rem) !important;
-    transform: translateX(clamp(4rem, 9vw, 6rem)) translateY(clamp(3rem, 6vh, 4.5rem)) !important;
+    margin-top: clamp(1rem, 2vh, 1.5rem) !important;
   }
+  
+  /* vput4.png изображение - позиционирование */
   
   /* Элемент tiraj.png - теперь справа от flash.png на мобильной версии */
   .mobile-journey-section .mobile-journey-tiraj,
@@ -1450,6 +1516,37 @@
     -webkit-transform: translate(-50%, -50%) scale(0.78) scaleY(0.92) !important;
   }
   
+  /* Устанавливаем чуть больший размер для kvartira.mp4 */
+  .mobile-journey-section video[src="/photo/kvartira.mp4"],
+  .mobile-journey-section video[src*="kvartira.mp4"],
+  .journey-section-container video[src="/photo/kvartira.mp4"],
+  .journey-section-container video[src*="kvartira.mp4"],
+  .mobile-scene-card:nth-child(3) video[src*="kvartira.mp4"],
+  .mobile-scene-image video[src*="kvartira.mp4"],
+  .vput3-mobile-position video[src*="kvartira.mp4"] {
+    /* КРИТИЧНО: Гарантируем видимость видео */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: absolute !important;
+    z-index: 1 !important;
+    background-color: #000 !important;
+    /* Устанавливаем формат 16:9 (альбомный) */
+    aspect-ratio: 16 / 9 !important;
+    /* УВЕЛИЧИВАЕМ ширину - уменьшаем отступы */
+    width: calc(100% - clamp(22rem, 44vw, 34rem)) !important;
+    max-width: calc(100% - clamp(22rem, 44vw, 34rem)) !important;
+    /* Высота вычисляется автоматически на основе aspect-ratio */
+    height: auto !important;
+    /* Используем contain для правильного отображения формата 16:9 */
+    object-fit: contain !important;
+    /* УВЕЛИЧИВАЕМ размер - используем scale для увеличения */
+    transform: translate(-50%, -50%) scale(0.86) scaleY(0.92) !important;
+    -webkit-transform: translate(-50%, -50%) scale(0.86) scaleY(0.92) !important;
+    top: calc(50% + clamp(1rem, 2vh, 1.5rem)) !important;
+    left: calc(50% - clamp(0.5rem, 1vw, 0.8rem)) !important;
+  }
+  
   /* УМЕНЬШАЕМ размер psihuska.mp4 на мобильной версии */
   /* Устанавливаем формат 16:9 для psihuska.mp4 на мобильной версии */
   .mobile-journey-section video[src="/photo/psihuska.mp4"],
@@ -1476,24 +1573,25 @@
   .mobile-journey-section video[src*="babka.mp4"],
   .journey-section-container video[src="/photo/babka.mp4"],
   .journey-section-container video[src*="babka.mp4"] {
-    /* Mobile: slightly narrower than psihuska.mp4 (X only) */
-    width: calc(100% - clamp(3.05rem, 7.4vw, 4.85rem)) !important;
-    transform: translate(-50%, -50%) scaleX(0.91) !important;
-    -webkit-transform: translate(-50%, -50%) scaleX(0.91) !important;
-    /* Высота остается без изменений */
-    height: calc(100% - clamp(5rem, 11vw, 7.5rem)) !important;
+    /* Mobile: формат 16:9 для всех устройств, растянуто в ширину */
+    aspect-ratio: 16 / 9 !important;
+    width: calc(100% - clamp(2.5rem, 5vw, 4rem)) !important;
+    height: auto !important;
+    /* Увеличиваем размер через scale для большей ширины */
+    transform: translate(-50%, -50%) scale(0.85) !important;
+    -webkit-transform: translate(-50%, -50%) scale(0.85) !important;
+    object-fit: contain !important;
   }
 
-  /* Actors cards: slightly stretch photos vertically on mobile to remove top/bottom gaps */
+  /* Actors cards: убираем растяжение фотографий на мобильных */
   .actors-section-mobile .actor-card-image img {
-    /* Mobile-only override: global img rule forces object-fit: contain (creates top/bottom gaps).
-       For actor photos we must fill the frame like before. */
+    /* Mobile-only override: убираем растяжение, сохраняем пропорции */
     object-fit: cover !important;
     width: 100% !important;
     height: 100% !important;
     display: block !important;
-    transform: scaleY(1.06) !important;
-    -webkit-transform: scaleY(1.06) !important;
+    transform: none !important;
+    -webkit-transform: none !important;
     transform-origin: center center !important;
   }
   
@@ -1676,18 +1774,18 @@ body[data-debug="true"] section:nth-child(6) { border-color: purple !important; 
 /* Дополнительные правила для опускания computer.png и текста Ярыгиной в мобильной версии */
 @media (max-width: 768px), (pointer: coarse) {
   .yarygina-mobile-scene {
-    margin-top: clamp(22rem, 35vh, 26rem) !important;
-    padding-top: clamp(8rem, 16vh, 10rem) !important;
+    margin-top: clamp(0rem, 1vh, 0.5rem) !important;
+    padding-top: clamp(0.5rem, 1vh, 1rem) !important;
   }
   
   .yarygina-content-wrapper {
-    margin-top: clamp(14rem, 26vh, 17rem) !important;
+    margin-top: clamp(2rem, 4vh, 3rem) !important;
     align-items: flex-start !important;
-    padding-top: clamp(2rem, 4vh, 3rem) !important;
+    padding-top: clamp(1rem, 2vh, 1.5rem) !important;
   }
   
   /* Для computer.png */
   .computer-mobile-image {
-    margin-top: clamp(6rem, 12vh, 8rem) !important;
+    margin-top: clamp(1rem, 2vh, 1.5rem) !important;
   }
 }

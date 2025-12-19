@@ -735,153 +735,13 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       darkOverlayDuplicateRef.current.style.opacity = '1';
     }
 
-    // ПРИНУДИТЕЛЬНОЕ позиционирование кнопки "Купить билет" и виджета адреса на мобильных
-    // MOBILE SCROLL FIX: Упрощенная версия без requestAnimationFrame для стабильности
-    const updateButtonPositions = () => {
-      const vvhClamp = 'clamp(calc(var(--vvh, 1vh) * 45), calc(var(--vvh, 1vh) * 50), calc(var(--vvh, 1vh) * 55))';
-      if (buyTicketButtonRef.current) {
-        // Кнопка должна быть ниже текста описания (200px), но над виджетом адреса
-        // Текст описания на 200px, кнопка на 320px (120px отступ для лучшей видимости), виджет на 400px (80px отступ от кнопки)
-        buyTicketButtonRef.current.style.position = 'absolute';
-        buyTicketButtonRef.current.style.top = `calc(${vvhClamp} + 0.5% + 1rem + 320px)`;
-        buyTicketButtonRef.current.style.left = '50%';
-        buyTicketButtonRef.current.style.right = 'auto';
-        buyTicketButtonRef.current.style.transform = 'translateX(-50%)';
-        buyTicketButtonRef.current.style.zIndex = '10';
-        // Принудительно применяем стили с !important через setProperty для гарантии
-        try {
-          buyTicketButtonRef.current.style.setProperty('top', `calc(${vvhClamp} + 0.5% + 1rem + 320px)`, 'important');
-          buyTicketButtonRef.current.style.setProperty('left', '50%', 'important');
-          buyTicketButtonRef.current.style.setProperty('right', 'auto', 'important');
-          buyTicketButtonRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
-          buyTicketButtonRef.current.style.setProperty('position', 'absolute', 'important');
-        } catch (e) {
-          // Если setProperty не поддерживается, используем обычные стили
-        }
-      }
-      
-      if (venueWidgetRef.current) {
-        // Виджет адреса должен быть ниже кнопки (80px отступ)
-        venueWidgetRef.current.style.position = 'absolute';
-        venueWidgetRef.current.style.top = `calc(${vvhClamp} + 0.5% + 1rem + 400px)`;
-        venueWidgetRef.current.style.left = '50%';
-        venueWidgetRef.current.style.right = 'auto';
-        venueWidgetRef.current.style.transform = 'translateX(-50%)';
-        venueWidgetRef.current.style.zIndex = '10';
-        // Принудительно применяем стили с !important через setProperty для гарантии
-        try {
-          venueWidgetRef.current.style.setProperty('top', `calc(${vvhClamp} + 0.5% + 1rem + 400px)`, 'important');
-          venueWidgetRef.current.style.setProperty('left', '50%', 'important');
-          venueWidgetRef.current.style.setProperty('right', 'auto', 'important');
-          venueWidgetRef.current.style.setProperty('transform', 'translateX(-50%)', 'important');
-          venueWidgetRef.current.style.setProperty('position', 'absolute', 'important');
-        } catch (e) {
-          // Если setProperty не поддерживается, используем обычные стили
-        }
-      }
-    };
-
-    // MOBILE SCROLL FIX: Уменьшаем количество setTimeout вызовов для предотвращения layout thrashing
-    updateButtonPositions();
-    // Используем только один setTimeout вместо нескольких
-    const timeoutId = setTimeout(updateButtonPositions, 200);
-    
-    // Используем debounce для resize для предотвращения частых обновлений
-    let resizeTimeout: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(updateButtonPositions, 150);
-    };
-    
-    window.addEventListener('resize', handleResize, { passive: true });
-    
-    return () => {
-      clearTimeout(timeoutId);
-      clearTimeout(resizeTimeout);
-      window.removeEventListener('resize', handleResize);
-    };
+    // На мобильной версии кнопка и виджет позиционируются в потоке документа, не требуется JavaScript позиционирование
   }, [isMobile]);
 
-  // УПРОЩЕННОЕ позиционирование раздела "Отзывы" для мобильной версии - БЕЗ СЛОЖНЫХ ВЫЧИСЛЕНИЙ
-  // MOBILE SCROLL FIX: Минимальные изменения - только позиционирование, без requestAnimationFrame
-  useEffect(() => {
-    if (!isMobile || !reviewsSectionRef.current) return;
+  // На мобильной версии элементы позиционируются последовательно в потоке документа
+  // Не требуется специальное позиционирование через JavaScript
 
-    // Простое и стабильное позиционирование без сложных вычислений
-    const reviewsElement = reviewsSectionRef.current;
-    
-    // Position relative to the mobile background height (CSS variable --details-bg-h)
-    reviewsElement.style.position = 'relative';
-    reviewsElement.style.marginTop =
-      'calc(var(--details-bg-h) - calc(var(--vvh, 1vh) * 100) + clamp(2rem, 4vh, 3.5rem))';
-    reviewsElement.style.paddingTop = '0';
-    reviewsElement.style.zIndex = '20';
-    
-    // Убеждаемся, что элемент виден
-    reviewsElement.style.visibility = 'visible';
-    reviewsElement.style.opacity = '1';
-    reviewsElement.style.display = 'block';
-  }, [isMobile]);
-
-  // ПРИНУДИТЕЛЬНОЕ позиционирование блюра на мобильных - чтобы он был виден в нужном месте
-  // MOBILE SCROLL FIX: Упрощенная версия без requestAnimationFrame для стабильности
-  useEffect(() => {
-    if (!isMobile || !mobileBlurOverlayRef.current) return;
-
-    const updateBlurPosition = () => {
-      if (mobileBlurOverlayRef.current) {
-        // Position blur relative to the mobile background height (CSS variable --details-bg-h)
-        const blurElement = mobileBlurOverlayRef.current;
-        blurElement.style.position = 'absolute';
-        blurElement.style.top = 'calc(var(--details-bg-h) - 200px)';
-        blurElement.style.left = '0';
-        blurElement.style.right = '0';
-        blurElement.style.width = '100%';
-        blurElement.style.height = '300px';
-        blurElement.style.zIndex = '12';
-        blurElement.style.display = 'block';
-        blurElement.style.visibility = 'visible';
-        blurElement.style.opacity = '1';
-        blurElement.style.background = 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)';
-        blurElement.style.backdropFilter = 'none';
-        blurElement.style.setProperty('-webkit-backdrop-filter', 'none');
-        blurElement.style.boxShadow = 'inset 0 0 300px rgba(0, 0, 0, 1)';
-        // Принудительно применяем стили
-        try {
-          blurElement.style.setProperty(
-            'top',
-            'calc(var(--details-bg-h) - 200px)',
-            'important'
-          );
-          blurElement.style.setProperty('z-index', '12', 'important');
-          blurElement.style.setProperty('display', 'block', 'important');
-          blurElement.style.setProperty('visibility', 'visible', 'important');
-          blurElement.style.setProperty('opacity', '1', 'important');
-        } catch (e) {
-          // Если setProperty не поддерживается
-        }
-      }
-    };
-
-    // MOBILE SCROLL FIX: Минимальные вызовы для стабильности
-    updateBlurPosition();
-    const timeoutId = setTimeout(updateBlurPosition, 200);
-    
-    // Используем debounce для resize для предотвращения частых обновлений
-    let resizeTimeout: NodeJS.Timeout;
-    const handleResize = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(updateBlurPosition, 150);
-    };
-    
-    window.addEventListener('resize', handleResize, { passive: true });
-    
-    return () => {
-      clearTimeout(timeoutId);
-      clearTimeout(resizeTimeout);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [isMobile]);
+  // Блюр убран на мобильной версии, так как черный фон убран
 
   return (
     <div ref={containerRef} className="details-container">
@@ -914,22 +774,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       />
       {/* Рамка - сначала на мобильных, потом на десктопе */}
       <div className={`frame-widget ${isMobile ? 'frame-widget-mobile-first' : ''}`}>
-        {/* Mobile + Desktop: remove ramka.png and show square treiler.mp4 like MainScreen Trailer section */}
-        <div
-          className="details-trailer-square"
-          onClick={(e) => {
-            // Mobile: prevent touch->click double fire
-            if (isMobile && Date.now() - lastMobileTouchTsRef.current < 500) return;
-            e.stopPropagation();
-            toggleTrailerPlayback();
-          }}
-          onTouchEnd={(e) => {
-            if (!isMobile) return;
-            lastMobileTouchTsRef.current = Date.now();
-            e.stopPropagation();
-            toggleTrailerPlayback();
-          }}
-        >
+        {/* Видео psihuska.mp4 - автозапуск без звука, без плеера */}
+        <div className="details-trailer-square">
           <video
             ref={trailerRef}
             className="details-trailer-video"
@@ -940,27 +786,16 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               borderRadius: '8px',
               backgroundColor: '#000',
             }}
-            // Mobile: behave as normal player; Desktop: controls only while playing
-            controls={isMobile ? true : isTrailerPlaying}
-            preload="metadata"
+            autoPlay
+            muted
+            loop
             playsInline
-            onPlay={() => setIsTrailerPlaying(true)}
-            onPause={() => setIsTrailerPlaying(false)}
-            onEnded={() => setIsTrailerPlaying(false)}
+            controls={false}
+            preload="auto"
           >
-            <source src="/backgrounds/sections/treiler.mp4" type="video/mp4" />
+            <source src="/photo/psihuska.mp4" type="video/mp4" />
             Ваш браузер не поддерживает воспроизведение видео.
           </video>
-
-          {!isTrailerPlaying && (
-            <div className="details-trailer-overlay" style={{ pointerEvents: isMobile ? 'none' : 'auto' }}>
-              <div className="details-trailer-play">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                  <path d="M8 5v14l11-7z" fill="#682302" stroke="#682302" strokeWidth="1" />
-                </svg>
-              </div>
-            </div>
-          )}
         </div>
       </div>
       <div className="date-time-box">
@@ -1022,135 +857,278 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           delay={4800}
         />
       </div>
-      <button 
-        ref={buyTicketButtonRef}
-        className="buy-ticket-button"
-        onClick={handleBuyTicket}
-        disabled={!buyTicketUrl}
-      >
-        Купить билет
-      </button>
-      <div 
-        ref={venueWidgetRef}
-        className="venue-widget"
-      >
-        <svg 
-          className="venue-icon" 
-          width="24" 
-          height="24" 
-          viewBox="0 0 24 24" 
-          fill="none" 
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path 
-            d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" 
-            fill="currentColor"
-          />
-        </svg>
-        <div className="venue-text">
-          {address || 'Академический театр оперы и балета'}
-        </div>
-      </div>
-      <div className="dark-overlay">
-        <Image 
-          src="/photo/temno11.png" 
-          alt="Затемнение" 
-          width={1920}
-          height={1080}
-          className="dark-overlay-image"
-          priority
-          quality={80}
-          loading="eager"
-          unoptimized
-        />
-        <div ref={triangleRef} className="triangle-overlay">
-          <Image 
-            src="/photo/treygol.png" 
-            alt="Треугольник" 
-            width={200}
-            height={200}
-            loading="eager"
-            priority
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            unoptimized
-          />
-        </div>
-        <div className="stats-circles">
-          <div className="stat-circle">
-            <div className="stat-number">
-              <CounterAnimation
-                end={5}
-                duration={1500}
-                delay={200}
-                style={{
-                  fontFamily: "'Noto Serif Malayalam', serif",
-                  fontSize: 'inherit',
-                  fontWeight: 'inherit',
-                  color: 'inherit'
+      {/* На мобильной версии кнопка и виджет идут между текстом описания и кругами */}
+      {isMobile ? (
+        <>
+          <button 
+            ref={buyTicketButtonRef}
+            className="buy-ticket-button"
+            onClick={handleBuyTicket}
+            disabled={!buyTicketUrl}
+          >
+            Купить билет
+          </button>
+          <div 
+            ref={venueWidgetRef}
+            className="venue-widget"
+          >
+            <svg 
+              className="venue-icon" 
+              width="24" 
+              height="24" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" 
+                fill="currentColor"
+              />
+            </svg>
+            <div className="venue-text">
+              {address || 'Академический театр оперы и балета'}
+            </div>
+          </div>
+          {/* Контейнер с затемнением temno11.png - начинается с кругов, заканчивается с textmibile.png - только на мобильной версии */}
+          <div 
+            style={{
+              position: 'relative',
+              width: '100%',
+              marginTop: 'clamp(3.5rem, 7vh, 4.5rem)',
+              marginBottom: 'clamp(2rem, 4vh, 3rem)',
+              zIndex: 1
+            }}
+          >
+            {/* Затемнение temno11.png - растягивается на всю высоту контейнера */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: '100%',
+                height: '100%',
+                zIndex: 1,
+                pointerEvents: 'none',
+                overflow: 'hidden'
+              }}
+            >
+              <Image 
+                src="/photo/temno11.png" 
+                alt="Затемнение" 
+                width={1200}
+                height={800}
+                style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  objectFit: 'cover', /* Растягиваем на всю высоту контейнера */
+                  opacity: 0.8,
+                  display: 'block'
                 }}
+                unoptimized
               />
             </div>
-            <div className="stat-label">СТРАН</div>
-          </div>
-          <div className="stat-circle">
-            <div className="stat-number">
-              <CounterAnimation
-                end={27}
-                duration={2000}
-                delay={400}
-                style={{
-                  fontFamily: "'Noto Serif Malayalam', serif",
-                  fontSize: 'inherit',
-                  fontWeight: 'inherit',
-                  color: 'inherit'
-                }}
+            {/* Круги (статистика) */}
+            <div style={{ height: 'clamp(4rem, 8vh, 5.5rem)', width: '100%', position: 'relative', zIndex: 2 }} />
+            <div className="stats-circles" style={{ position: 'relative', zIndex: 2 }}>
+            <div className="stat-circle">
+              <div className="stat-number">
+                <CounterAnimation
+                  end={5}
+                  duration={1500}
+                  delay={200}
+                  style={{
+                    fontFamily: "'Noto Serif Malayalam', serif",
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'inherit'
+                  }}
+                />
+              </div>
+              <div className="stat-label">СТРАН</div>
+            </div>
+            <div className="stat-circle">
+              <div className="stat-number">
+                <CounterAnimation
+                  end={27}
+                  duration={2000}
+                  delay={400}
+                  style={{
+                    fontFamily: "'Noto Serif Malayalam', serif",
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'inherit'
+                  }}
+                />
+              </div>
+              <div className="stat-label">ГОРОДОВ</div>
+            </div>
+            <div className="stat-circle">
+              <div className="stat-number">
+                <CounterAnimation
+                  end={26350}
+                  duration={2500}
+                  delay={600}
+                  style={{
+                    fontFamily: "'Noto Serif Malayalam', serif",
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'inherit'
+                  }}
+                />
+              </div>
+              <div className="stat-label">ЗРИТЕЛЕЙ</div>
+            </div>
+            </div>
+            {/* text1.png */}
+            <div ref={quoteTextRef} className="quote-text-overlay" style={{ position: 'relative', zIndex: 2 }}>
+              <Image 
+                src="/photo/text1.png" 
+                alt="Текст цитаты" 
+                width={800}
+                height={400}
+                loading="eager"
+                priority
+                style={{ width: 'auto', height: 'auto', maxWidth: '90%', objectFit: 'contain', margin: '0 auto', display: 'block' }}
+                unoptimized
               />
             </div>
-            <div className="stat-label">ГОРОДОВ</div>
-          </div>
-          <div className="stat-circle">
-            <div className="stat-number">
-              <CounterAnimation
-                end={26350}
-                duration={2500}
-                delay={600}
-                style={{
-                  fontFamily: "'Noto Serif Malayalam', serif",
-                  fontSize: 'inherit',
-                  fontWeight: 'inherit',
-                  color: 'inherit'
-                }}
+            {/* textmibile.png */}
+            <div ref={longQuoteTextRef} className="long-quote-text-overlay" style={{ position: 'relative', zIndex: 2 }}>
+              <Image 
+                src="/photo/textmibile.png" 
+                alt="Длинный текст цитаты" 
+                width={800}
+                height={600}
+                loading="eager"
+                priority
+                style={{ width: 'auto', height: 'auto', maxWidth: '90%', objectFit: 'contain', margin: '0 auto', display: 'block' }}
+                unoptimized
               />
             </div>
-            <div className="stat-label">ЗРИТЕЛЕЙ</div>
           </div>
-        </div>
-        <div ref={quoteTextRef} className="quote-text-overlay">
-          <Image 
-            src="/photo/text1.png" 
-            alt="Текст цитаты" 
-            width={800}
-            height={400}
-            loading="eager"
-            priority
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            unoptimized
-          />
-        </div>
-        <div ref={longQuoteTextRef} className="long-quote-text-overlay">
-          {/* На мобильных показываем textmibile.png, на десктопе text55.png */}
-          {isMobile ? (
+        </>
+      ) : (
+            /* На ПК версии кнопка и виджет позиционируются абсолютно */
+            <>
+              <button 
+                ref={buyTicketButtonRef}
+                className="buy-ticket-button"
+                onClick={handleBuyTicket}
+                disabled={!buyTicketUrl}
+              >
+                Купить билет
+              </button>
+              <div 
+                ref={venueWidgetRef}
+                className="venue-widget"
+              >
+                <svg 
+                  className="venue-icon" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path 
+                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" 
+                    fill="currentColor"
+                  />
+                </svg>
+                <div className="venue-text">
+                  {address || 'Академический театр оперы и балета'}
+                </div>
+              </div>
+              {/* На ПК версии используем dark-overlay */}
+              <div className="dark-overlay">
+                <Image 
+                  src="/photo/temno11.png" 
+                  alt="Затемнение" 
+                  width={1920}
+                  height={1080}
+                  className="dark-overlay-image"
+                  priority
+                  quality={80}
+                  loading="eager"
+                  unoptimized
+                />
+          <div ref={triangleRef} className="triangle-overlay">
             <Image 
-              src="/photo/textmibile.png" 
-              alt="Длинный текст цитаты" 
-              width={800}
-              height={600}
+              src="/photo/treygol.png" 
+              alt="Треугольник" 
+              width={200}
+              height={200}
               loading="eager"
               priority
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               unoptimized
             />
-          ) : (
+          </div>
+          <div className="stats-circles">
+            <div className="stat-circle">
+              <div className="stat-number">
+                <CounterAnimation
+                  end={5}
+                  duration={1500}
+                  delay={200}
+                  style={{
+                    fontFamily: "'Noto Serif Malayalam', serif",
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'inherit'
+                  }}
+                />
+              </div>
+              <div className="stat-label">СТРАН</div>
+            </div>
+            <div className="stat-circle">
+              <div className="stat-number">
+                <CounterAnimation
+                  end={27}
+                  duration={2000}
+                  delay={400}
+                  style={{
+                    fontFamily: "'Noto Serif Malayalam', serif",
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'inherit'
+                  }}
+                />
+              </div>
+              <div className="stat-label">ГОРОДОВ</div>
+            </div>
+            <div className="stat-circle">
+              <div className="stat-number">
+                <CounterAnimation
+                  end={26350}
+                  duration={2500}
+                  delay={600}
+                  style={{
+                    fontFamily: "'Noto Serif Malayalam', serif",
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    color: 'inherit'
+                  }}
+                />
+              </div>
+              <div className="stat-label">ЗРИТЕЛЕЙ</div>
+            </div>
+          </div>
+          <div ref={quoteTextRef} className="quote-text-overlay">
+            <Image 
+              src="/photo/text1.png" 
+              alt="Текст цитаты" 
+              width={800}
+              height={400}
+              loading="eager"
+              priority
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              unoptimized
+            />
+          </div>
+          <div ref={longQuoteTextRef} className="long-quote-text-overlay">
             <Image 
               src="/photo/text55.png" 
               alt="Длинный текст цитаты" 
@@ -1161,9 +1139,11 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               unoptimized
             />
-          )}
+          </div>
         </div>
-      </div>
+        </>
+      )}
+      {!isMobile && (
       <div ref={darkOverlayDuplicateRef} className="dark-overlay-duplicate">
         <Image 
           src="/photo/temno11.png" 
@@ -1239,6 +1219,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           Купить билет
         </button>
       </div>
+      )}
 
       {/* Градиент блюра между фоном section-34839282.png и черным фоном перед разделом актеров - только для ПК */}
       {!isMobile && (
@@ -1252,7 +1233,8 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         />
       )}
 
-      {/* Раздел "Актеры" - позиционируется после dark-overlay-duplicate */}
+      {/* Раздел "Актеры" - только для ПК */}
+      {!isMobile && (
       <div 
         className="actors-section-details" 
         style={{ 
@@ -1263,60 +1245,19 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       >
         <ActorsSection />
       </div>
-
-      {/* Черный блюр между текстовым блоком и разделом "ОТЗЫВЫ" на мобильных - скрывает стык между фонами */}
-      {isMobile && (
-        <div 
-          ref={mobileBlurOverlayRef}
-          className="mobile-content-blur-overlay"
-          style={{
-            position: 'absolute',
-            top: 'calc(var(--details-bg-h) - 200px)',
-            left: 0,
-            right: 0,
-            height: '300px',
-            width: '100%',
-            background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 20%, rgba(0, 0, 0, 0.55) 40%, rgba(0, 0, 0, 0.75) 60%, rgba(0, 0, 0, 0.9) 80%, rgba(0, 0, 0, 0.97) 95%, rgba(0, 0, 0, 1) 100%)',
-            backdropFilter: 'none',
-            WebkitBackdropFilter: 'none',
-            zIndex: 12,
-            pointerEvents: 'none',
-            boxShadow: 'inset 0 0 300px rgba(0, 0, 0, 1)',
-            mixBlendMode: 'normal',
-            display: 'block',
-            visibility: 'visible',
-            opacity: '1'
-          }}
-        />
       )}
 
-      {/* Раздел "ОТЗЫВЫ" */}
-      <div ref={reviewsSectionRef} className="w-full flex flex-col items-center reviews-section-details" style={{ 
-        marginTop: 'clamp(8rem, 12vh, 10rem)', 
+      {/* Блюр убран на мобильной версии - черный фон убран */}
+
+      {/* Раздел "ОТЗЫВЫ" - на мобильной версии идет после PNG изображений */}
+      <div ref={reviewsSectionRef} className="w-full flex flex-col items-center reviews-section-details" style={{
+        marginTop: isMobile ? 'clamp(4rem, 8vh, 5.5rem)' : 'clamp(8rem, 12vh, 10rem)',
         width: '100%', 
         position: 'relative',
         zIndex: 20,
-        paddingTop: isMobile ? '1.5rem' : 'clamp(3rem, 6vh, 5rem)', // Уменьшен padding-top на мобильной версии
+        paddingTop: isMobile ? 'clamp(2rem, 4vh, 3rem)' : 'clamp(3rem, 6vh, 5rem)',
         paddingBottom: 'clamp(2rem, 4vh, 3rem)'
       }}>
-        {/* Блюр перед разделом "ОТЗЫВЫ" на мобильных - скрывает стык */}
-        {isMobile && (
-          <div 
-            style={{
-              position: 'absolute',
-              top: '-200px',
-              left: 0,
-              right: 0,
-              height: '200px',
-              width: '100%',
-              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 30%, rgba(0, 0, 0, 0.8) 60%, rgba(0, 0, 0, 0.95) 85%, rgba(0, 0, 0, 1) 100%)',
-              backdropFilter: 'none',
-              WebkitBackdropFilter: 'none',
-              zIndex: -1,
-              pointerEvents: 'none'
-            }}
-          />
-        )}
         <p 
           className="text-2xl md:text-3xl lg:text-4xl uppercase"
           style={{
@@ -1326,7 +1267,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
             textShadow: '0 0 15px rgba(231, 200, 132, 0.4), 0 0 30px rgba(231, 200, 132, 0.3)',
             letterSpacing: '0.1em',
             textAlign: 'center',
-            marginBottom: isMobile ? '0.25rem' : '2.5rem', // Минимальный отступ на мобильной версии для близости к карточкам
+            marginBottom: isMobile ? '0' : '2.5rem', // Убран отступ на мобильной версии для максимальной близости к карточкам
           }}
         >
           ОТЗЫВЫ
@@ -1334,7 +1275,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
 
         {/* Блок отзывов с каруселью Swiper */}
         <div className="relative w-full mt-10" style={{ 
-          marginTop: isMobile ? '0.5rem' : undefined, // Еще больше уменьшен отступ на мобильной версии
+          marginTop: isMobile ? '-1.5rem' : undefined, // Отрицательный отступ на мобильной версии, чтобы заголовок был ближе к карточкам
           padding: '2rem 0', 
           paddingLeft: 'clamp(2.5rem, 4vw, 3.5rem)', 
           paddingRight: 'clamp(2.5rem, 4vw, 3.5rem)' 
@@ -1549,51 +1490,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         }}
       />
 
-      {/* Блюр на границе между фоном section-34839282.png и черным экраном, где начинается раздел "Отзывы" */}
-      {isMobile && (
-        <>
-          {/* Дубликат нижней части фона с blur для создания эффекта размытия */}
-          <div 
-            style={{
-              position: 'absolute',
-              // Keep in sync with mobile background height defined in CSS (--details-bg-h)
-              top: 'calc(var(--details-bg-h) - 250px)',
-              left: 0,
-              right: 0,
-              height: '250px',
-              width: '100%',
-              backgroundImage: 'url(/photo/section-34839282.png)',
-              backgroundSize: '100% auto',
-              backgroundPosition: 'center calc(100% - 250px)',
-              backgroundRepeat: 'no-repeat',
-              transform: 'scaleX(-1)',
-              filter: 'none',
-              WebkitFilter: 'none',
-              zIndex: -1,
-              pointerEvents: 'none',
-              opacity: 0.6
-            }}
-          />
-          {/* Overlay с черным градиентом для скрытия стыка */}
-          <div 
-            className="mobile-background-blur-overlay"
-            style={{
-              position: 'absolute',
-              // Keep in sync with mobile background height defined in CSS (--details-bg-h)
-              top: 'calc(var(--details-bg-h) - 250px)',
-              left: 0,
-              right: 0,
-              height: '300px',
-              width: '100%',
-              background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 15%, rgba(0, 0, 0, 0.5) 35%, rgba(0, 0, 0, 0.75) 55%, rgba(0, 0, 0, 0.9) 75%, rgba(0, 0, 0, 0.98) 90%, rgba(0, 0, 0, 1) 100%)',
-              backdropFilter: 'none',
-              WebkitBackdropFilter: 'none',
-              zIndex: 0,
-              pointerEvents: 'none'
-            }}
-          />
-        </>
-      )}
+      {/* Блюр на границе между фоном section-34839282.png и черным экраном, где начинается раздел "Отзывы" - убран на мобильной версии */}
 
       {/* Раздел "Данные спектакля" */}
       <div 
@@ -1602,7 +1499,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
           marginTop: isMobile ? '0.5rem' : 'clamp(4rem, 7vh, 6rem)', /* Еще больше уменьшен margin-top на мобильной версии */
           paddingTop: 'clamp(1.5rem, 3vh, 2rem)',
           paddingBottom: 'clamp(2rem, 4vh, 3rem)',
-          backgroundColor: '#000000',
+          ...(isMobile ? {} : { backgroundColor: '#000000' }), /* Убираем фон полностью на мобильной версии */
           width: '100%',
           position: 'relative',
           zIndex: 20,

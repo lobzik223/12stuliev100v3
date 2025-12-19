@@ -273,7 +273,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
             <img src="/backgrounds/sections/section-3.png" alt="" loading="eager" />
             <img src="/backgrounds/sections/section-4.png" alt="" loading="eager" fetchPriority="high" />
             <img src="/backgrounds/sections/mobile/section-3-mobile.png" alt="" loading="eager" />
-            <img src="/backgrounds/sections/mobile/section-4-mobile.png" alt="" loading="eager" fetchPriority="high" />
+            <img src="/backgrounds/sections/mobile/section-4-mobile.png?v=10" alt="" loading="eager" fetchPriority="high" />
             <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="eager" />
             <img src="/backgrounds/sections/vput.png?v=2.0" alt="" loading="eager" />
             <img src="/backgrounds/sections/vput2.png?v=2.0" alt="" loading="eager" />
@@ -291,7 +291,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           <>
             {/* CRITICAL PERFORMANCE FIX: Optimized loading strategy for mobile */}
             {/* Preload section-4 (Journey section) as it appears early - CRITICAL for smooth scroll */}
-            <img src="/backgrounds/sections/mobile/section-4-mobile.png" alt="" loading="eager" fetchPriority="high" />
+            <img src="/backgrounds/sections/mobile/section-4-mobile.png?v=10" alt="" loading="eager" fetchPriority="high" />
             {/* Preload plitkanovosti (Events cards) as it's above the fold */}
             <img src="/backgrounds/sections/plitkanovosti.png" alt="" loading="eager" fetchPriority="high" />
             {/* Preload first Journey scene image (vput.png) - appears early in Journey section */}
@@ -474,6 +474,13 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           className="desktop-pc-blur-transition"
           style={{
             pointerEvents: 'none',
+            position: 'absolute',
+            top: '-100vh',
+            height: 'clamp(60vh, 70vh, 80vh)',
+            width: '100%',
+            left: 0,
+            right: 0,
+            zIndex: 5,
           }}
         />
 
@@ -482,7 +489,20 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
           className="relative w-full puull-gradient-between-sections"
           style={{
             pointerEvents: 'none',
-            zIndex: 10,
+            zIndex: 5,
+            width: '130vw',
+            maxWidth: '130vw',
+            minWidth: '130vw',
+            position: 'absolute',
+            top: '-90vh',
+            height: 'clamp(50vh, 60vh, 70vh)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            marginLeft: 0,
+            marginRight: 0,
+            paddingLeft: 0,
+            paddingRight: 0,
+            boxSizing: 'border-box',
           }}
         >
           <Image 
@@ -522,7 +542,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
                 backgroundImage: isMobile
                   ? 'url(/backgrounds/sections/mobile/section-3-mobile.png)'
                   : 'url(/backgrounds/sections/section-3.png)',
-                backgroundSize: '100% 100%',
+                backgroundSize: isMobile ? '120% auto' : '100% 100%',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 width: '100%',
