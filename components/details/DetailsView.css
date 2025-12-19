@@ -266,6 +266,14 @@ span.date-time-number {
   justify-content: center;
 }
 
+/* Для больших экранов (1920px и выше) - сдвигаем видео левее и поднимаем выше */
+@media (min-width: 1920px) {
+  .frame-widget {
+    top: 1% !important; /* Поднимаем выше */
+    right: 5% !important; /* Сдвигаем левее (увеличиваем right, чтобы элемент сдвинулся влево) */
+  }
+}
+
 /* Desktop: square trailer in place of ramka.png (match MainScreen Trailer style) */
 .details-trailer-square {
   /* Make the video bigger on desktop (actual video area, not controls) */
