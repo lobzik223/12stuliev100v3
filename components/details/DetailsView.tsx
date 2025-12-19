@@ -33,9 +33,11 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   address
 }) => {
   const router = useRouter();
-  // Обрабатываем dateTime - может быть строкой или объектом с HTML
+  // PRODUCTION FIX: Обрабатываем dateTime - может быть строкой или объектом с HTML
+  // Используем переданное значение, если оно есть, иначе дефолтное
   const defaultDateTime = '24 НОЯБРЯ | 19:00';
-  const dateTimeValue = dateTime || defaultDateTime;
+  // Проверяем, что dateTime не undefined и не null
+  const dateTimeValue = (dateTime !== undefined && dateTime !== null) ? dateTime : defaultDateTime;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isEmployeeTicketsModalOpen, setIsEmployeeTicketsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => {
@@ -46,6 +48,7 @@ const DetailsView: React.FC<DetailsViewProps> = ({
   const trailerRef = useRef<HTMLVideoElement>(null);
   const [isTrailerPlaying, setIsTrailerPlaying] = useState(false);
   const lastMobileTouchTsRef = useRef(0);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const handleBuyTicket = () => {
     if (buyTicketUrl) {
@@ -96,20 +99,96 @@ const DetailsView: React.FC<DetailsViewProps> = ({
     };
   }, []);
 
-  // Блокируем скролл body при открытии модального окна на мобильных
+  // PRODUCTION FIX: Гарантированная инициализация видео для стабильной загрузки
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const video = trailerRef.current;
+    if (!video) return;
+
+    // Устанавливаем атрибуты для стабильной работы на всех устройствах
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('x5-playsinline', 'true');
+    video.muted = true;
+    
+    // Обработчики для гарантированной загрузки
+    const handleLoadedMetadata = () => {
+      setIsVideoReady(true);
+      // Гарантируем видимость видео
+      video.style.display = 'block';
+      video.style.visibility = 'visible';
+      video.style.opacity = '1';
+    };
+
+    const handleCanPlay = () => {
+      setIsVideoReady(true);
+    };
+
+    const handleError = (e: Event) => {
+      console.warn('Video load error (non-critical):', e);
+      // Не блокируем рендеринг при ошибке загрузки видео
+      setIsVideoReady(true);
+    };
+
+    // Если видео уже загружено
+    if (video.readyState >= 2) {
+      setIsVideoReady(true);
+    }
+
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('error', handleError);
+
+    // Принудительная загрузка метаданных
+    if (video.readyState === 0) {
+      video.load();
+    }
+
+    return () => {
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('error', handleError);
+    };
+  }, []);
+
+  // Блокируем скролл body при открытии модального окна на мобильных и скрываем header
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
     if (isTicketModalOpen && isMobile) {
       // Сохраняем текущую позицию скролла
       const scrollY = window.scrollY;
-      // Блокируем скролл body
+      // Блокируем скролл body, сохраняя позицию
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
       // Добавляем класс для CSS правил
       document.body.classList.add('modal-scroll-locked');
+      
+      // Скрываем header и все его элементы на мобильных
+      const header = document.querySelector('header');
+      const hamburgerButton = document.querySelector('.mobile-hamburger-button');
+      const secondaryNav = document.querySelector('.secondary-nav');
+      
+      if (header) {
+        (header as HTMLElement).style.display = 'none';
+        (header as HTMLElement).style.visibility = 'hidden';
+        (header as HTMLElement).style.opacity = '0';
+        (header as HTMLElement).style.pointerEvents = 'none';
+      }
+      if (hamburgerButton) {
+        (hamburgerButton as HTMLElement).style.display = 'none';
+        (hamburgerButton as HTMLElement).style.visibility = 'hidden';
+        (hamburgerButton as HTMLElement).style.opacity = '0';
+        (hamburgerButton as HTMLElement).style.pointerEvents = 'none';
+      }
+      if (secondaryNav) {
+        (secondaryNav as HTMLElement).style.display = 'none';
+        (secondaryNav as HTMLElement).style.visibility = 'hidden';
+        (secondaryNav as HTMLElement).style.opacity = '0';
+        (secondaryNav as HTMLElement).style.pointerEvents = 'none';
+      }
       
       return () => {
         // Восстанавливаем скролл при закрытии
@@ -119,6 +198,27 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         document.body.style.width = '';
         document.body.style.overflow = '';
         document.body.classList.remove('modal-scroll-locked');
+        
+        // Показываем header обратно
+        if (header) {
+          (header as HTMLElement).style.display = '';
+          (header as HTMLElement).style.visibility = '';
+          (header as HTMLElement).style.opacity = '';
+          (header as HTMLElement).style.pointerEvents = '';
+        }
+        if (hamburgerButton) {
+          (hamburgerButton as HTMLElement).style.display = '';
+          (hamburgerButton as HTMLElement).style.visibility = '';
+          (hamburgerButton as HTMLElement).style.opacity = '';
+          (hamburgerButton as HTMLElement).style.pointerEvents = '';
+        }
+        if (secondaryNav) {
+          (secondaryNav as HTMLElement).style.display = '';
+          (secondaryNav as HTMLElement).style.visibility = '';
+          (secondaryNav as HTMLElement).style.opacity = '';
+          (secondaryNav as HTMLElement).style.pointerEvents = '';
+        }
+        
         // Используем requestAnimationFrame для плавного восстановления
         requestAnimationFrame(() => {
           window.scrollTo(0, savedScrollY);
@@ -131,6 +231,30 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       document.body.style.width = '';
       document.body.style.overflow = '';
       document.body.classList.remove('modal-scroll-locked');
+      
+      // Показываем header обратно
+      const header = document.querySelector('header');
+      const hamburgerButton = document.querySelector('.mobile-hamburger-button');
+      const secondaryNav = document.querySelector('.secondary-nav');
+      
+      if (header) {
+        (header as HTMLElement).style.display = '';
+        (header as HTMLElement).style.visibility = '';
+        (header as HTMLElement).style.opacity = '';
+        (header as HTMLElement).style.pointerEvents = '';
+      }
+      if (hamburgerButton) {
+        (hamburgerButton as HTMLElement).style.display = '';
+        (hamburgerButton as HTMLElement).style.visibility = '';
+        (hamburgerButton as HTMLElement).style.opacity = '';
+        (hamburgerButton as HTMLElement).style.pointerEvents = '';
+      }
+      if (secondaryNav) {
+        (secondaryNav as HTMLElement).style.display = '';
+        (secondaryNav as HTMLElement).style.visibility = '';
+        (secondaryNav as HTMLElement).style.opacity = '';
+        (secondaryNav as HTMLElement).style.pointerEvents = '';
+      }
     }
   }, [isTicketModalOpen, isMobile]);
 
@@ -785,6 +909,9 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               objectFit: 'cover',
               borderRadius: '8px',
               backgroundColor: '#000',
+              display: 'block',
+              visibility: 'visible',
+              opacity: 1,
             }}
             autoPlay
             muted
@@ -792,6 +919,23 @@ const DetailsView: React.FC<DetailsViewProps> = ({
             playsInline
             controls={false}
             preload="auto"
+            onLoadedMetadata={() => {
+              // PRODUCTION FIX: Гарантируем видимость после загрузки
+              if (trailerRef.current) {
+                trailerRef.current.style.display = 'block';
+                trailerRef.current.style.visibility = 'visible';
+                trailerRef.current.style.opacity = '1';
+              }
+            }}
+            onError={(e) => {
+              // PRODUCTION FIX: Обработка ошибок без блокировки рендеринга
+              console.warn('Video error (non-critical):', e);
+              if (trailerRef.current) {
+                trailerRef.current.style.display = 'block';
+                trailerRef.current.style.visibility = 'visible';
+                trailerRef.current.style.opacity = '1';
+              }
+            }}
           >
             <source src="/photo/psihuska.mp4" type="video/mp4" />
             Ваш браузер не поддерживает воспроизведение видео.
@@ -1809,42 +1953,69 @@ const DetailsView: React.FC<DetailsViewProps> = ({
       {/* Модальное окно с виджетом intickets для покупки билетов */}
       {isTicketModalOpen && buyTicketUrl && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          className="fixed inset-0 z-[9999]"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(5px)'
+            backdropFilter: isMobile ? 'none' : 'blur(5px)',
+            padding: isMobile ? 'clamp(1rem, 2vh, 1.5rem)' : '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh'
           }}
           onClick={closeTicketModal}
         >
           <div
-            className="relative bg-white rounded-lg overflow-hidden"
+            className="relative bg-white overflow-hidden"
             style={{
-              width: '90vw',
-              height: '85vh',
-              maxWidth: '1200px',
-              maxHeight: '800px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              width: isMobile ? '95vw' : '90vw',
+              height: isMobile ? '90vh' : '85vh',
+              maxWidth: isMobile ? '95vw' : '1200px',
+              maxHeight: isMobile ? '90vh' : '800px',
+              borderRadius: isMobile ? 'clamp(0.75rem, 2vw, 1rem)' : '0.5rem',
+              boxShadow: isMobile ? '0 4px 20px rgba(0, 0, 0, 0.3)' : '0 20px 60px rgba(0, 0, 0, 0.5)',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
-              touchAction: 'pan-y'
+              touchAction: 'pan-y',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              margin: 'auto'
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Кнопка закрытия */}
+            {/* Кнопка закрытия - черный крестик в белом круге */}
             <button
               onClick={closeTicketModal}
-              className="absolute top-4 right-4 z-[10000] bg-white rounded-full p-2 hover:bg-gray-200 transition-colors"
+              className="absolute z-[10000] bg-white rounded-full transition-all hover:bg-gray-100"
               style={{
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                top: isMobile ? 'clamp(0.5rem, 1.5vh, 0.75rem)' : '1rem',
+                right: isMobile ? 'clamp(0.5rem, 1.5vh, 0.75rem)' : '1rem',
+                width: isMobile ? 'clamp(2.5rem, 6vw, 3rem)' : '2.5rem',
+                height: isMobile ? 'clamp(2.5rem, 6vw, 3rem)' : '2.5rem',
+                padding: isMobile ? 'clamp(0.5rem, 1.5vw, 0.75rem)' : '0.5rem',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px solid rgba(0, 0, 0, 0.1)'
               }}
             >
               <svg
-                width="24"
-                height="24"
+                width={isMobile ? 'clamp(20px, 5vw, 24px)' : '24'}
+                height={isMobile ? 'clamp(20px, 5vw, 24px)' : '24'}
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+                stroke="#000000"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -1853,15 +2024,21 @@ const DetailsView: React.FC<DetailsViewProps> = ({
               </svg>
             </button>
 
-            {/* Iframe с виджетом intickets */}
+            {/* Iframe с виджетом intickets - оптимизирован для мобильных */}
             <iframe
-              key={`details-ticket-${buyTicketUrl}`}
+              key={`details-ticket-${buyTicketUrl}-${Date.now()}`}
               src={buyTicketUrl}
-              className="w-full h-full border-0"
+              className="w-full border-0"
               style={{
-                minHeight: '600px'
+                width: '100%',
+                height: isMobile ? 'calc(90vh - clamp(3.5rem, 7vh, 4.5rem))' : '100%',
+                minHeight: isMobile ? 'calc(90vh - clamp(3.5rem, 7vh, 4.5rem))' : '600px',
+                flex: '1',
+                display: 'block',
+                border: 'none'
               }}
               allow="payment"
+              allowFullScreen
               title="Покупка билетов"
             />
           </div>

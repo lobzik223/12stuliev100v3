@@ -1033,7 +1033,7 @@ span.date-time-number {
     transform: none !important;
     width: 85% !important;
     max-width: 400px !important;
-    height: clamp(45vh, 50vh, 55vh) !important;
+    height: clamp(35vh, 40vh, 45vh) !important; /* Уменьшена высота видео на мобильных */
     margin: clamp(2rem, 4vh, 3rem) auto clamp(2rem, 4vh, 3rem) auto !important;
     z-index: 20 !important;
     display: flex !important;

@@ -103,6 +103,9 @@ export default function RootLayout({
         <link rel="preload" href="/backgrounds/sections/vput2.png?v=2.0" as="image" type="image/png" />
         <link rel="preload" href="/backgrounds/sections/vput3.png?v=2.0" as="image" type="image/png" />
         <link rel="preload" href="/backgrounds/sections/vput4.png?v=2.0" as="image" type="image/png" />
+        {/* PRODUCTION FIX: Preload критических видео для стабильной загрузки */}
+        <link rel="preload" href="/photo/psihuska.mp4" as="video" type="video/mp4" />
+        <link rel="preload" href="/backgrounds/sections/treiler.mp4" as="video" type="video/mp4" />
       </head>
       <body>
         <ErrorBoundary>

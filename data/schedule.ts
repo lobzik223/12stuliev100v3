@@ -16,16 +16,16 @@ export const scheduleItems: ScheduleItem[] = [
     time: '19:00',
     location: 'ДК Подшипникового завода',
     address: '',
-    buyTicketUrl: ''
+    buyTicketUrl: 'https://iframeab-pre10068.intickets.ru/seance/68855887'
   },
   {
     id: 2,
-    title: '12 стульев – Липецк',
+    title: '12 стульев – Нижний Новгород',
     date: '18 Февраля',
     time: '19:00',
     location: 'ДК Красное Сормово',
     address: '',
-    buyTicketUrl: ''
+    buyTicketUrl: 'https://iframeab-pre10068.intickets.ru/seance/68883235'
   },
   {
     id: 3,
@@ -34,7 +34,7 @@ export const scheduleItems: ScheduleItem[] = [
     time: '19:00',
     location: 'Областной центр культуры народного творчества и кино',
     address: '',
-    buyTicketUrl: ''
+    buyTicketUrl: 'https://iframeab-pre10068.intickets.ru/seance/68733630'
   },
   {
     id: 4,
@@ -43,7 +43,7 @@ export const scheduleItems: ScheduleItem[] = [
     time: '18:00',
     location: 'Центр молодёжных инициатив',
     address: '',
-    buyTicketUrl: ''
+    buyTicketUrl: 'https://iframeab-pre10068.intickets.ru/seance/68733673'
   },
   {
     id: 5,
@@ -52,7 +52,7 @@ export const scheduleItems: ScheduleItem[] = [
     time: '19:00',
     location: 'КЗ Губернский',
     address: '',
-    buyTicketUrl: ''
+    buyTicketUrl: 'https://iframeab-pre10068.intickets.ru/seance/68595730'
   },
   {
     id: 6,
@@ -61,25 +61,7 @@ export const scheduleItems: ScheduleItem[] = [
     time: '19:00',
     location: 'КЦ Диалог',
     address: '',
-    buyTicketUrl: ''
-  },
-  {
-    id: 7,
-    title: '12 стульев – Воронеж',
-    date: '12 Марта',
-    time: '19:00',
-    location: 'Воронежский концертный зал',
-    address: '',
-    buyTicketUrl: ''
-  },
-  {
-    id: 8,
-    title: '12 стульев – Владимир',
-    date: '13 Марта',
-    time: '19:00',
-    location: 'АРТ Холл',
-    address: '',
-    buyTicketUrl: ''
+    buyTicketUrl: 'https://iframeab-pre10068.intickets.ru/seance/68734925'
   }
 ];
 

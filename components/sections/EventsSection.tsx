@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, forwardRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import ScrollReveal from '../ui/ScrollReveal';
 import CounterAnimation from '../ui/CounterAnimation';
@@ -27,8 +28,25 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNavPanelSticky, setIsNavPanelSticky] = useState(false);
   const isMobileUi = typeof window !== 'undefined' ? isProbablyMobile() : false;
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.innerWidth <= 768;
+  });
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const journeyTextRef = useRef<HTMLDivElement>(null);
+  
+  // Обновляем isMobile при изменении размера окна
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    window.addEventListener('orientationchange', checkMobile);
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('orientationchange', checkMobile);
+    };
+  }, []);
 
   // Mobile-only: render card with fixed PNG aspect ratio (prevents real-device vh/viewport stretching)
   const renderEventCardMobile = (event: typeof events[0]) => {
@@ -401,45 +419,82 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
     setSelectedEventUrl(null);
   };
 
-  // Блокируем скролл body при открытии модального окна на мобильных
+  // Скрываем header при открытии модального окна на мобильных (БЕЗ блокировки скролла)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    const isMobile = isProbablyMobile();
-    
     if (isModalOpen && isMobile) {
-      // Сохраняем текущую позицию скролла
-      const scrollY = window.scrollY;
-      // Блокируем скролл body
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-      // Добавляем класс для CSS правил
-      document.body.classList.add('modal-scroll-locked');
+      // Скрываем header и все его элементы на мобильных
+      const header = document.querySelector('header');
+      const hamburgerButton = document.querySelector('.mobile-hamburger-button');
+      const secondaryNav = document.querySelector('.secondary-nav');
+      
+      if (header) {
+        (header as HTMLElement).style.display = 'none';
+        (header as HTMLElement).style.visibility = 'hidden';
+        (header as HTMLElement).style.opacity = '0';
+        (header as HTMLElement).style.pointerEvents = 'none';
+      }
+      if (hamburgerButton) {
+        (hamburgerButton as HTMLElement).style.display = 'none';
+        (hamburgerButton as HTMLElement).style.visibility = 'hidden';
+        (hamburgerButton as HTMLElement).style.opacity = '0';
+        (hamburgerButton as HTMLElement).style.pointerEvents = 'none';
+      }
+      if (secondaryNav) {
+        (secondaryNav as HTMLElement).style.display = 'none';
+        (secondaryNav as HTMLElement).style.visibility = 'hidden';
+        (secondaryNav as HTMLElement).style.opacity = '0';
+        (secondaryNav as HTMLElement).style.pointerEvents = 'none';
+      }
       
       return () => {
-        // Восстанавливаем скролл при закрытии
-        const savedScrollY = parseInt(document.body.style.top || '0', 10) * -1 || scrollY;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.body.style.overflow = '';
-        document.body.classList.remove('modal-scroll-locked');
-        // Используем requestAnimationFrame для плавного восстановления
-        requestAnimationFrame(() => {
-          window.scrollTo(0, savedScrollY);
-        });
+        // Показываем header обратно
+        if (header) {
+          (header as HTMLElement).style.display = '';
+          (header as HTMLElement).style.visibility = '';
+          (header as HTMLElement).style.opacity = '';
+          (header as HTMLElement).style.pointerEvents = '';
+        }
+        if (hamburgerButton) {
+          (hamburgerButton as HTMLElement).style.display = '';
+          (hamburgerButton as HTMLElement).style.visibility = '';
+          (hamburgerButton as HTMLElement).style.opacity = '';
+          (hamburgerButton as HTMLElement).style.pointerEvents = '';
+        }
+        if (secondaryNav) {
+          (secondaryNav as HTMLElement).style.display = '';
+          (secondaryNav as HTMLElement).style.visibility = '';
+          (secondaryNav as HTMLElement).style.opacity = '';
+          (secondaryNav as HTMLElement).style.pointerEvents = '';
+        }
       };
     } else if (!isModalOpen && isMobile) {
-      // Убеждаемся что стили очищены даже если модальное окно закрылось другим способом
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      document.body.classList.remove('modal-scroll-locked');
+      // Показываем header обратно при закрытии модального окна
+      const header = document.querySelector('header');
+      const hamburgerButton = document.querySelector('.mobile-hamburger-button');
+      const secondaryNav = document.querySelector('.secondary-nav');
+      
+      if (header) {
+        (header as HTMLElement).style.display = '';
+        (header as HTMLElement).style.visibility = '';
+        (header as HTMLElement).style.opacity = '';
+        (header as HTMLElement).style.pointerEvents = '';
+      }
+      if (hamburgerButton) {
+        (hamburgerButton as HTMLElement).style.display = '';
+        (hamburgerButton as HTMLElement).style.visibility = '';
+        (hamburgerButton as HTMLElement).style.opacity = '';
+        (hamburgerButton as HTMLElement).style.pointerEvents = '';
+      }
+      if (secondaryNav) {
+        (secondaryNav as HTMLElement).style.display = '';
+        (secondaryNav as HTMLElement).style.visibility = '';
+        (secondaryNav as HTMLElement).style.opacity = '';
+        (secondaryNav as HTMLElement).style.pointerEvents = '';
+      }
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, isMobile]);
 
   // Функция для рендеринга карточки события
   const renderEventCard = (event: typeof events[0], withScrollReveal = false) => {
@@ -1026,64 +1081,163 @@ const EventsSection = forwardRef<HTMLDivElement, EventsSectionProps>(({ navPanel
 
       {/* Модальное окно с виджетом intickets для покупки билетов */}
       {isModalOpen && selectedEventUrl && (
-        <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center"
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(5px)'
-          }}
-          onClick={closeModal}
-        >
-          <div
-            className="relative bg-white rounded-lg overflow-hidden"
-            style={{
-              width: '90vw',
-              height: '85vh',
-              maxWidth: '1200px',
-              maxHeight: '800px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-              overflowY: 'auto',
-              WebkitOverflowScrolling: 'touch',
-              touchAction: 'pan-y'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Кнопка закрытия */}
-            <button
+        <>
+          {/* Desktop версия - рендерим как обычно */}
+          {!isMobile && (
+            <div
+              className="fixed inset-0 z-[9999]"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                backdropFilter: 'blur(5px)',
+                padding: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: '100vw',
+                height: '100vh'
+              }}
               onClick={closeModal}
-              className="absolute top-4 right-4 z-[10000] bg-white rounded-full p-2 hover:bg-gray-200 transition-colors"
-              style={{
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
-              }}
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              <div
+                className="relative bg-white overflow-hidden"
+                style={{
+                  width: '90vw',
+                  height: '85vh',
+                  maxWidth: '1200px',
+                  maxHeight: '800px',
+                  borderRadius: '0.5rem',
+                  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  position: 'relative',
+                  margin: 'auto'
+                }}
+                onClick={(e) => e.stopPropagation()}
               >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
+                {/* Кнопка закрытия - черный крестик в белом круге */}
+                <button
+                  onClick={closeModal}
+                  className="absolute z-[10000] bg-white rounded-full transition-all hover:bg-gray-100"
+                  style={{
+                    top: '1rem',
+                    right: '1rem',
+                    width: '2.5rem',
+                    height: '2.5rem',
+                    padding: '0.5rem',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#000000"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
 
-            {/* Iframe с виджетом intickets */}
-            <iframe
-              key={`ticket-${selectedEventUrl}`}
-              src={selectedEventUrl}
-              className="w-full h-full border-0"
-              style={{
-                minHeight: '600px'
-              }}
-              allow="payment"
-              title="Покупка билетов"
-            />
-          </div>
-        </div>
+                {/* Iframe с виджетом intickets */}
+                <iframe
+                  key={`ticket-${selectedEventUrl}-${Date.now()}`}
+                  src={selectedEventUrl}
+                  className="w-full border-0"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    minHeight: '600px',
+                    flex: '1',
+                    display: 'block',
+                    border: 'none'
+                  }}
+                  allow="payment"
+                  allowFullScreen
+                  title="Покупка билетов"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Mobile версия - рендерим через Portal в document.body */}
+          {isMobile && typeof document !== 'undefined' && createPortal(
+            <div
+              className="intickets-mobile-overlay"
+              onClick={closeModal}
+            >
+              <div
+                className="intickets-mobile-modal"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Кнопка закрытия - черный крестик в белом круге */}
+                <button
+                  onClick={closeModal}
+                  className="absolute z-[10000] bg-white rounded-full transition-all hover:bg-gray-100"
+                  style={{
+                    top: 'clamp(0.5rem, 1.5vh, 0.75rem)',
+                    right: 'clamp(0.5rem, 1.5vh, 0.75rem)',
+                    width: 'clamp(2.5rem, 6vw, 3rem)',
+                    height: 'clamp(2.5rem, 6vw, 3rem)',
+                    padding: 'clamp(0.5rem, 1.5vw, 0.75rem)',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid rgba(0, 0, 0, 0.1)'
+                  }}
+                >
+                  <svg
+                    width="clamp(20px, 5vw, 24px)"
+                    height="clamp(20px, 5vw, 24px)"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#000000"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+
+                {/* Iframe с виджетом intickets */}
+                <iframe
+                  key={`ticket-${selectedEventUrl}-${Date.now()}`}
+                  src={selectedEventUrl}
+                  className="w-full border-0"
+                  style={{
+                    width: '100%',
+                    height: 'calc(100dvh - 24px - clamp(3.5rem, 7vh, 4.5rem))',
+                    minHeight: 'calc(100dvh - 24px - clamp(3.5rem, 7vh, 4.5rem))',
+                    flex: '1',
+                    display: 'block',
+                    border: 'none'
+                  }}
+                  allow="payment"
+                  allowFullScreen
+                  title="Покупка билетов"
+                />
+              </div>
+            </div>,
+            document.body
+          )}
+        </>
       )}
     </section>
   );

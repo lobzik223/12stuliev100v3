@@ -60,7 +60,7 @@ const getCityFromTitle = (title: string): string => {
   return 'городе';
 };
 
-// Функция для форматирования даты и времени с выделением цифр
+// PRODUCTION FIX: Функция для форматирования даты и времени с выделением цифр
 // Унифицированный формат для всех городов: "22 ОКТЯБРЯ | 19:00"
 const formatDateTime = (date: string, location?: string, time?: string): { __html: string } => {
   let result = '';
@@ -76,23 +76,31 @@ const formatDateTime = (date: string, location?: string, time?: string): { __htm
       result = dateStr;
     }
   } else if (time) {
-    // Для schedule: date = "15 ноября", time = "22:00"
-    // Преобразуем в единый формат: "15 НОЯБРЯ | 22:00"
-    // Извлекаем число и месяц из строки вида "15 ноября"
-    const dateMatch = date.match(/(\d+)\s+([а-яё]+)/i);
+    // Для schedule: date = "16 Февраля", time = "19:00"
+    // Преобразуем в единый формат: "16 ФЕВРАЛЯ | 19:00"
+    // Извлекаем число и месяц из строки вида "16 Февраля" или "16 февраля"
+    const dateMatch = date.match(/(\d+)\s+([а-яёА-ЯЁ]+)/i);
     if (dateMatch) {
       const day = dateMatch[1];
       const month = dateMatch[2].toUpperCase();
       result = `${day} ${month} | ${time}`;
     } else {
-      // Если формат не распознан, просто делаем uppercase
+      // Если формат не распознан, просто делаем uppercase и добавляем время
       result = `${date.toUpperCase()} | ${time}`;
     }
   } else {
-    result = date.toUpperCase();
+    // Если нет времени, просто форматируем дату
+    const dateMatch = date.match(/(\d+)\s+([а-яёА-ЯЁ]+)/i);
+    if (dateMatch) {
+      const day = dateMatch[1];
+      const month = dateMatch[2].toUpperCase();
+      result = `${day} ${month}`;
+    } else {
+      result = date.toUpperCase();
+    }
   }
   
-  // Обертываем все цифры в span с классом для увеличения размера
+  // PRODUCTION FIX: Обертываем все цифры в span с классом для увеличения размера
   // Это гарантирует, что все цифры (и в дате, и во времени) будут одинакового размера
   // Используем глобальную замену для всех цифр в строке
   const html = result.replace(/(\d+)/g, '<span class="date-time-number">$1</span>');
@@ -126,21 +134,15 @@ const DetailsPage: React.FC = () => {
     );
   }
 
+  // PRODUCTION FIX: Ищем данные в обоих источниках и используем правильные данные
   // Сначала ищем в scheduleItems (приоритет для расписания спектаклей)
-  // Это гарантирует, что при клике "Подробнее" в SchedulePage откроется правильная карточка
   let scheduleItem = id ? scheduleItems.find(s => s.id === id) : null;
-  let event = null;
-  let isFromEvents = false;
+  // Также ищем в events для проверки и синхронизации данных
+  let event = id ? events.find(e => e.id === id) : null;
   
-  // Если не найдено в scheduleItems, ищем в events (для обратной совместимости)
-  if (!scheduleItem && id) {
-    event = events.find(e => e.id === id);
-    if (event) {
-      isFromEvents = true;
-    }
-  }
-
-  if (!event && !scheduleItem) {
+  // Если найдено в обоих источниках, используем scheduleItems как основной источник
+  // но проверяем, что данные синхронизированы
+  if (!scheduleItem && !event) {
     return (
       <div style={{ padding: '2rem', textAlign: 'center', color: 'white', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div>Событие не найдено</div>
@@ -148,25 +150,27 @@ const DetailsPage: React.FC = () => {
     );
   }
 
-  // Извлекаем город и форматируем дату/время
+  // PRODUCTION FIX: Извлекаем данные с правильным приоритетом
   let city = 'городе';
   let dateTime: string | { __html: string } | undefined = undefined;
   let buyTicketUrl: string | undefined;
   let address: string | undefined;
 
-  if (isFromEvents && event) {
-    city = getCityFromLocation(event.location);
-    dateTime = formatDateTime(event.date, event.location, event.time);
-    buyTicketUrl = event.buyTicketUrl;
-    // Для events адрес формируется из location
-    address = event.location;
-  } else if (scheduleItem) {
+  // Приоритет: scheduleItems > events
+  if (scheduleItem) {
     // Для schedule извлекаем все данные строго из scheduleItem
     city = getCityFromTitle(scheduleItem.title);
     dateTime = formatDateTime(scheduleItem.date, undefined, scheduleItem.time);
-    buyTicketUrl = scheduleItem.buyTicketUrl;
+    buyTicketUrl = scheduleItem.buyTicketUrl || undefined;
     // Формируем адрес из location и address (если address не пустой)
     address = scheduleItem.location + (scheduleItem.address ? ' ' + scheduleItem.address : '');
+  } else if (event) {
+    // Для events извлекаем данные из event
+    city = getCityFromLocation(event.location);
+    dateTime = formatDateTime(event.date, event.location, event.time);
+    buyTicketUrl = event.buyTicketUrl || undefined;
+    // Для events адрес формируется из location
+    address = event.location;
   }
 
   return (

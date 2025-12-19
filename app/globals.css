@@ -406,30 +406,25 @@
   contain: none !important;
 }
 
-/* Принудительная загрузка фоновых изображений на мобильных устройствах */
+/* PRODUCTION FIX: Принудительная загрузка фоновых изображений на мобильных устройствах
+   БЕЗ переопределения inline стилей компонентов */
 @media (max-width: 768px), (max-device-width: 768px) {
-  /* Убеждаемся что фоновые изображения загружаются принудительно */
-  [style*="backgroundImage"],
-  [style*="background-image"],
-  section[style*="backgroundImage"],
-  section[style*="background-image"],
-  div[style*="backgroundImage"],
-  div[style*="background-image"] {
+  /* PRODUCTION FIX: Убраны !important для background-size и background-position,
+     чтобы inline стили компонентов имели приоритет и не было визуальных изменений */
+  [style*="backgroundImage"]:not([style*="background-size"]):not([style*="backgroundSize"]),
+  [style*="background-image"]:not([style*="background-size"]):not([style*="backgroundSize"]),
+  section[style*="backgroundImage"]:not([style*="background-size"]):not([style*="backgroundSize"]),
+  section[style*="background-image"]:not([style*="background-size"]):not([style*="backgroundSize"]),
+  div[style*="backgroundImage"]:not([style*="background-size"]):not([style*="backgroundSize"]),
+  div[style*="background-image"]:not([style*="background-size"]):not([style*="backgroundSize"]) {
     image-rendering: -webkit-optimize-contrast;
-    background-attachment: scroll !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
+    background-attachment: scroll;
+    background-repeat: no-repeat;
     image-rendering: crisp-edges;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
     -webkit-perspective: 1000;
     perspective: 1000;
-    /* Принудительная загрузка фона */
-    background-attachment: scroll !important;
-    background-size: cover !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
   }
   
   /* Принудительная загрузка критических фонов */
@@ -1429,6 +1424,9 @@ div.swiper-button-next.swiper-button-next-actors {
       visibility: visible !important;
       opacity: 1 !important;
       position: absolute !important;
+      /* PRODUCTION FIX: Гарантируем видимость видео всегда */
+      background-color: #000 !important;
+      z-index: 1 !important;
     }
     
     .desktop-vput-container > div {
@@ -1452,6 +1450,9 @@ div.swiper-button-next.swiper-button-next-actors {
       visibility: visible !important;
       opacity: 1 !important;
       position: absolute !important;
+      /* PRODUCTION FIX: Гарантируем видимость видео всегда */
+      background-color: #000 !important;
+      z-index: 1 !important;
     }
 
     .desktop-vput2-container > div {
@@ -1475,6 +1476,9 @@ div.swiper-button-next.swiper-button-next-actors {
       visibility: visible !important;
       opacity: 1 !important;
       position: absolute !important;
+      /* PRODUCTION FIX: Гарантируем видимость видео всегда */
+      background-color: #000 !important;
+      z-index: 1 !important;
     }
 
     .desktop-vput3-container > div {
@@ -1503,6 +1507,9 @@ div.swiper-button-next.swiper-button-next-actors {
       /* Формат 16:9 для всех устройств */
       aspect-ratio: 16 / 9 !important;
       object-fit: contain !important;
+      /* PRODUCTION FIX: Гарантируем видимость видео всегда */
+      background-color: #000 !important;
+      z-index: 1 !important;
     }
 
     .desktop-vput4-container > div {
@@ -1954,6 +1961,41 @@ div.swiper-button-next.swiper-button-next-actors {
   .trailer-section-wrapper-mobile button {
     font-size: clamp(0.875rem, 1.2vw, 1rem) !important;
     padding: clamp(0.4rem, 0.6vw, 0.5rem) clamp(3rem, 6vw, 4rem) !important;
+  }
+
+  /* КРИТИЧНО: На мобильных контролы видео должны быть всегда доступны для паузы/остановки */
+  .trailer-section-wrapper-mobile video {
+    pointer-events: auto !important;
+    -webkit-touch-callout: default !important;
+    -webkit-user-select: none !important;
+    user-select: none !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  /* Убеждаемся, что нативные контролы видео всегда видны и доступны на мобильных */
+  .trailer-section-wrapper-mobile video::-webkit-media-controls-panel {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+  }
+
+  .trailer-section-wrapper-mobile video::-webkit-media-controls-play-button {
+    display: flex !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+  }
+
+  .trailer-section-wrapper-mobile video::-webkit-media-controls-pause-button {
+    display: flex !important;
+    pointer-events: auto !important;
+    z-index: 10 !important;
+  }
+
+  /* Убеждаемся, что контейнер видео не блокирует клики по контролам */
+  .trailer-section-wrapper-mobile > div > div[style*="relative"] {
+    position: relative !important;
   }
 
   /* Поднимаем раздел "ГАЛЕРЕЯ" выше на мобильных - ближе к кнопке "Посмотреть трейлер" */
@@ -3242,24 +3284,36 @@ div.swiper-button-next.swiper-button-next-actors {
       z-index: 5 !important;
     }
 
-    /* Стили для модальных окон на мобильных - правильный скролл */
+    /* PRODUCTION FIX: Стили для модальных окон intickets на мобильных - улучшенный UX */
+    /* Модальное окно на мобильных - полноэкранное для удобства */
     [class*="fixed"][class*="inset-0"][style*="rgba(0, 0, 0"] {
       -webkit-overflow-scrolling: touch !important;
       touch-action: pan-y !important;
     }
 
-    /* Контейнер модального окна с iframe - разрешаем скролл */
-    [class*="bg-white"][class*="rounded-lg"][style*="90vw"] {
+    /* Контейнер модального окна с iframe - оптимизирован для мобильных */
+    [class*="bg-white"][style*="100vw"],
+    [class*="bg-white"][style*="90vw"] {
       -webkit-overflow-scrolling: touch !important;
       touch-action: pan-y !important;
       overflow-y: auto !important;
     }
 
-    /* Iframe внутри модального окна - разрешаем скролл */
+    /* PRODUCTION FIX: Iframe внутри модального окна - улучшенный скролл на мобильных */
     iframe[title="Покупка билетов"] {
       -webkit-overflow-scrolling: touch !important;
       touch-action: pan-y !important;
       overflow-y: auto !important;
+      /* Гарантируем правильное отображение на мобильных */
+      border: none !important;
+      display: block !important;
+    }
+
+    /* PRODUCTION FIX: Кнопка закрытия модального окна - увеличенная область клика на мобильных */
+    button[class*="absolute"][class*="z-[10000]"][class*="bg-white"][class*="rounded-full"] {
+      /* Увеличиваем область клика для удобства на мобильных */
+      min-width: clamp(2.5rem, 6vw, 3rem) !important;
+      min-height: clamp(2.5rem, 6vw, 3rem) !important;
     }
   }
 }
@@ -3380,8 +3434,8 @@ body.employee-tickets-modal-open .secondary-nav {
   /* Используем мобильные версии фонов */
   .mobile-section-3-background {
     background-image: url(/backgrounds/sections/mobile/section-3-mobile.png) !important;
-    /* Растягиваем по ширине еще больше и уменьшаем высоту на мобильных */
-    background-size: 120% auto !important;
+    /* PRODUCTION FIX: Растягиваем фон в длину - используем cover для покрытия всей высоты */
+    background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
     /* CRITICAL FIX: Ensure background is below Actors content on mobile */
@@ -3390,9 +3444,28 @@ body.employee-tickets-modal-open .secondary-nav {
   }
   
   /* CRITICAL FIX: Ensure mobile-section-3-bg container is below Actors content */
+  /* PRODUCTION FIX: Растягиваем контейнер фона на всю высоту секции */
   .mobile-section-3-bg {
     z-index: 0 !important;
     position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
+  }
+  
+  /* PRODUCTION FIX: Растягиваем сам фон на всю высоту контейнера */
+  .mobile-section-3-background {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100% !important;
   }
   
   /* Улучшенный блюр-градиент для плавного перехода между section-4-mobile и section-3-mobile */
@@ -3490,8 +3563,8 @@ body.employee-tickets-modal-open .secondary-nav {
 /* Для force-mobile класса */
 .force-mobile .mobile-section-3-background {
   background-image: url(/backgrounds/sections/mobile/section-3-mobile.png) !important;
-  /* Растягиваем по ширине еще больше и уменьшаем высоту на мобильных */
-  background-size: 120% auto !important;
+  /* PRODUCTION FIX: Растягиваем фон в длину - используем cover для покрытия всей высоты */
+  background-size: cover !important;
   background-position: center !important;
 }
 
@@ -3559,5 +3632,27 @@ body.employee-tickets-modal-open .secondary-nav {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
+}
+
+/* PRODUCTION FIX: Гарантируем видимость всех видео в разделе Journey (desktop и mobile) */
+/* Это правило переопределяет любые другие правила, которые могут скрывать видео */
+.desktop-journey video,
+.mobile-journey-section video,
+.desktop-vput-container video,
+.desktop-vput2-container video,
+.desktop-vput3-container video,
+.desktop-vput4-container video,
+.mobile-scene-image video,
+video[src*="bimbom.mp4"],
+video[src*="psihuska.mp4"],
+video[src*="kvartira.mp4"],
+video[src*="babka.mp4"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background-color: #000 !important;
+  /* Гарантируем, что видео всегда видимы, даже если что-то пытается их скрыть */
+  position: absolute !important;
+  z-index: 1 !important;
 }
 

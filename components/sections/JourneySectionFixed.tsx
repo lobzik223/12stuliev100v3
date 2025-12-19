@@ -52,19 +52,112 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
     setIsMobileDevice(isProbablyMobile());
   }, []);
 
+  // PRODUCTION FIX: Гарантируем видимость всех видео (desktop и mobile) - периодическая проверка
+  useEffect(() => {
+    if (!isClient) return;
+
+    const ensureAllVideosVisible = () => {
+      // Desktop videos
+      const desktopVideos = [
+        videoRef.current,
+        psihuskaVideoRef.current,
+        kvartiraVideoRef.current,
+        babkaVideoRef.current,
+      ].filter(Boolean) as HTMLVideoElement[];
+
+      // Mobile videos
+      const mobileVideos = [
+        mobileVideoRef.current,
+        mobilePsihuskaVideoRef.current,
+        mobileKvartiraVideoRef.current,
+        mobileBabkaVideoRef.current,
+      ].filter(Boolean) as HTMLVideoElement[];
+
+      const allVideos = [...desktopVideos, ...mobileVideos];
+
+      allVideos.forEach(video => {
+        // PRODUCTION FIX: Принудительно устанавливаем видимость
+        video.style.setProperty('display', 'block', 'important');
+        video.style.setProperty('visibility', 'visible', 'important');
+        video.style.setProperty('opacity', '1', 'important');
+        video.style.setProperty('background-color', '#000', 'important');
+        
+        // Загружаем первое изображение, если видео еще не загружено
+        if (video.readyState === 0) {
+          video.load();
+        }
+        
+        // Показываем первый кадр
+        if (video.readyState >= 2 && video.currentTime === 0) {
+          video.currentTime = 0;
+        }
+      });
+    };
+
+    // Запускаем сразу и периодически
+    ensureAllVideosVisible();
+    const intervalId = setInterval(ensureAllVideosVisible, 1000); // Проверяем каждую секунду
+    
+    // Также слушаем события загрузки
+    const handleVideoEvent = (e: Event) => {
+      const video = e.target as HTMLVideoElement;
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
+    };
+
+    const allVideoRefs = [
+      videoRef.current,
+      psihuskaVideoRef.current,
+      kvartiraVideoRef.current,
+      babkaVideoRef.current,
+      mobileVideoRef.current,
+      mobilePsihuskaVideoRef.current,
+      mobileKvartiraVideoRef.current,
+      mobileBabkaVideoRef.current,
+    ].filter(Boolean) as HTMLVideoElement[];
+
+    allVideoRefs.forEach(video => {
+      video.addEventListener('loadedmetadata', handleVideoEvent);
+      video.addEventListener('canplay', handleVideoEvent);
+      video.addEventListener('loadeddata', handleVideoEvent);
+    });
+
+    return () => {
+      clearInterval(intervalId);
+      allVideoRefs.forEach(video => {
+        video.removeEventListener('loadedmetadata', handleVideoEvent);
+        video.removeEventListener('canplay', handleVideoEvent);
+        video.removeEventListener('loadeddata', handleVideoEvent);
+      });
+    };
+  }, [isClient]);
+
   // IntersectionObserver для автоплея видео при скролле (desktop)
   useEffect(() => {
     if (!isClient || !videoRef.current) return;
 
     const video = videoRef.current;
     
+    // PRODUCTION FIX: Гарантируем видимость перед настройкой observer
+    video.style.setProperty('display', 'block', 'important');
+    video.style.setProperty('visibility', 'visible', 'important');
+    video.style.setProperty('opacity', '1', 'important');
+    
     // Обработчик загрузки видео
     video.addEventListener('loadeddata', () => {
       console.log('Desktop video loaded');
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
     
     video.addEventListener('error', (e) => {
       console.error('Desktop video error:', e);
+      // PRODUCTION FIX: Даже при ошибке видео должно быть видимым
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
 
     const observer = new IntersectionObserver(
@@ -229,8 +322,13 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       }
     );
 
-    // Store event handlers for proper cleanup
-    const videoHandlers = new Map<HTMLVideoElement, () => void>();
+    // PRODUCTION FIX: Store event handlers for proper cleanup
+    interface VideoHandlers {
+      canplay?: () => void;
+      loadedmetadata?: () => void;
+      error?: (e: Event) => void;
+    }
+    const videoHandlers = new Map<HTMLVideoElement, VideoHandlers>();
     
     videos.forEach(video => {
       // CRITICAL: Ensure videos are always visible, regardless of observer state
@@ -251,31 +349,53 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
       }
       video.removeAttribute('autoplay');
       
-      // CRITICAL: Add lightweight event listeners - NO getBoundingClientRect() calls
+      // PRODUCTION FIX: Add lightweight event listeners with error handling
       // getBoundingClientRect() causes layout thrashing and scroll lag
       const handleCanPlay = () => {
         // Video is ready - let IntersectionObserver handle play/pause
-        // Don't call getBoundingClientRect() here as it causes performance issues
-        // IntersectionObserver will handle visibility detection
+        // PRODUCTION FIX: Guarantee visibility
+        video.style.display = 'block';
+        video.style.visibility = 'visible';
+        video.style.opacity = '1';
+      };
+
+      const handleLoadedMetadata = () => {
+        // PRODUCTION FIX: Guarantee visibility after metadata loaded
+        video.style.display = 'block';
+        video.style.visibility = 'visible';
+        video.style.opacity = '1';
+      };
+
+      const handleError = (e: Event) => {
+        // PRODUCTION FIX: Handle errors without blocking rendering
+        console.warn('Video load error (non-critical):', e);
+        video.style.display = 'block';
+        video.style.visibility = 'visible';
+        video.style.opacity = '1';
       };
       
-      // Store handler for cleanup
-      videoHandlers.set(video, handleCanPlay);
+      // Store handlers for cleanup
+      const handlers: VideoHandlers = { canplay: handleCanPlay, loadedmetadata: handleLoadedMetadata, error: handleError };
+      videoHandlers.set(video, handlers);
       
-      // Only listen to canplay - loadedmetadata is not needed
+      // PRODUCTION FIX: Listen to multiple events for guaranteed loading
       video.addEventListener('canplay', handleCanPlay);
+      video.addEventListener('loadedmetadata', handleLoadedMetadata);
+      video.addEventListener('error', handleError);
       
       observer.observe(video);
     });
 
     return () => {
       observer.disconnect();
-      // Ensure all videos are paused on cleanup and remove event listeners
+      // PRODUCTION FIX: Ensure all videos are paused on cleanup and remove event listeners
       videos.forEach(video => {
         video.pause();
-        const handler = videoHandlers.get(video);
-        if (handler) {
-          video.removeEventListener('canplay', handler);
+        const handlers = videoHandlers.get(video);
+        if (handlers) {
+          if (handlers.canplay) video.removeEventListener('canplay', handlers.canplay);
+          if (handlers.loadedmetadata) video.removeEventListener('loadedmetadata', handlers.loadedmetadata);
+          if (handlers.error) video.removeEventListener('error', handlers.error);
         }
       });
     };
@@ -287,13 +407,25 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
     const video = psihuskaVideoRef.current;
     
+    // PRODUCTION FIX: Гарантируем видимость перед настройкой observer
+    video.style.setProperty('display', 'block', 'important');
+    video.style.setProperty('visibility', 'visible', 'important');
+    video.style.setProperty('opacity', '1', 'important');
+    
     // Обработчик загрузки видео
     video.addEventListener('loadeddata', () => {
       console.log('Desktop psihuska video loaded');
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
     
     video.addEventListener('error', (e) => {
       console.error('Desktop psihuska video error:', e);
+      // PRODUCTION FIX: Даже при ошибке видео должно быть видимым
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
 
     const observer = new IntersectionObserver(
@@ -329,12 +461,24 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
     const video = kvartiraVideoRef.current;
     
+    // PRODUCTION FIX: Гарантируем видимость перед настройкой observer
+    video.style.setProperty('display', 'block', 'important');
+    video.style.setProperty('visibility', 'visible', 'important');
+    video.style.setProperty('opacity', '1', 'important');
+    
     video.addEventListener('loadeddata', () => {
       console.log('Desktop kvartira video loaded');
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
     
     video.addEventListener('error', (e) => {
       console.error('Desktop kvartira video error:', e);
+      // PRODUCTION FIX: Даже при ошибке видео должно быть видимым
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
 
     const observer = new IntersectionObserver(
@@ -370,12 +514,24 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
 
     const video = babkaVideoRef.current;
     
+    // PRODUCTION FIX: Гарантируем видимость перед настройкой observer
+    video.style.setProperty('display', 'block', 'important');
+    video.style.setProperty('visibility', 'visible', 'important');
+    video.style.setProperty('opacity', '1', 'important');
+    
     video.addEventListener('loadeddata', () => {
       console.log('Desktop babka video loaded');
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
     
     video.addEventListener('error', (e) => {
       console.error('Desktop babka video error:', e);
+      // PRODUCTION FIX: Даже при ошибке видео должно быть видимым
+      video.style.setProperty('display', 'block', 'important');
+      video.style.setProperty('visibility', 'visible', 'important');
+      video.style.setProperty('opacity', '1', 'important');
     });
 
     const observer = new IntersectionObserver(
@@ -607,8 +763,8 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                         position: 'absolute',
                         top: 'calc(50% + clamp(1rem, 2vh, 1.5rem))',
                         left: 'calc(50% - clamp(0.3rem, 0.8vw, 0.6rem))',
-                        transform: 'translate(calc(-50% + clamp(0.5rem, 1.5vw, 1rem)), -50%) scale(0.76)',
-                        width: 'calc(100% - clamp(26rem, 52vw, 38rem))',
+                        transform: 'translate(calc(-50% + clamp(0.5rem, 1.5vw, 1rem)), -50%) scale(0.55)',
+                        width: 'calc(55% - clamp(1rem, 2vw, 1.5rem))',
                         height: 'auto',
                         aspectRatio: '16 / 9',
                         objectFit: 'contain',
@@ -716,8 +872,9 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       position: 'relative',
                       display: 'block',
                       visibility: 'visible',
-                      overflow: 'visible', /* Изменено на visible, чтобы рамка не обрезалась */
+                      overflow: 'visible', /* Изменено на visible, чтобы рамка была полностью видна */
                       boxSizing: 'border-box',
+                      backgroundColor: 'transparent', /* Убираем черный фон */
                       marginLeft: 'auto',
                       marginRight: 'auto',
                     }}
@@ -733,23 +890,24 @@ export default function JourneySection({ sectionEndRef, finalTextRef, officeRef,
                       preload="metadata"
                       style={{
                         position: 'absolute',
-                        top: '53%', /* Опущено ниже на мобильной версии */
-                        // Match psihuska.mp4 sizing/centering on mobile
-                        left: 'calc(50% + clamp(0.2rem, 0.8vw, 0.5rem))',
-                        // Формат 16:9 для всех устройств, растянуто в ширину на мобильных
-                        aspectRatio: '16 / 9',
-                        transform: 'translate(-50%, -50%) scale(0.72)', /* Уменьшен scale, чтобы видео было меньше в высоту на мобильных версиях */
-                        width: 'calc(90% - clamp(2.5rem, 5vw, 4rem))', /* Уменьшена ширина, чтобы видео было меньше в высоту */
-                        height: 'auto',
-                        maxHeight: '85%', /* Ограничение высоты */
-                        objectFit: 'contain',
+                        top: '55%', /* Опущено ниже на мобильной версии */
+                        left: '50%',
+                        // Видео: формат 16:9, одинаковый размер на всех устройствах
+                        transform: 'translate(-50%, -50%) scale(1, 0.97)', /* Чуть уменьшено в длину */
+                        aspectRatio: '16 / 9', /* Альбомный горизонтальный формат */
+                        width: 'clamp(290px, 77vw, 330px)', /* Чуть увеличена ширина на всех устройствах */
+                        height: 'auto', /* Высота вычисляется автоматически из aspect-ratio */
+                        maxWidth: 'clamp(290px, 77vw, 330px)',
+                        maxHeight: 'calc(clamp(290px, 77vw, 330px) * 9 / 16)', /* Высота из соотношения 16:9 */
+                        minWidth: 'clamp(290px, 77vw, 330px)',
+                        objectFit: 'cover', /* Cover для заполнения без черных полос */
                         zIndex: 1,
                         pointerEvents: 'none',
                         outline: 'none',
                         display: 'block',
                         visibility: 'visible',
                         opacity: 1,
-                        backgroundColor: '#000'
+                        backgroundColor: 'transparent'
                       }}
                     />
                     {/* Рамка поверх видео */}

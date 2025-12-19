@@ -542,7 +542,7 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
                 backgroundImage: isMobile
                   ? 'url(/backgrounds/sections/mobile/section-3-mobile.png)'
                   : 'url(/backgrounds/sections/section-3.png)',
-                backgroundSize: isMobile ? '120% auto' : '100% 100%',
+                backgroundSize: isMobile ? 'cover' : '100% 100%',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 width: '100%',

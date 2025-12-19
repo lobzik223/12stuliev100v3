@@ -36,17 +36,61 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
     setMounted(true);
   }, []);
 
-  // Устанавливаем атрибуты для iOS и других браузеров
+  // PRODUCTION FIX: Гарантированная инициализация видео для стабильной загрузки
   useEffect(() => {
-    if (videoRef.current && mounted) {
-      // Для iOS Safari
-      videoRef.current.setAttribute('webkit-playsinline', 'true');
-      videoRef.current.setAttribute('playsinline', 'true');
-      // Для Android/Chrome
-      videoRef.current.setAttribute('x5-playsinline', 'true');
-      videoRef.current.setAttribute('x5-video-player-type', 'h5');
-      videoRef.current.setAttribute('x5-video-player-fullscreen', 'true');
+    if (typeof window === 'undefined') return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Устанавливаем атрибуты для стабильной работы на всех устройствах
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('playsinline', 'true');
+    video.setAttribute('x5-playsinline', 'true');
+    video.setAttribute('x5-video-player-type', 'h5');
+    video.setAttribute('x5-video-player-fullscreen', 'true');
+    
+    // PRODUCTION FIX: Гарантируем видимость видео
+    video.style.display = 'block';
+    video.style.visibility = 'visible';
+    video.style.opacity = '1';
+
+    // Обработчики для гарантированной загрузки
+    const handleLoadedMetadata = () => {
+      video.style.display = 'block';
+      video.style.visibility = 'visible';
+      video.style.opacity = '1';
+    };
+
+    const handleCanPlay = () => {
+      video.style.display = 'block';
+      video.style.visibility = 'visible';
+      video.style.opacity = '1';
+    };
+
+    const handleError = (e: Event) => {
+      console.warn('Video load error (non-critical):', e);
+      // Не блокируем рендеринг при ошибке загрузки видео
+      video.style.display = 'block';
+      video.style.visibility = 'visible';
+      video.style.opacity = '1';
+    };
+
+    // Если видео уже загружено
+    if (video.readyState >= 2) {
+      video.style.display = 'block';
+      video.style.visibility = 'visible';
+      video.style.opacity = '1';
     }
+
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('error', handleError);
+
+    return () => {
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('error', handleError);
+    };
   }, [mounted]);
 
   // Mobile: behave as a normal player (controls + fullscreen), but avoid touch->click double fire.
@@ -70,7 +114,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
     setSelectedScheduleUrl(null);
   };
 
-  // Блокируем скролл body при открытии модального окна на мобильных
+  // Блокируем скролл body при открытии модального окна на мобильных и скрываем header
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
@@ -79,13 +123,37 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
     if (isModalOpen && isMobile) {
       // Сохраняем текущую позицию скролла
       const scrollY = window.scrollY;
-      // Блокируем скролл body
+      // Блокируем скролл body, сохраняя позицию
       document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
       document.body.style.width = '100%';
       document.body.style.overflow = 'hidden';
       // Добавляем класс для CSS правил
       document.body.classList.add('modal-scroll-locked');
+      
+      // Скрываем header и все его элементы на мобильных
+      const header = document.querySelector('header');
+      const hamburgerButton = document.querySelector('.mobile-hamburger-button');
+      const secondaryNav = document.querySelector('.secondary-nav');
+      
+      if (header) {
+        (header as HTMLElement).style.display = 'none';
+        (header as HTMLElement).style.visibility = 'hidden';
+        (header as HTMLElement).style.opacity = '0';
+        (header as HTMLElement).style.pointerEvents = 'none';
+      }
+      if (hamburgerButton) {
+        (hamburgerButton as HTMLElement).style.display = 'none';
+        (hamburgerButton as HTMLElement).style.visibility = 'hidden';
+        (hamburgerButton as HTMLElement).style.opacity = '0';
+        (hamburgerButton as HTMLElement).style.pointerEvents = 'none';
+      }
+      if (secondaryNav) {
+        (secondaryNav as HTMLElement).style.display = 'none';
+        (secondaryNav as HTMLElement).style.visibility = 'hidden';
+        (secondaryNav as HTMLElement).style.opacity = '0';
+        (secondaryNav as HTMLElement).style.pointerEvents = 'none';
+      }
       
       return () => {
         // Восстанавливаем скролл при закрытии
@@ -95,6 +163,27 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
         document.body.style.width = '';
         document.body.style.overflow = '';
         document.body.classList.remove('modal-scroll-locked');
+        
+        // Показываем header обратно
+        if (header) {
+          (header as HTMLElement).style.display = '';
+          (header as HTMLElement).style.visibility = '';
+          (header as HTMLElement).style.opacity = '';
+          (header as HTMLElement).style.pointerEvents = '';
+        }
+        if (hamburgerButton) {
+          (hamburgerButton as HTMLElement).style.display = '';
+          (hamburgerButton as HTMLElement).style.visibility = '';
+          (hamburgerButton as HTMLElement).style.opacity = '';
+          (hamburgerButton as HTMLElement).style.pointerEvents = '';
+        }
+        if (secondaryNav) {
+          (secondaryNav as HTMLElement).style.display = '';
+          (secondaryNav as HTMLElement).style.visibility = '';
+          (secondaryNav as HTMLElement).style.opacity = '';
+          (secondaryNav as HTMLElement).style.pointerEvents = '';
+        }
+        
         // Используем requestAnimationFrame для плавного восстановления
         requestAnimationFrame(() => {
           window.scrollTo(0, savedScrollY);
@@ -107,6 +196,30 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
       document.body.style.width = '';
       document.body.style.overflow = '';
       document.body.classList.remove('modal-scroll-locked');
+      
+      // Показываем header обратно
+      const header = document.querySelector('header');
+      const hamburgerButton = document.querySelector('.mobile-hamburger-button');
+      const secondaryNav = document.querySelector('.secondary-nav');
+      
+      if (header) {
+        (header as HTMLElement).style.display = '';
+        (header as HTMLElement).style.visibility = '';
+        (header as HTMLElement).style.opacity = '';
+        (header as HTMLElement).style.pointerEvents = '';
+      }
+      if (hamburgerButton) {
+        (hamburgerButton as HTMLElement).style.display = '';
+        (hamburgerButton as HTMLElement).style.visibility = '';
+        (hamburgerButton as HTMLElement).style.opacity = '';
+        (hamburgerButton as HTMLElement).style.pointerEvents = '';
+      }
+      if (secondaryNav) {
+        (secondaryNav as HTMLElement).style.display = '';
+        (secondaryNav as HTMLElement).style.visibility = '';
+        (secondaryNav as HTMLElement).style.opacity = '';
+        (secondaryNav as HTMLElement).style.pointerEvents = '';
+      }
     }
   }, [isModalOpen]);
 
@@ -172,11 +285,24 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 objectFit: 'cover',
                 borderRadius: '8px',
                 backgroundColor: '#000',
+                zIndex: isMobile ? 1 : 'auto',
+                display: 'block',
+                visibility: 'visible',
+                opacity: 1,
               }}
-              // Mobile: normal player with fullscreen; Desktop unchanged behavior (controls only while playing)
+              // Mobile: всегда показываем контролы для возможности паузы/остановки
+              // Desktop: контролы показываются только когда видео играет
               controls={isMobile ? true : isVideoPlaying}
               preload="metadata"
               playsInline
+              onLoadedMetadata={() => {
+                // PRODUCTION FIX: Гарантируем видимость после загрузки
+                if (videoRef.current) {
+                  videoRef.current.style.display = 'block';
+                  videoRef.current.style.visibility = 'visible';
+                  videoRef.current.style.opacity = '1';
+                }
+              }}
               onPlay={() => {
                 setIsVideoPlaying(true);
               }}
@@ -186,12 +312,22 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               onEnded={() => {
                 setIsVideoPlaying(false);
               }}
+              onError={(e) => {
+                // PRODUCTION FIX: Обработка ошибок без блокировки рендеринга
+                console.warn('Video error (non-critical):', e);
+                if (videoRef.current) {
+                  videoRef.current.style.display = 'block';
+                  videoRef.current.style.visibility = 'visible';
+                  videoRef.current.style.opacity = '1';
+                }
+              }}
             >
               <source src="/backgrounds/sections/treiler.mp4" type="video/mp4" />
               Ваш браузер не поддерживает воспроизведение видео.
             </video>
             
             {/* Кнопка воспроизведения (показывается когда видео не играет) */}
+            {/* На мобильных: скрываем оверлей полностью, когда видео играет, чтобы не мешать нативным контролам */}
             {!isVideoPlaying && (
               <div
                 className="absolute inset-0 flex items-center justify-center"
@@ -201,6 +337,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                   cursor: 'pointer',
                   transition: 'background-color 0.3s ease',
                   pointerEvents: 'auto',
+                  zIndex: isMobile ? (isVideoPlaying ? 0 : 2) : 2, // На мобильных: z-index 0 когда играет, чтобы не мешать контролам
                 }}
                 onMouseEnter={(e) => {
                   if (!isMobile) {
@@ -1460,43 +1597,69 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
       {/* Модальное окно с виджетом intickets для покупки билетов */}
       {isModalOpen && selectedScheduleUrl && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center"
+          className="fixed inset-0 z-[9999]"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(5px)'
+            backdropFilter: isMobile ? 'none' : 'blur(5px)',
+            padding: isMobile ? 'clamp(1rem, 2vh, 1.5rem)' : '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'auto',
+            WebkitOverflowScrolling: 'touch',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh'
           }}
           onClick={closeModal}
         >
           <div
-            className="relative bg-white rounded-lg overflow-hidden"
+            className="relative bg-white overflow-hidden"
             style={{
-              width: isMobile ? '75vw' : '90vw',
-              height: '85vh',
-              maxWidth: isMobile ? '350px' : '1200px',
-              margin: '0 auto',
-              maxHeight: '800px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+              width: isMobile ? '95vw' : '90vw',
+              height: isMobile ? '90vh' : '85vh',
+              maxWidth: isMobile ? '95vw' : '1200px',
+              maxHeight: isMobile ? '90vh' : '800px',
+              borderRadius: isMobile ? 'clamp(0.75rem, 2vw, 1rem)' : '0.5rem',
+              boxShadow: isMobile ? '0 4px 20px rgba(0, 0, 0, 0.3)' : '0 20px 60px rgba(0, 0, 0, 0.5)',
               overflowY: 'auto',
               WebkitOverflowScrolling: 'touch',
-              touchAction: 'pan-y'
+              touchAction: 'pan-y',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative',
+              margin: 'auto'
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Кнопка закрытия */}
+            {/* Кнопка закрытия - черный крестик в белом круге */}
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 z-[10000] bg-white rounded-full p-2 hover:bg-gray-200 transition-colors"
+              className="absolute z-[10000] bg-white rounded-full transition-all hover:bg-gray-100"
               style={{
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)'
+                top: isMobile ? 'clamp(0.5rem, 1.5vh, 0.75rem)' : '1rem',
+                right: isMobile ? 'clamp(0.5rem, 1.5vh, 0.75rem)' : '1rem',
+                width: isMobile ? 'clamp(2.5rem, 6vw, 3rem)' : '2.5rem',
+                height: isMobile ? 'clamp(2.5rem, 6vw, 3rem)' : '2.5rem',
+                padding: isMobile ? 'clamp(0.5rem, 1.5vw, 0.75rem)' : '0.5rem',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px solid rgba(0, 0, 0, 0.1)'
               }}
             >
               <svg
-                width="24"
-                height="24"
+                width={isMobile ? 'clamp(20px, 5vw, 24px)' : '24'}
+                height={isMobile ? 'clamp(20px, 5vw, 24px)' : '24'}
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+                stroke="#000000"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -1505,15 +1668,21 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
               </svg>
             </button>
 
-            {/* Iframe с виджетом intickets */}
+            {/* Iframe с виджетом intickets - оптимизирован для мобильных */}
             <iframe
-              key={`schedule-ticket-${selectedScheduleUrl}`}
+              key={`schedule-ticket-${selectedScheduleUrl}-${Date.now()}`}
               src={selectedScheduleUrl}
-              className="w-full h-full border-0"
+              className="w-full border-0"
               style={{
-                minHeight: '600px'
+                width: '100%',
+                height: isMobile ? 'calc(90vh - clamp(3.5rem, 7vh, 4.5rem))' : '100%',
+                minHeight: isMobile ? 'calc(90vh - clamp(3.5rem, 7vh, 4.5rem))' : '600px',
+                flex: '1',
+                display: 'block',
+                border: 'none'
               }}
               allow="payment"
+              allowFullScreen
               title="Покупка билетов"
             />
           </div>
