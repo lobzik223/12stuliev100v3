@@ -797,7 +797,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 transform: 'translateY(-50%)',
                 position: 'absolute',
                 zIndex: 30,
-                left: '-1rem'
+                ...(isMobile ? {} : { left: '-1rem' })
               }}
             ></div>
             <div 
@@ -808,7 +808,7 @@ export default function TrailerSection({ gallerySectionRef, teamSectionRef, revi
                 transform: 'translateY(-50%)',
                 position: 'absolute',
                 zIndex: 30,
-                right: '-1rem'
+                ...(isMobile ? {} : { right: '-1rem' })
               }}
             ></div>
             </>

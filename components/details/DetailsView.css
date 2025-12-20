@@ -254,8 +254,8 @@ span.date-time-number {
 /* Виджет с рамкой справа */
 .frame-widget {
   position: absolute;
-  top: 2.5%; /* Опущено чуть ниже на ПК версии */
-  right: -2%;
+  top: 3%; /* Опущено чуть ниже */
+  right: -1%; /* Сдвинуто немного влево (уменьшено right) */
   /* Desktop: allow larger trailer block */
   width: 54%;
   max-width: 820px;
