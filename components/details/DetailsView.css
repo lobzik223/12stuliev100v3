@@ -1285,12 +1285,20 @@ span.date-time-number {
 /* Для больших экранов (1920px и выше) - больше отступ для безопасности */
 @media (min-width: 1920px) {
   .actors-blur-gradient-pc {
-    /* Large screens: push blur a bit lower */
-    top: calc(3% + 415vh + 260px + 120px + 100px);
+    /* Large screens: push blur lower */
+    top: calc(3% + 425vh + 300px + 120px + 100px);
   }
   
   .actors-section-details {
     margin-top: calc(3% + 415vh + 260px);
+  }
+}
+
+/* Для очень больших экранов (2560px и выше) - опускаем блюр еще ниже */
+@media (min-width: 2560px) {
+  .actors-blur-gradient-pc {
+    /* Very large screens: push blur even lower */
+    top: calc(3% + 435vh + 350px + 120px + 100px);
   }
 }
 

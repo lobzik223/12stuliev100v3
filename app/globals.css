@@ -3366,18 +3366,25 @@ body.employee-tickets-modal-open .secondary-nav {
   .employee-tickets-modal-bg {
     background-size: cover !important;
     background-position: center center !important;
+    background-attachment: fixed !important;
+    background-repeat: no-repeat !important;
     width: 100vw !important;
     height: 100vh !important;
     min-height: 100vh !important;
-    max-height: 100vh !important;
-    overflow: hidden !important;
-    padding-top: clamp(4rem, 6vh, 5rem) !important;
-    padding-bottom: clamp(4rem, 6vh, 5rem) !important;
+    max-height: none !important;
+    overflow: auto !important;
+    padding-top: clamp(2rem, 3vh, 3rem) !important;
+    padding-bottom: clamp(2rem, 3vh, 3rem) !important;
+    padding-left: clamp(2rem, 3vw, 3rem) !important;
+    padding-right: clamp(2rem, 3vw, 3rem) !important;
+    position: relative !important;
   }
   
-  /* Увеличиваем maxHeight контейнера модального окна на PC */
+  /* Убеждаемся, что модальное окно занимает весь экран на PC */
   div[style*="slideUp"] {
-    max-height: clamp(700px, 90vh, 950px) !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
   }
 }
 

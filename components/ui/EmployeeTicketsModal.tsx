@@ -154,6 +154,9 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
           pointerEvents: 'none',
           zIndex: 100001,
           padding: '0',
+          margin: '0',
+          width: '100vw',
+          height: '100vh',
         }}
         onClick={(e) => {
           if (e.target === modalRef.current && !isMobile) {
@@ -171,6 +174,7 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
             maxWidth: '100vw',
             height: '100vh',
             maxHeight: '100vh',
+            minHeight: '100vh',
             borderRadius: '0',
             overflow: 'hidden',
             position: 'fixed',
@@ -178,6 +182,9 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
             left: 0,
             right: 0,
             bottom: 0,
+            zIndex: 100001,
+            margin: 0,
+            padding: 0,
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -186,9 +193,10 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
             className="relative w-full h-full employee-tickets-modal-bg"
             style={{
               backgroundImage: 'url(/backgrounds/sections/fonsotrud.png)',
-              backgroundSize: isMobile ? 'cover' : 'cover', /* Cover для растягивания фона на весь экран */
+              backgroundSize: 'cover',
               backgroundPosition: 'center center',
               backgroundRepeat: 'no-repeat',
+              backgroundAttachment: isMobile ? 'scroll' : 'fixed',
               width: '100vw',
               height: '100vh',
               minHeight: '100vh',
@@ -197,10 +205,12 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
               paddingTop: isMobile ? 'clamp(3rem, 5vh, 4rem)' : 'clamp(2rem, 3vh, 3rem)',
               paddingBottom: isMobile ? 'clamp(3rem, 5vh, 4rem)' : 'clamp(2rem, 3vh, 3rem)',
               boxSizing: 'border-box',
-              overflow: 'hidden',
+              overflow: isMobile ? 'hidden' : 'auto',
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'center',
+              justifyContent: isMobile ? 'center' : 'flex-start',
+              WebkitOverflowScrolling: 'touch',
+              position: 'relative',
             }}
           >
             {/* Close Button */}
@@ -225,13 +235,14 @@ export default function EmployeeTicketsModal({ isOpen, onClose }: EmployeeTicket
 
             {/* Content Container */}
             <div 
-              className="relative w-full h-full flex flex-col items-center" 
+              className="relative w-full flex flex-col items-center" 
               style={{ 
-                justifyContent: 'center',
-                overflow: 'hidden',
-                maxHeight: '100vh',
+                justifyContent: isMobile ? 'center' : 'flex-start',
+                overflow: 'visible',
+                minHeight: isMobile ? '100%' : 'auto',
                 padding: 0,
                 margin: 0,
+                width: '100%',
               }}
             >
               {/* Logo - показываем на всех версиях */}
