@@ -1286,7 +1286,7 @@ span.date-time-number {
 @media (min-width: 1920px) {
   .actors-blur-gradient-pc {
     /* Large screens: push blur slightly lower */
-    top: calc(3% + 412vh + 250px + 120px + 100px);
+    top: calc(3% + 413vh + 255px + 120px + 100px);
   }
   
   .actors-section-details {
@@ -1298,7 +1298,7 @@ span.date-time-number {
 @media (min-width: 2560px) {
   .actors-blur-gradient-pc {
     /* Very large screens: push blur slightly lower */
-    top: calc(3% + 422vh + 290px + 120px + 100px);
+    top: calc(3% + 423vh + 295px + 120px + 100px);
   }
 }
 

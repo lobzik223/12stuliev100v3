@@ -1005,25 +1005,60 @@ const DetailsView: React.FC<DetailsViewProps> = ({
         // Убираем второй крестик (кнопку закрытия) внутри overlay, чтобы не было дублей.
         hideCloseButton={true}
         onTicketsClick={() => {
-          router.push('/');
+          // Переходим на главную страницу с hash для скролла к разделу "Билеты"
+          if (typeof window !== 'undefined') {
+            window.location.href = '/#tickets';
+          } else {
+            router.push('/#tickets');
+          }
         }}
         onAboutClick={() => {
-          router.push('/');
+          // Переходим на главную страницу с hash для скролла к разделу "О спектакле"
+          if (typeof window !== 'undefined') {
+            window.location.href = '/#about';
+          } else {
+            router.push('/#about');
+          }
         }}
         onGalleryClick={() => {
-          router.push('/gallery');
+          // Переходим на главную страницу с hash для скролла к разделу "Галерея"
+          if (typeof window !== 'undefined') {
+            window.location.href = '/#gallery';
+          } else {
+            router.push('/#gallery');
+          }
         }}
         onActorsClick={() => {
-          router.push('/');
+          // Переходим на главную страницу с hash для скролла к разделу "Актеры"
+          if (typeof window !== 'undefined') {
+            window.location.href = '/#actors';
+          } else {
+            router.push('/#actors');
+          }
         }}
         onTeamClick={() => {
-          router.push('/');
+          // Переходим на главную страницу с hash для скролла к разделу "Команда"
+          if (typeof window !== 'undefined') {
+            window.location.href = '/#team';
+          } else {
+            router.push('/#team');
+          }
         }}
         onReviewsClick={() => {
-          router.push('/');
+          // Переходим на главную страницу с hash для скролла к разделу "Отзывы"
+          if (typeof window !== 'undefined') {
+            window.location.href = '/#reviews';
+          } else {
+            router.push('/#reviews');
+          }
         }}
         onContactsClick={() => {
-          router.push('/');
+          // Переходим на главную страницу с hash для скролла к разделу "Контакты"
+          if (typeof window !== 'undefined') {
+            window.location.href = '/#contacts';
+          } else {
+            router.push('/#contacts');
+          }
         }}
       />
       {/* Рамка - сначала на мобильных, потом на десктопе */}

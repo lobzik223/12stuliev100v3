@@ -49,6 +49,82 @@ export default function MainScreen({ initialDebug = false, ssrIsIOS = false }: {
   const teamSectionRef = useRef<HTMLDivElement>(null);
   const reviewsSectionRef = useRef<HTMLDivElement>(null);
   const contactsSectionRef = useRef<HTMLDivElement>(null);
+
+  // Обработка hash в URL для скролла к разделам при переходе из DetailsView
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleHashScroll = () => {
+      const hash = window.location.hash.slice(1); // Убираем #
+      if (!hash) return;
+
+      // Ждем загрузки DOM
+      const scrollToSection = () => {
+        let targetRef: React.RefObject<HTMLDivElement> | null = null;
+
+        switch (hash) {
+          case 'tickets':
+            targetRef = eventsSectionRef;
+            break;
+          case 'about':
+            targetRef = journeySectionRef;
+            break;
+          case 'gallery':
+            targetRef = gallerySectionRef;
+            break;
+          case 'actors':
+            targetRef = actorsSectionRef;
+            break;
+          case 'team':
+            targetRef = teamSectionRef;
+            break;
+          case 'reviews':
+            targetRef = reviewsSectionRef;
+            break;
+          case 'contacts':
+            targetRef = contactsSectionRef;
+            break;
+        }
+
+        if (targetRef?.current) {
+          const element = targetRef.current;
+          const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = elementPosition - 100; // Отступ для header
+          
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+          
+          // Очищаем hash после скролла
+          setTimeout(() => {
+            window.history.replaceState(null, '', window.location.pathname);
+          }, 1000);
+        }
+      };
+
+      // Пробуем сразу
+      scrollToSection();
+      
+      // Если не получилось, пробуем через небольшую задержку (после загрузки всех компонентов)
+      setTimeout(scrollToSection, 300);
+      setTimeout(scrollToSection, 600);
+      setTimeout(scrollToSection, 1000);
+    };
+
+    // Обрабатываем hash при загрузке (с небольшой задержкой для гарантии загрузки всех refs)
+    const initialTimeout = setTimeout(() => {
+      handleHashScroll();
+    }, 100);
+
+    // Также слушаем изменения hash
+    window.addEventListener('hashchange', handleHashScroll);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      window.removeEventListener('hashchange', handleHashScroll);
+    };
+  }, []);
   const navPanelRef = useRef<HTMLDivElement>(null);
   const finalTextRef = useRef<HTMLDivElement>(null);
   const sectionEndRef = useRef<HTMLDivElement>(null);
