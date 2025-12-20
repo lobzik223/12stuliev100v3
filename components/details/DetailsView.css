@@ -1285,8 +1285,8 @@ span.date-time-number {
 /* Для больших экранов (1920px и выше) - больше отступ для безопасности */
 @media (min-width: 1920px) {
   .actors-blur-gradient-pc {
-    /* Large screens: push blur higher */
-    top: calc(3% + 410vh + 240px + 120px + 100px);
+    /* Large screens: push blur slightly lower */
+    top: calc(3% + 412vh + 250px + 120px + 100px);
   }
   
   .actors-section-details {
@@ -1294,11 +1294,11 @@ span.date-time-number {
   }
 }
 
-/* Для очень больших экранов (2560px и выше) - поднимаем блюр выше */
+/* Для очень больших экранов (2560px и выше) - опускаем блюр чуть ниже */
 @media (min-width: 2560px) {
   .actors-blur-gradient-pc {
-    /* Very large screens: push blur higher */
-    top: calc(3% + 420vh + 280px + 120px + 100px);
+    /* Very large screens: push blur slightly lower */
+    top: calc(3% + 422vh + 290px + 120px + 100px);
   }
 }
 
